@@ -1,0 +1,38 @@
+{
+  "name": "beagle",
+  "version": "0.0.1",
+  "description": "Search engine for biological ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peri4n/beagle.git"
+  },
+  "keywords": [
+    "biological",
+    "search",
+    "engine"
+  ],
+  "author": "Fabian Bull",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peri4n/beagle/issues"
+  },
+  "homepage": "https://github.com/peri4n/beagle#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "git-revision-webpack-plugin": "^3.0.3",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  }
+}

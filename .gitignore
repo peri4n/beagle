@@ -12,3 +12,6 @@ project/boot/
 project/plugins/project/
 .cache
 .lib/
+
+# Node specific files
+node_modules
