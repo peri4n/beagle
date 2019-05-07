@@ -29,7 +29,16 @@ object App {
         }
       }
 
-    val bindingFuture = Http().bindAndHandle(staticResources, "localhost", 8080)
+    val uploadController = path("upload") {
+      post {
+        entity(as[String]) { fileUpload =>
+          println(fileUpload)
+          complete("Everything went well")
+        }
+      }
+    }
+
+    val bindingFuture = Http().bindAndHandle(staticResources ~ uploadController, "localhost", 8080)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
