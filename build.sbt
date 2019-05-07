@@ -9,3 +9,6 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 // Webapp
 libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.10"
+
+// Spray
+libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10"

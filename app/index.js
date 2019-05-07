@@ -17,9 +17,9 @@ class App extends React.Component {
                     "Content-Type": "text/*"
                 },
                 body: event.target.result
-            }
-            ).then(response => console.log(response)
-            ).catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
+            }).then(response => response.json())
+            .then(json => console.log(json))
+            .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
         }
         reader.readAsText(file)
     }
