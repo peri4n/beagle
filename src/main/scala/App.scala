@@ -21,7 +21,7 @@ object App {
     implicit val executionContext = system.dispatcher
 
     val staticResources =
-      (get & pathPrefix("")){
+      (get & pathPrefix("")) {
         (pathEndOrSingleSlash & redirectToTrailingSlashIfMissing(StatusCodes.TemporaryRedirect)) {
           getFromFile("dist/index.html")
         } ~ {

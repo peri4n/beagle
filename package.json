@@ -4,7 +4,8 @@
   "description": "Search engine for biological ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "npx webpack --mode development --watch",
+    "build": "npx webpack --mode production"
   },
   "repository": {
     "type": "git",
