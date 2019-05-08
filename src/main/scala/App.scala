@@ -6,9 +6,15 @@ import akka.stream.ActorMaterializer
 import org.slf4j.LoggerFactory
 import spray.json.DefaultJsonProtocol._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.stream.alpakka.elasticsearch.WriteMessage
+import akka.stream.alpakka.elasticsearch.scaladsl.ElasticsearchSink
+import akka.stream.scaladsl.Source
+import org.apache.http.HttpHost
+import org.elasticsearch.client.RestClient
 import spray.json.RootJsonFormat
 
 import scala.io.StdIn
+import scala.util._
 
 object App {
 
@@ -25,6 +31,8 @@ object App {
 
     implicit val fastaEntryJsonFormat: RootJsonFormat[FastaEntry] = jsonFormat2(FastaEntry.apply)
 
+    implicit val client: RestClient = RestClient.builder(new HttpHost("localhost", 9200)).build()
+
     val staticResources =
       (get & pathPrefix("")) {
         (pathEndOrSingleSlash & redirectToTrailingSlashIfMissing(StatusCodes.TemporaryRedirect)) {
@@ -39,8 +47,13 @@ object App {
         entity(as[String]) { fileUpload =>
 
           val entries = FastaParser.parse(fileUpload)
-          println(entries)
-          complete(entries)
+          val messages = entries.map(entry => WriteMessage.createIndexMessage(source = entry))
+          val writeFuture = Source(messages)
+            .runWith(ElasticsearchSink.create("fasta", typeName = "_doc"))
+          onComplete(writeFuture) {
+            case Success(value) => complete(Map("status" -> "success"))
+            case Failure(ex) => complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
+          }
         }
       }
     }

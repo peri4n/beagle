@@ -12,3 +12,6 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.10"
 
 // Spray
 libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10"
+
+// Elastic Search connector for Akka
+libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-elasticsearch" % "1.0.0"
