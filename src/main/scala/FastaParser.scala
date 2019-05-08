@@ -4,6 +4,7 @@ object FastaParser {
     content.split(">")
       .tail
       .map(entry => entry.span(_ != '\n'))
+      .map { case (h, s) => (h, s.trim) }
       .map(FastaEntry.tupled)
       .toList
   }

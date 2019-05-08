@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import spray.json.DefaultJsonProtocol._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.stream.alpakka.elasticsearch.WriteMessage
-import akka.stream.alpakka.elasticsearch.scaladsl.ElasticsearchSink
-import akka.stream.scaladsl.Source
+import akka.stream.alpakka.elasticsearch.scaladsl.{ElasticsearchSink, ElasticsearchSource}
+import akka.stream.scaladsl.{Sink, Source}
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
 import spray.json.RootJsonFormat
@@ -58,7 +58,20 @@ object App {
       }
     }
 
-    val bindingFuture = Http().bindAndHandle(staticResources ~ uploadController, "localhost", 8080)
+    val searchController = path("search") {
+      post {
+        entity(as[String]) { searchSequence =>
+          val q = s"""{"match": { "sequence": "$searchSequence"}}"""
+          val readFuture = ElasticsearchSource(indexName = "fasta", typeName = "_doc", query = q).runWith(Sink.seq)
+          onComplete(readFuture) {
+            case Success(value) => complete(value.map(_.source))
+            case Failure(ex) => complete((StatusCodes.InternalServerError, Map("error" -> ex.toString)))
+          }
+        }
+      }
+    }
+
+    val bindingFuture = Http().bindAndHandle(staticResources ~ uploadController ~ searchController, "localhost", 8080)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return

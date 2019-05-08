@@ -1,5 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
+import SearchForm from './components/SearchForm'
 
 class App extends React.Component {
 
@@ -34,10 +35,13 @@ class App extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.renderFile}>
-                File: <input id="fasta" type="file" name="fasta-file"/><br/>
-                <input type="submit" value="Submit"/>
-            </form>
+            <div>
+                <form onSubmit={this.renderFile}>
+                    File: <input id="fasta" type="file" /><br/>
+                    <input type="submit" value="Submit"/>
+                </form>
+                <SearchForm />
+            </div>
         );
 
     }
