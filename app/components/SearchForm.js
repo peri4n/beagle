@@ -8,33 +8,32 @@ class SearchForm extends React.Component {
         this.searchSequence = this.searchSequence.bind(this)
         this.updateSequence = this.updateSequence.bind(this)
         this.state = {
-            "sequence": ""
+            'sequence': ''
         }
     }
 
     searchSequence(event) {
         event.preventDefault()
+        this.props.clearHits()
+        console.log(`Searching for ${this.state.sequence}.`)
         fetch('http://localhost:8080/search', {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: this.state.sequence
-        }).then(response => {
-            console.log(response)
-            console.log('first try')
-            return response.json()
-        }).then(json => {
-            console.log(json)
-            console.log('second try')
         })
-        .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
+            .then(response => response.json())
+            .then(list => list.forEach( hit => this.props.addHit(hit )))
+            .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
     }
 
     updateSequence(event) {
+        const sequence = event.target.value
         this.setState({
-            "sequence": event.target.value
+            'sequence': sequence
         })
+        this.props.updateSearchSequence(sequence)
     }
 
     render() {
