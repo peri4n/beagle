@@ -15,3 +15,6 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10"
 
 // Elastic Search connector for Akka
 libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-elasticsearch" % "1.0.0"
+
+// cats
+libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
