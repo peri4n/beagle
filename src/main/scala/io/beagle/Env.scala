@@ -11,7 +11,7 @@ object Env {
 
   val settings = env map (_.settings)
 
-  val route = env map (_.route)
+  val controllers = env map (_.controllers)
 
   val system = env map (_.system)
 

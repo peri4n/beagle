@@ -5,10 +5,13 @@ class FileUpload extends React.Component {
     constructor() {
         super()
         this.fileInput = React.createRef()
-        this.renderFile = this.renderFile.bind(this)
+        this.sendFile = this.sendFile.bind(this)
     }
 
-    sendFile(file) {
+    sendFile(event) {
+        event.preventDefault();
+
+        let [ file ] = this.fileInput.files
         const reader = new FileReader()
 
         // register callback for when the file is completely read
@@ -16,9 +19,9 @@ class FileUpload extends React.Component {
             fetch('http://localhost:8080/upload', {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "text/*"
+                    "Content-Type": "application/json"
                 },
-                body: event.target.result
+                body: JSON.stringify({ 'text': event.target.result })
             }).then(response => {
                 console.log(response)
                 return response.json()
@@ -30,15 +33,9 @@ class FileUpload extends React.Component {
         reader.readAsText(file)
     }
 
-    renderFile(event) {
-        event.preventDefault();
-        let file = this.fileInput.files.item(0)
-        this.sendFile(file)
-    }
-
     render() {
         return (
-            <form onSubmit={this.renderFile}>
+            <form onSubmit={this.sendFile}>
                 File: <input ref={(input) => this.fileInput = input} type="file" /><br/>
                 <input type="submit" value="Submit"/>
             </form>

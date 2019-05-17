@@ -1,41 +1,76 @@
 package io.beagle.directive
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives._
-import akka.stream.alpakka.elasticsearch.WriteMessage
-import akka.stream.alpakka.elasticsearch.scaladsl.ElasticsearchSink
-import akka.stream.scaladsl.Source
-import io.beagle.Env
+import akka.actor.{Actor, ActorRef, Props}
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.server.Directives
+import akka.pattern.ask
+import akka.util.Timeout
+import com.sksamuel.elastic4s.http.{ElasticClient, ElasticDsl, ElasticProperties}
+import com.typesafe.scalalogging.Logger
 import io.beagle.fasta.FastaParser
-import org.apache.http.HttpHost
-import org.elasticsearch.client.RestClient
-import spray.json.DefaultJsonProtocol._
+import io.beagle.{ElasticSearchSettings, Env}
+import spray.json.DefaultJsonProtocol
 
-import scala.util._
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
-object FileUpload {
+object FileUploadActor {
 
-  val uploadController = Env.env map { env =>
+  case class FileUploadRequest(text: String)
 
-    import FastaParser.fastaEntryJsonFormat
+  case class FileUploadResponse(status: String)
 
-    implicit val esClient = RestClient
-      .builder(new HttpHost(env.settings.elasticSearch.elasticSearchHost, env.settings.elasticSearch.elasticSearchPort))
-      .build()
+}
 
-    path("upload") {
-      post {
-        entity(as[String]) { fileUpload =>
+class FileUploadActor(settings: ElasticSearchSettings) extends Actor with ElasticDsl {
 
-          val entries = FastaParser.parse(fileUpload)
-          val messages = entries.map(entry => WriteMessage.createIndexMessage(source = entry))
-          val writeFuture = Source(messages)
-            .runWith(ElasticsearchSink.create("fasta", typeName = "_doc"))(env.materializer)
-          onComplete(writeFuture) {
-            case Success(value) => complete(Map("status" -> "success"))
-            case Failure(ex) => complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
-          }
+  import FileUploadActor._
+
+  private val Log = Logger(classOf[FileUploadActor])
+
+  private val elasticClient = ElasticClient(ElasticProperties(s"${ settings.protocol }://${ settings.host }:${ settings.port }"))
+
+  def receive: Receive = {
+    case FileUploadRequest(text) =>
+      logger.info("received request")
+      val requests = FastaParser.parse(text) map { elem =>
+        indexInto("fasta", "_doc") fields(
+          "header" -> elem.header,
+          "sequence" -> elem.sequence
+        )
+      }
+
+      val future = elasticClient.execute {
+        bulk(requests)
+      }
+
+      sender ! FileUploadResponse("success")
+  }
+
+}
+
+object FileUploadController {
+
+  val route = Env.env map { env => new FileUploadController(env.system.actorOf(Props(new FileUploadActor(env.settings.elasticSearch))))(env.system.dispatcher).upload }
+
+}
+
+class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext: ExecutionContext) extends Directives with DefaultJsonProtocol with SprayJsonSupport {
+
+  import FileUploadActor._
+
+  implicit val timeout = Timeout(2.seconds)
+
+  implicit val requestFormat = jsonFormat1(FileUploadRequest)
+  implicit val responseFormat = jsonFormat1(FileUploadResponse)
+
+  def upload = path("upload") {
+    post {
+      entity(as[FileUploadRequest]) { request =>
+        onComplete(( fileUploadActor ? request ).mapTo[FileUploadResponse]) {
+          case Success(value) => complete("success")
+          case Failure(throwable) => failWith(throwable)
         }
       }
     }

@@ -21,10 +21,10 @@ class SearchForm extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: this.state.sequence
+            body: JSON.stringify({ 'sequence': this.state.sequence })
         })
             .then(response => response.json())
-            .then(list => list.forEach( hit => this.props.addHit(hit )))
+            .then(hits => hits.sequences.forEach( hit => this.props.addHit(JSON.parse(hit))))
             .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
     }
 

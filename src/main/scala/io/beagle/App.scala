@@ -1,8 +1,10 @@
 package io.beagle
 
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Route
 import com.typesafe.config.ConfigFactory
-import io.beagle.directive.Directives
+import io.beagle.components.Controllers
+import io.beagle.directive.{FileUploadController, SearchSequenceController, Static}
 import org.slf4j.LoggerFactory
 
 import scala.io.StdIn
@@ -24,7 +26,7 @@ object App {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
-    val bindingFuture = Http().bindAndHandle(Env.route.run(environment), "localhost", 8080)
+    val bindingFuture = Http().bindAndHandle(environment.controllers.all, "localhost", 8080)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
@@ -36,6 +38,8 @@ object App {
 
 object production extends Env {
 
+  env =>
+
   override def settings: Settings = new Settings {
 
     private val config = ConfigFactory.load()
@@ -44,12 +48,21 @@ object production extends Env {
 
     def elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
 
-      def elasticSearchHost = config.getString("elasticsearch.host")
+      def protocol = config.getString("elasticsearch.protocol")
 
-      def elasticSearchPort = config.getInt("elasticsearch.port")
+      def host = config.getString("elasticsearch.host")
+
+      def port = config.getInt("elasticsearch.port")
 
     }
   }
 
-  def route = Directives.all.run(this)
+  def controllers = new Controllers {
+    def fileUpload: Route = FileUploadController.route.run(env)
+
+    def search: Route = SearchSequenceController.route.run(env)
+
+    def static: Route = Static.route.run(env)
+  }
+
 }

@@ -12,9 +12,11 @@ trait Settings {
 
 trait ElasticSearchSettings {
 
-  def elasticSearchHost: String
+  def protocol : String
 
-  def elasticSearchPort: Int
+  def host: String
+
+  def port: Int
 
 }
 
@@ -36,9 +38,11 @@ object ProdSettings extends Settings {
 
   def elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
 
-    def elasticSearchHost = config.getString("elasticsearch.host")
+    def protocol = config.getString("elasticsearch.protocol")
 
-    def elasticSearchPort = config.getInt("elasticsearch.port")
+    def host = config.getString("elasticsearch.host")
+
+    def port = config.getInt("elasticsearch.port")
 
   }
 }
