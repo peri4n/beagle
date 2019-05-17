@@ -1,5 +1,4 @@
 import React from 'react'
-import { render } from 'react-dom'
 
 class SearchForm extends React.Component {
 
@@ -15,7 +14,6 @@ class SearchForm extends React.Component {
     searchSequence(event) {
         event.preventDefault()
         this.props.clearHits()
-        console.log(`Searching for ${this.state.sequence}.`)
         fetch('http://localhost:8080/search', {
             method: 'POST',
             headers: {
@@ -25,7 +23,7 @@ class SearchForm extends React.Component {
         })
             .then(response => response.json())
             .then(hits => hits.sequences.forEach( hit => this.props.addHit(JSON.parse(hit))))
-            .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
+            .catch(error => alert('There has been a problem with your fetch operation: ', error.message))
     }
 
     updateSequence(event) {
