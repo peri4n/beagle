@@ -1,6 +1,6 @@
 import React from 'react'
 
-class SearchForm extends React.Component {
+    class SearchForm extends React.Component {
 
     constructor() {
         super()
@@ -22,7 +22,7 @@ class SearchForm extends React.Component {
             body: JSON.stringify({ 'sequence': this.state.sequence })
         })
             .then(response => response.json())
-            .then(hits => hits.sequences.forEach( hit => this.props.addHit(JSON.parse(hit))))
+            .then(hits => hits.sequences.forEach( hit => this.props.addHit(hit)))
             .catch(error => alert('There has been a problem with your fetch operation: ', error.message))
     }
 

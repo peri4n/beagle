@@ -5,12 +5,14 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives
 import akka.pattern.ask
 import akka.util.Timeout
+import cats.instances.future
+import com.sksamuel.elastic4s.http.search.SearchHits
 import com.sksamuel.elastic4s.http.{ElasticClient, ElasticDsl, ElasticProperties}
 import com.typesafe.scalalogging.Logger
 import io.beagle.{ElasticSearchSettings, Env}
 import spray.json.DefaultJsonProtocol
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -18,7 +20,9 @@ object SearchSequenceActor {
 
   case class SearchSequenceRequest(sequence: String)
 
-  case class SearchSequenceResponse(sequences: List[String])
+  case class SearchSequenceResponse(sequences: List[SearchHit])
+
+  case class SearchHit(header: String, sequence: String)
 
 }
 
@@ -37,9 +41,14 @@ class SearchSequenceActor(settings: ElasticSearchSettings) extends Actor with El
         search("fasta") query sequence
       }
 
-      future.onComplete {
-        case Success(response) => sender ! SearchSequenceResponse(response.result.hits.hits.map(_.sourceAsString).toList)
-      }
+      val response = Await.result(future, 2.seconds)
+
+      sender ! SearchSequenceResponse(
+        response.result.hits.hits.map { hit =>
+          SearchHit(
+            hit.sourceAsMap.getOrElse("header", "").toString,
+            hit.sourceAsMap.getOrElse("sequence", "").toString)
+        }.toList)
   }
 }
 
@@ -56,6 +65,7 @@ class SearchSequenceController(searchActor: ActorRef)(implicit executionContext:
   implicit val timeout = Timeout(2.seconds)
 
   implicit val requestFormat = jsonFormat1(SearchSequenceRequest)
+  implicit val hitFormat = jsonFormat2(SearchHit)
   implicit val responseFormat = jsonFormat1(SearchSequenceResponse)
 
   val search =
