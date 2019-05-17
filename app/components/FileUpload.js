@@ -22,11 +22,7 @@ class FileUpload extends React.Component {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ 'text': event.target.result })
-            }).then(response => {
-                console.log(response)
-                return response.json()
-            }).then(json => console.log(json))
-            .catch(error => console.log('There has been a problem with your fetch operation: ', error.message))
+            }).catch(error => alert('There has been a problem with your fetch operation: ', error.message))
         }
 
         // read the file

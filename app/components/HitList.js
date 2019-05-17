@@ -1,10 +1,8 @@
 import React from 'react'
-import { render } from 'react-dom'
 import Hit from './Hit'
 
 class HitList extends React.Component {
     render() {
-        console.log(this.props)
         return (
                 <div>
                     <h3>Hits for {this.props.searchSequence}</h3>
