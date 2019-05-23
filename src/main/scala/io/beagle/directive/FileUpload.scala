@@ -5,7 +5,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives
 import akka.pattern.ask
 import akka.util.Timeout
-import com.sksamuel.elastic4s.http.{ElasticClient, ElasticDsl, ElasticProperties}
+import com.sksamuel.elastic4s.http.ElasticDsl
 import com.typesafe.scalalogging.Logger
 import io.beagle.fasta.FastaParser
 import io.beagle.{ElasticSearchSettings, Env}
@@ -29,19 +29,17 @@ class FileUploadActor(settings: ElasticSearchSettings) extends Actor with Elasti
 
   private val Log = Logger(classOf[FileUploadActor])
 
-  private val elasticClient = ElasticClient(ElasticProperties(s"${ settings.protocol }://${ settings.host }:${ settings.port }"))
-
   def receive: Receive = {
     case FileUploadRequest(text) =>
       logger.info("received request")
       val requests = FastaParser.parse(text) map { elem =>
-        indexInto("fasta", "_doc") fields(
+        indexInto("fasta", "sequence") fields(
           "header" -> elem.header,
           "sequence" -> elem.sequence
         )
       }
 
-      val future = elasticClient.execute {
+      val future = settings.client.execute {
         bulk(requests)
       }
 

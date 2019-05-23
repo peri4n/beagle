@@ -1,23 +1,22 @@
 package io.beagle
 
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.server.Route
-import com.typesafe.config.ConfigFactory
-import io.beagle.components.Controllers
-import io.beagle.directive.{FileUploadController, SearchSequenceController, Static}
+import com.sksamuel.elastic4s.analyzers.{CustomAnalyzerDefinition, NGramTokenizer, StandardAnalyzer, UppercaseTokenFilter}
+import com.sksamuel.elastic4s.mappings.{MappingDefinition, TextField}
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.io.StdIn
 
 object App {
 
   private val Logger = LoggerFactory.getLogger(App.getClass.getName)
 
-  private val environment = production
+  private val environment = Env.production
 
   def main(args: Array[String]): Unit = {
     Logger.info("Welcome to bIO - the search engine for biological sequences.")
-
 
     implicit val system = Env.system.run(environment)
 
@@ -25,6 +24,24 @@ object App {
 
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
+
+    val createFastaIndex = Future {
+      import com.sksamuel.elastic4s.http.ElasticDsl._
+      environment.settings.elasticSearch.client.execute {
+        createIndex("fasta").mappings(
+          MappingDefinition("sequence").as(
+            TextField("header").analyzer(StandardAnalyzer),
+            TextField("sequence").analyzer("custom"))
+        ).analysis(
+          CustomAnalyzerDefinition(
+            "custom",
+            NGramTokenizer("nGram", 3, 5),
+            UppercaseTokenFilter
+          )
+        )
+      }
+    }
+    Await.result(createFastaIndex.fallbackTo(createFastaIndex), 2.seconds)
 
     val bindingFuture = Http().bindAndHandle(environment.controllers.all, "localhost", 8080)
 
@@ -34,35 +51,6 @@ object App {
       .flatMap(_.unbind()) // trigger unbinding from the port
       .onComplete(_ => system.terminate()) // and shutdown when done
   }
-}
-
-object production extends Env {
-
-  env =>
-
-  override def settings: Settings = new Settings {
-
-    private val config = ConfigFactory.load()
-
-    def uiRoot = config.getString("ui.root")
-
-    def elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
-
-      def protocol = config.getString("elasticsearch.protocol")
-
-      def host = config.getString("elasticsearch.host")
-
-      def port = config.getInt("elasticsearch.port")
-
-    }
-  }
-
-  def controllers = new Controllers {
-    def fileUpload: Route = FileUploadController.route.run(env)
-
-    def search: Route = SearchSequenceController.route.run(env)
-
-    def static: Route = Static.route.run(env)
-  }
 
 }
+
