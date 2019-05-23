@@ -33,11 +33,9 @@ class SearchSequenceActor(settings: ElasticSearchSettings) extends Actor with El
 
   val Log = Logger(classOf[SearchSequenceActor])
 
-  val client = ElasticClient(ElasticProperties(s"${ settings.protocol }://${ settings.host }:${ settings.port }"))
-
   def receive: Receive = {
     case SearchSequenceRequest(sequence) =>
-      val future = client.execute {
+      val future = settings.client.execute {
         search("fasta") query sequence
       }
 

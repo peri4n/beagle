@@ -1,5 +1,6 @@
 package io.beagle
 
+import com.sksamuel.elastic4s.http.{ElasticClient, ElasticProperties}
 import com.typesafe.config.ConfigFactory
 
 trait Settings {
@@ -12,11 +13,13 @@ trait Settings {
 
 trait ElasticSearchSettings {
 
-  def protocol : String
+  def protocol: String
 
   def host: String
 
   def port: Int
+
+  def client = ElasticClient(ElasticProperties(s"${ protocol }://${ host }:${ port }"))
 
 }
 
