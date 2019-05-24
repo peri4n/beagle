@@ -14,6 +14,11 @@ import spray.json.DefaultJsonProtocol
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import javax.ws.rs.{POST, Path}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.{Content, Schema}
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 
 object FileUploadActor {
 
@@ -54,6 +59,7 @@ object FileUploadController {
 
 }
 
+@Path("")
 class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext: ExecutionContext) extends Directives with DefaultJsonProtocol with SprayJsonSupport {
 
   import FileUploadActor._
@@ -63,6 +69,14 @@ class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext:
   implicit val requestFormat = jsonFormat1(FileUploadRequest)
   implicit val responseFormat = jsonFormat1(FileUploadResponse)
 
+  @POST
+  @Operation(summary = "FASTA upload", description = "Upload FASTA files",
+    requestBody = new RequestBody(content = Array(new Content(schema = new Schema(implementation = classOf[FileUploadRequest])))),
+    responses = Array(
+      new ApiResponse(responseCode = "200", description = "File upload response",
+        content = Array(new Content(schema = new Schema(implementation = classOf[FileUploadResponse])))),
+      new ApiResponse(responseCode = "500", description = "Internal server error"))
+  )
   def upload = path("upload") {
     post {
       entity(as[FileUploadRequest]) { request =>

@@ -25,3 +25,15 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion
 )
+
+// Swagger
+val swaggerVersion = "2.0.8"
+libraryDependencies ++= Seq(
+  "javax.ws.rs" % "javax.ws.rs-api" % "2.0.1",
+  "com.github.swagger-akka-http" %% "swagger-akka-http" % "2.0.2",
+  "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.0.3",
+  "io.swagger.core.v3" % "swagger-core" % swaggerVersion,
+  "io.swagger.core.v3" % "swagger-annotations" % swaggerVersion,
+  "io.swagger.core.v3" % "swagger-models" % swaggerVersion,
+  "io.swagger.core.v3" % "swagger-jaxrs2" % swaggerVersion,
+)

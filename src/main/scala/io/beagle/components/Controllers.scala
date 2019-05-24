@@ -2,6 +2,7 @@ package io.beagle.components
 
 import akka.http.scaladsl.server.{Directives, Route}
 import io.beagle.Env
+import io.beagle.directive.SwaggerDocService
 
 trait Controllers extends Directives {
 
@@ -11,7 +12,7 @@ trait Controllers extends Directives {
 
   def search: Route
 
-  def all = static ~ fileUpload ~ search
+  def all = static ~ fileUpload ~ search ~ SwaggerDocService.routes
 
 }
 
