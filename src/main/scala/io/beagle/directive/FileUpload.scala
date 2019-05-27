@@ -64,12 +64,10 @@ class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext:
   implicit val responseFormat = jsonFormat1(FileUploadResponse)
 
   def upload = path("upload") {
-    post {
-      entity(as[FileUploadRequest]) { request =>
-        onComplete(( fileUploadActor ? request ).mapTo[FileUploadResponse]) {
-          case Success(value) => complete("success")
-          case Failure(throwable) => failWith(throwable)
-        }
+    formField('file.*) { request =>
+      onComplete(( fileUploadActor ? FileUploadRequest(request.mkString("\n")) ).mapTo[FileUploadResponse]) {
+        case Success(value) => complete(value)
+        case Failure(throwable) => failWith(throwable)
       }
     }
   }
