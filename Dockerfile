@@ -1,3 +1,6 @@
+############################
+# Start of the build stage #
+############################
 FROM node:8 as build-stage
 
 # Create app directory
@@ -22,5 +25,8 @@ ARG commit_hash
 ENV COMMIT_HASH=$commit_hash
 RUN npm run build
 
+############################
+# Start of the run stage   #
+############################
 FROM nginx:1.15
 COPY --from=build-stage /usr/src/build/dist /usr/share/nginx/html
