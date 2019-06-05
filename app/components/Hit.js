@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class Hit extends React.Component {
     render() {
@@ -11,4 +12,10 @@ class Hit extends React.Component {
     }
 }
 
+Hit.propTypes = {
+    header: PropTypes.string,
+    sequence: PropTypes.string
+}
+
 export default Hit
+
