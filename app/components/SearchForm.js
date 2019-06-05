@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
     class SearchForm extends React.Component {
 
@@ -43,6 +44,12 @@ import React from 'react'
         );
 
     }
+}
+
+SearchForm.propTypes = {
+    clearHits: PropTypes.func.isRequired,
+    addHit: PropTypes.func.isRequired,
+    updateSearchSequence: PropTypes.func.isRequired
 }
 
 export default SearchForm

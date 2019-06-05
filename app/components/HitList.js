@@ -1,5 +1,6 @@
 import React from 'react'
 import Hit from './Hit'
+import PropTypes from 'prop-types'
 
 class HitList extends React.Component {
     render() {
@@ -12,6 +13,11 @@ class HitList extends React.Component {
                 </div>
         )
     }
+}
+
+HitList.propTypes = {
+    searchSequence: PropTypes.string,
+    hitList: PropTypes.array
 }
 
 export default HitList

@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "npx webpack --mode development --watch",
     "build": "npx webpack --mode production",
-    "check": "npx eslint 'app/**'"
+    "lint": "npx eslint \"./app/**/*.{js,jsx}\""
   },
   "repository": {
     "type": "git",
