@@ -1,49 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-    class SearchForm extends React.Component {
+export default function SearchForm(props) {
 
-    constructor() {
-        super()
-        this.searchSequence = this.searchSequence.bind(this)
-        this.updateSequence = this.updateSequence.bind(this)
-        this.state = {
-            'sequence': ''
-        }
-    }
+    const [searchSequence, setSearchSequence] = useState('')
 
-    searchSequence(event) {
+    const search = (event) => {
         event.preventDefault()
-        this.props.clearHits()
+        props.clearHits()
         fetch('http://localhost:8080/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 'sequence': this.state.sequence })
+            body: JSON.stringify({ 'sequence': searchSequence })
         })
             .then(response => response.json())
-            .then(hits => hits.sequences.forEach( hit => this.props.addHit(hit)))
+            .then(hits => hits.sequences.forEach( hit => props.addHit(hit)))
             .catch(error => alert('There has been a problem with your fetch operation: ', error.message))
     }
 
-    updateSequence(event) {
+    const updateSequence = (event) => {
         const sequence = event.target.value
-        this.setState({
-            'sequence': sequence
-        })
-        this.props.updateSearchSequence(sequence)
+        setSearchSequence(sequence)
+        props.updateSearchSequence(sequence)
     }
 
-    render() {
-        return (
-            <form onSubmit={this.searchSequence}>
-                Sequence: <input type="text" onChange={this.updateSequence}/><br/>
-                <input type="submit" value="Submit"/>
-            </form>
-        );
-
-    }
+    return (
+        <form onSubmit={search}>
+            Sequence: <input type="text" onChange={updateSequence}/><br/>
+            <input type="submit" value="Submit"/>
+        </form>
+    )
 }
 
 SearchForm.propTypes = {
@@ -51,5 +39,3 @@ SearchForm.propTypes = {
     addHit: PropTypes.func.isRequired,
     updateSearchSequence: PropTypes.func.isRequired
 }
-
-export default SearchForm
