@@ -54,7 +54,7 @@ object App {
     val bindingFuture = Http().bindAndHandle(environment.controllers.all, "localhost", 8080)
 
     Logger.info(s"Server online at http://localhost:8080/")
-    StdIn.readLine() // let it run until user presses return
+    println(StdIn.readLine()) // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
       .onComplete(_ => system.terminate()) // and shutdown when done

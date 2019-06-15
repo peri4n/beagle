@@ -43,7 +43,6 @@ libraryDependencies ++= Seq(
 // Scala test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
-
-fork := true
-
-javaOptions := Seq("-Dui.root=../frontend/dist/")
+fork in (Compile, run) := true
+connectInput in (Compile, run) := true
+javaOptions in  (Compile, run) += "-Dui.root=../frontend/dist/"
