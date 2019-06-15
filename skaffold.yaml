@@ -1,0 +1,16 @@
+apiVersion: skaffold/v1beta11
+kind: Config
+build:
+  tagPolicy:
+    envTemplate: 
+      template: "{{.IMAGE_NAME}}:stable"
+  artifacts:
+  - image: beagle-frontend
+    context: subprojects/frontend/
+    docker:
+      buildArgs:
+          commit_hash: foo
+  - image: beagle-server
+    context: subprojects/server/
+    docker: {}
+  local: {}

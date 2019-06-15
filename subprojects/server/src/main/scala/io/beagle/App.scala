@@ -1,7 +1,10 @@
 package io.beagle
 
 import akka.http.scaladsl.Http
+import akka.pattern.retry
 import com.sksamuel.elastic4s.analyzers.{CustomAnalyzerDefinition, NGramTokenizer, StandardAnalyzer, UppercaseTokenFilter}
+import com.sksamuel.elastic4s.http.Response
+import com.sksamuel.elastic4s.http.index.CreateIndexResponse
 import com.sksamuel.elastic4s.mappings.{MappingDefinition, TextField}
 import org.slf4j.LoggerFactory
 
@@ -20,26 +23,31 @@ object App {
 
     implicit val system = Env.system.run(environment)
 
+    implicit val scheduler = system.scheduler
+
     implicit val materializer = Env.materializer.run(environment)
 
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
-    val createFastaIndex = Future {
-      import com.sksamuel.elastic4s.http.ElasticDsl._
-      environment.settings.elasticSearch.client.execute {
-        createIndex("fasta").mappings(
-          MappingDefinition("sequence").as(
-            TextField("header").analyzer(StandardAnalyzer),
-            TextField("sequence").analyzer("custom"))
-        ).analysis(
-          CustomAnalyzerDefinition(
-            "custom",
-            NGramTokenizer("nGram", 3, 5),
-            UppercaseTokenFilter
-          )
+    import com.sksamuel.elastic4s.http.ElasticDsl._
+
+    def connectionCheck = environment.settings.elasticSearch.client.execute { clusterHealth() }
+
+    Await.result(retry(() => connectionCheck, 100, 1.seconds), Duration.Inf)
+
+    val createFastaIndex: Future[Response[CreateIndexResponse]] = environment.settings.elasticSearch.client.execute {
+      createIndex("fasta").mappings(
+        MappingDefinition("sequence").as(
+          TextField("header").analyzer(StandardAnalyzer),
+          TextField("sequence").analyzer("custom"))
+      ).analysis(
+        CustomAnalyzerDefinition(
+          "custom",
+          NGramTokenizer("nGram", 3, 5),
+          UppercaseTokenFilter
         )
-      }
+      )
     }
     Await.result(createFastaIndex.fallbackTo(createFastaIndex), 2.seconds)
 
