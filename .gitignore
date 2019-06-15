@@ -4,7 +4,7 @@
 *.iws
 
 # SBT specific files
-dist/*
+dist/
 target/
 lib_managed/
 src_managed/

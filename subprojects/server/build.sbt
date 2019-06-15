@@ -29,3 +29,7 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion
 )
+
+fork := true
+
+javaOptions := Seq("-Dui.root=../frontend/dist/")

@@ -1,12 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+
 export default function Hit(props) {
     return (
-        <div>
-            <h3>{props.header}</h3>
-            <p>{props.sequence}</p>
-        </div>
+        <ListItem alignItems="flex-start">
+            <ListItemText
+                primary={props.header}
+                secondary={props.sequence}
+            />
+        </ListItem>
     )
 }
 
