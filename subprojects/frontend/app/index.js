@@ -1,49 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { render } from 'react-dom'
-import SearchForm from './components/SearchForm'
-import FileUpload from './components/FileUpload'
+import SearchBar from './components/SearchBar'
 import HitList from './components/HitList'
 
-class App extends React.Component {
+export default function App() {
 
-    constructor() {
-        super()
-        this.updateSearchSequence = this.updateSearchSequence.bind(this)
-        this.addHit = this.addHit.bind(this)
-        this.clearHits = this.clearHits.bind(this)
-        this.state = {
-            'search_sequence': '',
-            'hits': []
-        }
+    const [searchSequence, setSearchSequence] = useState('')
+    const [hits, setHits] = useState([])
+
+
+    function clearHits() {
+        setHits([])
     }
 
-    updateSearchSequence(sequence) {
-        this.setState({
-            'search_sequence': sequence
-        })
+    function addHit(hit) {
+        setHits(prevHits => [hit, ...prevHits])
     }
 
-    clearHits() {
-        this.setState({
-            'hits': []
-        })
-    }
-
-    addHit(hit) {
-        this.setState(prevState => ({
-            hits: [hit, ...prevState.hits]
-        }))
-    }
-
-    render() {
-        return (
-            <div>
-                <FileUpload />
-                <SearchForm updateSearchSequence={this.updateSearchSequence} clearHits={this.clearHits} addHit={this.addHit}/>
-                <HitList searchSequence={this.state.search_sequence} hitList={this.state.hits}/>
+    return (
+        <div>
+            <SearchBar updateSearchSequence={setSearchSequence} clearHits={clearHits} addHit={addHit}/>
+            <div style={{ marginTop: 100 }}>
+                <HitList searchSequence={searchSequence} hitList={hits}/>
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 render(<App/>, document.getElementById('app-container'))

@@ -4,10 +4,7 @@ const GitRevisionPlugin = require('git-revision-webpack-plugin');
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
-const config = (env, argv) => {
-
-    console.log('Environment: ', process.env)
-    console.log('Arguments: ', argv)
+const config = argv => {
 
     return {
         entry: ['babel-polyfill', './app/index.js'],

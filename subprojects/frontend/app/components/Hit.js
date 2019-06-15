@@ -1,21 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class Hit extends React.Component {
-    render() {
-        return (
-            <div>
-                <h3>{this.props.header}</h3>
-                <p>{this.props.sequence}</p>
-            </div>
-        )
-    }
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+
+export default function Hit(props) {
+    return (
+        <ListItem alignItems="flex-start">
+            <ListItemText
+                primary={props.header}
+                secondary={props.sequence}
+            />
+        </ListItem>
+    )
 }
 
 Hit.propTypes = {
     header: PropTypes.string,
     sequence: PropTypes.string
 }
-
-export default Hit
 
