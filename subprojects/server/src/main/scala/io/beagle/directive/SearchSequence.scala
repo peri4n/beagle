@@ -2,7 +2,6 @@ package io.beagle.directive
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.server.Directives
 import akka.pattern.ask
 import akka.util.Timeout
 import cats.instances.future
@@ -56,9 +55,10 @@ object SearchSequenceController {
 
 }
 
-class SearchSequenceController(searchActor: ActorRef)(implicit executionContext: ExecutionContext) extends Directives with DefaultJsonProtocol with SprayJsonSupport {
+class SearchSequenceController(searchActor: ActorRef)(implicit executionContext: ExecutionContext) extends DefaultJsonProtocol with SprayJsonSupport {
 
   import SearchSequenceActor._
+  import akka.http.scaladsl.server.Directives._
 
   implicit val timeout = Timeout(2.seconds)
 
