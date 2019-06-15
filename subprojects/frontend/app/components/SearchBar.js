@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
+import FileUploadDialog from './FileUploadDialog'
+
 import { fade, makeStyles} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -28,12 +30,11 @@ export default function SearchBar(props) {
             transition: theme.transitions.create('width'),
             width: '100%',
             [theme.breakpoints.up('md')]: {
-                width: 200,
+                width: '700px',
             },
         },
         search: {
             position: 'relative',
-            flexGrow: 1,
             borderRadius: theme.shape.borderRadius,
             backgroundColor: fade(theme.palette.common.white, 0.15),
             '&:hover': {
@@ -77,6 +78,12 @@ export default function SearchBar(props) {
             .catch(error => alert('There has been a problem with your fetch operation: ', error.message))
     }
 
+    function handleEnter(event) {
+        if(event.key === 'Enter') {
+            search(event)
+        }
+    }
+
     function updateSequence(event) {
         const sequence = event.target.value
         setSearchSequence(sequence)
@@ -92,7 +99,7 @@ export default function SearchBar(props) {
                 <Typography variant="h6">
                     Beagle
                 </Typography>
-                <div className={classes.search}>
+                <div className={classes.search} onKeyPress={handleEnter}>
                     <div className={classes.searchIcon}>
                         <SearchIcon />
                     </div>
@@ -107,6 +114,7 @@ export default function SearchBar(props) {
                     />
                 </div>
                 <Button color="inherit" onClick={search}>Search</Button>
+                <FileUploadDialog />
             </Toolbar>
         </AppBar>
     )
