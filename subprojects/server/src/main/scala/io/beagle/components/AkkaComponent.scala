@@ -5,8 +5,8 @@ import akka.stream.ActorMaterializer
 
 trait AkkaComponent {
 
-  def system: ActorSystem = ActorSystem("my-system")
+  val system: ActorSystem = ActorSystem("test-system")
 
-  def materializer: ActorMaterializer = ActorMaterializer()(system)
+  val materializer: ActorMaterializer = ActorMaterializer()(system)
 
 }

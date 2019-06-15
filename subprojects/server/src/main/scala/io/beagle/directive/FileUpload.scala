@@ -1,15 +1,14 @@
 package io.beagle.directive
 
 import akka.actor.{Actor, ActorRef, Props}
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.server.Directives
+import akka.http.scaladsl.server.Directives._
 import akka.pattern.ask
 import akka.util.Timeout
 import com.sksamuel.elastic4s.http.ElasticDsl
 import com.typesafe.scalalogging.Logger
+import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.beagle.fasta.FastaParser
 import io.beagle.{ElasticSearchSettings, Env}
-import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -20,6 +19,8 @@ object FileUploadActor {
   case class FileUploadRequest(text: String)
 
   case class FileUploadResponse(status: String)
+
+  def props(elasticSearchSettings: ElasticSearchSettings) = Props(new FileUploadActor(elasticSearchSettings))
 
 }
 
@@ -39,9 +40,9 @@ class FileUploadActor(settings: ElasticSearchSettings) extends Actor with Elasti
         )
       }
 
-      val future = settings.client.execute {
+      settings.client.execute {
         bulk(requests)
-      }
+      }.await(2.seconds)
 
       sender ! FileUploadResponse("success")
   }
@@ -50,18 +51,17 @@ class FileUploadActor(settings: ElasticSearchSettings) extends Actor with Elasti
 
 object FileUploadController {
 
-  val route = Env.env map { env => new FileUploadController(env.system.actorOf(Props(new FileUploadActor(env.settings.elasticSearch))))(env.system.dispatcher).upload }
+  val route = Env.env map { env => new FileUploadController(env.system.actorOf(FileUploadActor.props(env.settings.elasticSearch)))(env.system.dispatcher).upload }
 
 }
 
-class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext: ExecutionContext) extends Directives with DefaultJsonProtocol with SprayJsonSupport {
+class FileUploadController(fileUploadActor: ActorRef)(implicit executionContext: ExecutionContext) extends FailFastCirceSupport {
 
   import FileUploadActor._
 
   implicit val timeout = Timeout(2.seconds)
 
-  implicit val requestFormat = jsonFormat1(FileUploadRequest)
-  implicit val responseFormat = jsonFormat1(FileUploadResponse)
+  import io.circe.generic.auto._
 
   def upload = path("upload") {
     formField('file.*) { request =>

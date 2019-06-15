@@ -24,13 +24,13 @@ object Env {
 
     env =>
 
-    override def settings: Settings = new Settings {
+    override val settings: Settings = new Settings {
 
       private val config = ConfigFactory.load()
 
       def uiRoot = config.getString("ui.root")
 
-      def elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
+      val elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
 
         def protocol = config.getString("elasticsearch.protocol")
 
@@ -41,7 +41,7 @@ object Env {
       }
     }
 
-    def controllers = new Controllers {
+    val controllers = new Controllers {
       def fileUpload: Route = FileUploadController.route.run(env)
 
       def search: Route = SearchSequenceController.route.run(env)
@@ -50,4 +50,5 @@ object Env {
     }
 
   }
+
 }

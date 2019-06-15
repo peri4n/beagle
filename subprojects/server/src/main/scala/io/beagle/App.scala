@@ -14,7 +14,7 @@ import scala.io.StdIn
 
 object App {
 
-  private val Logger = LoggerFactory.getLogger(App.getClass.getName)
+  private val Logger = LoggerFactory.getLogger(classOf[App])
 
   private val environment = Env.production
 
@@ -53,7 +53,7 @@ object App {
 
     val bindingFuture = Http().bindAndHandle(environment.controllers.all, "localhost", 8080)
 
-    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+    Logger.info(s"Server online at http://localhost:8080/")
     StdIn.readLine() // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
