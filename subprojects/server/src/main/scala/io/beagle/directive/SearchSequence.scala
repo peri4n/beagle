@@ -1,17 +1,14 @@
 package io.beagle.directive
 
-import akka.actor.{Actor, ActorRef, Props}
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import cats.instances.future
-import com.sksamuel.elastic4s.http.search.SearchHits
-import com.sksamuel.elastic4s.http.{ElasticClient, ElasticDsl, ElasticProperties}
+import com.sksamuel.elastic4s.http.ElasticDsl
 import com.typesafe.scalalogging.Logger
+import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.beagle.{ElasticSearchSettings, Env}
-import spray.json.DefaultJsonProtocol
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -25,20 +22,19 @@ object SearchSequenceActor {
 
 }
 
-class SearchSequenceActor(settings: ElasticSearchSettings) extends Actor with ElasticDsl {
+class SearchSequenceActor(settings: ElasticSearchSettings) extends Actor with ElasticDsl with ActorLogging {
 
   import SearchSequenceActor._
   import context.dispatcher
 
-  val Log = Logger(classOf[SearchSequenceActor])
-
   def receive: Receive = {
     case SearchSequenceRequest(sequence) =>
-      val future = settings.client.execute {
-        search("fasta") query sequence
-      }
+      log.info("test")
 
-      val response = Await.result(future, 2.seconds)
+      val response = settings.client.execute {
+        search("fasta") query sequence
+      }.await(2.seconds)
+
 
       sender ! SearchSequenceResponse(
         response.result.hits.hits.map { hit =>
@@ -55,16 +51,14 @@ object SearchSequenceController {
 
 }
 
-class SearchSequenceController(searchActor: ActorRef)(implicit executionContext: ExecutionContext) extends DefaultJsonProtocol with SprayJsonSupport {
+class SearchSequenceController(searchActor: ActorRef)(implicit executionContext: ExecutionContext) extends FailFastCirceSupport {
 
   import SearchSequenceActor._
   import akka.http.scaladsl.server.Directives._
 
   implicit val timeout = Timeout(2.seconds)
 
-  implicit val requestFormat = jsonFormat1(SearchSequenceRequest)
-  implicit val hitFormat = jsonFormat2(SearchHit)
-  implicit val responseFormat = jsonFormat1(SearchSequenceResponse)
+  import io.circe.generic.auto._
 
   val search =
     path("search") {
