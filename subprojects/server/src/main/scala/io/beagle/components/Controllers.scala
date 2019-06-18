@@ -11,7 +11,9 @@ trait Controllers extends Directives {
 
   def search: Route
 
-  def all = static ~ fileUpload ~ search
+  def health: Route
+
+  def all = static ~ fileUpload ~ search ~ health
 
 }
 
@@ -28,6 +30,8 @@ object Controllers {
       def search: Route = controllers.search
 
       def static: Route = controllers.static
+
+      def health: Route = controllers.health
     }
   }
 

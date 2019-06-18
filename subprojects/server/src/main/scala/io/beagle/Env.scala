@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Route
 import cats.data.Reader
 import com.typesafe.config.ConfigFactory
 import io.beagle.components.{AkkaComponent, ControllerComponent, Controllers, SettingsComponent}
-import io.beagle.directive.{FileUploadController, SearchSequenceController, Static}
+import io.beagle.directive.{FileUploadController, HealthCheckController, SearchSequenceController, Static}
 
 trait Env extends SettingsComponent with ControllerComponent with AkkaComponent
 
@@ -46,7 +46,10 @@ object Env {
 
       def search: Route = SearchSequenceController.route.run(env)
 
+      def health: Route = HealthCheckController.route.run(env)
+
       def static: Route = Static.route.run(env)
+
     }
 
   }

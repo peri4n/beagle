@@ -45,5 +45,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 
 fork := true
+connectInput := true
 
 javaOptions := Seq("-Dui.root=../frontend/dist/")

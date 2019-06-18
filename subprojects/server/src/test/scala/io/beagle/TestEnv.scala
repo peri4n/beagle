@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Route
 import com.sksamuel.elastic4s.embedded.LocalNode
 import io.beagle.components.Controllers
-import io.beagle.directive.{FileUploadController, SearchSequenceController, Static}
+import io.beagle.directive.{FileUploadController, HealthCheckController, SearchSequenceController, Static}
 
 case class TestEnv(override val system: ActorSystem) extends Env {
 
@@ -34,5 +34,7 @@ case class TestEnv(override val system: ActorSystem) extends Env {
     def search: Route = SearchSequenceController.route.run(env)
 
     def static: Route = Static.route.run(env)
+
+    def health: Route = HealthCheckController.route.run(env)
   }
 }

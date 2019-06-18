@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.sksamuel.elastic4s.http.ElasticDsl
-import com.typesafe.scalalogging.Logger
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport
 import io.beagle.{ElasticSearchSettings, Env}
 
@@ -55,10 +54,9 @@ class SearchSequenceController(searchActor: ActorRef)(implicit executionContext:
 
   import SearchSequenceActor._
   import akka.http.scaladsl.server.Directives._
+  import io.circe.generic.auto._
 
   implicit val timeout = Timeout(2.seconds)
-
-  import io.circe.generic.auto._
 
   val search =
     path("search") {
