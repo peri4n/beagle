@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 ############################
 # Start of the build stage #
 ############################
@@ -15,7 +17,7 @@ COPY build.sbt ./
 COPY src ./src/
 
 # Build the application
-RUN sbt stage
+RUN --mount=type=cache,target=/root/.ivy2/ sbt stage
 
 ############################
 # Start of the run stage   #

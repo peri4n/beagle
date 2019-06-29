@@ -1,63 +1,56 @@
 package io.beagle
 
-import akka.http.scaladsl.Http
-import akka.pattern.retry
+import cats.effect.{ContextShift, IO, Timer}
+import cats.syntax.all._
 import com.sksamuel.elastic4s.analyzers.{CustomAnalyzerDefinition, NGramTokenizer, StandardAnalyzer, UppercaseTokenFilter}
-import com.sksamuel.elastic4s.http.Response
-import com.sksamuel.elastic4s.http.index.CreateIndexResponse
+import com.sksamuel.elastic4s.cats.effect.instances._
 import com.sksamuel.elastic4s.mappings.{MappingDefinition, TextField}
+import org.http4s.implicits._
+import org.http4s.server.blaze.BlazeServerBuilder
 import org.slf4j.LoggerFactory
+import com.sksamuel.elastic4s.http.ElasticDsl._
+import com.sksamuel.elastic4s.http.Response
+import com.sksamuel.elastic4s.http.cluster.ClusterHealthResponse
+import com.sksamuel.elastic4s.http.index.CreateIndexResponse
+import io.beagle.components.{Env, Services}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import scala.io.StdIn
 
 object App {
 
   private val Logger = LoggerFactory.getLogger(classOf[App])
 
-  private val environment = Env.production
+  private val environment = Env.selection
+
+  def connectionCheck(env: Env): IO[Response[ClusterHealthResponse]] = env.settings.elasticSearch.client.execute { clusterHealth() }
+
+  def retryWithBackoff[A](ioa: IO[A], initialDelay: FiniteDuration, maxRetries: Int)(implicit timer: Timer[IO]): IO[A] = {
+    ioa.handleErrorWith { error =>
+      if (maxRetries > 0)
+        IO.sleep(initialDelay) *> retryWithBackoff(ioa, initialDelay * 2, maxRetries - 1)
+      else
+        IO.raiseError(error)
+    }
+  }
 
   def main(args: Array[String]): Unit = {
     Logger.info("Welcome to bIO - the search engine for biological sequences.")
+    Logger.info(environment.toString)
 
-    implicit val system = Env.system.run(environment)
+    implicit val cs: ContextShift[IO] = IO.contextShift(global)
+    implicit val timer: Timer[IO] = IO.timer(global)
 
-    implicit val scheduler = system.scheduler
+    val preconditions = for {
+      _ <- retryWithBackoff(connectionCheck(environment), 5.seconds, 100)
+      _ <- Services.elasticSearch(environment).createSequenceIndex()
+    } yield ()
 
-    implicit val materializer = Env.materializer.run(environment)
+    preconditions.unsafeRunSync()
 
-    // needed for the future flatMap/onComplete in the end
-    implicit val executionContext = system.dispatcher
-
-    import com.sksamuel.elastic4s.http.ElasticDsl._
-
-    def connectionCheck = environment.settings.elasticSearch.client.execute { clusterHealth() }
-
-    Await.result(retry(() => connectionCheck, 100, 1.seconds), Duration.Inf)
-
-    val createFastaIndex: Future[Response[CreateIndexResponse]] = environment.settings.elasticSearch.client.execute {
-      createIndex("fasta").mappings(
-        MappingDefinition("sequence").as(
-          TextField("header").analyzer(StandardAnalyzer),
-          TextField("sequence").analyzer("custom"))
-      ).analysis(
-        CustomAnalyzerDefinition(
-          "custom",
-          NGramTokenizer("nGram", 3, 5),
-          UppercaseTokenFilter
-        )
-      )
-    }
-    Await.result(createFastaIndex.fallbackTo(createFastaIndex), 2.seconds)
-
-    val bindingFuture = Http().bindAndHandle(environment.controllers.all, "localhost", 8080)
-
-    Logger.info(s"Server online at http://localhost:8080/")
-    StdIn.readLine() // let it run until user presses return
-    bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+    // Needed by `BlazeServerBuilder`. Provided by `IOApp`.
+    val server = BlazeServerBuilder[IO].bindHttp(8080).withHttpApp(environment.controllers.all.orNotFound).resource
+    server.use(_ => IO.never).start.unsafeRunSync()
   }
 
 }

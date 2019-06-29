@@ -25,14 +25,15 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
           readinessProbe:
             httpGet:
               path: /
               port: http
-          resources:

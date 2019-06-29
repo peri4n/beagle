@@ -1,38 +1,29 @@
 package io.beagle.components
 
-import akka.http.scaladsl.server.{Directives, Route}
-import io.beagle.Env
+import cats.effect.IO
+import cats.implicits._
+import io.beagle.controller.{FileUploadController, HealthCheckController, SearchSequenceController, StaticContentController}
+import org.http4s.HttpRoutes
 
-trait Controllers extends Directives {
+trait Controllers {
 
-  def static: Route
+  def upload: HttpRoutes[IO]
 
-  def fileUpload: Route
+  def health: HttpRoutes[IO]
 
-  def search: Route
+  def search: HttpRoutes[IO]
 
-  def health: Route
+  def static: HttpRoutes[IO]
 
-  def all = static ~ fileUpload ~ search ~ health
-
+  def all = upload <+> search <+> health
 }
 
 object Controllers {
+  def health = HealthCheckController.instance
 
-  val fileUpload = Env.controllers map { _.fileUpload }
+  def search = SearchSequenceController.instance
 
-  val search = Env.controllers map { _.search }
+  def upload = FileUploadController.instance
 
-  val all = Env.controllers map { controllers =>
-    new Controllers {
-      def fileUpload: Route = controllers.fileUpload
-
-      def search: Route = controllers.search
-
-      def static: Route = controllers.static
-
-      def health: Route = controllers.health
-    }
-  }
-
+  def static = StaticContentController.instance
 }
