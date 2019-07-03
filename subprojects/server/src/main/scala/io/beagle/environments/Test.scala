@@ -2,6 +2,7 @@ package io.beagle.environments
 
 import cats.effect.IO
 import io.beagle.components._
+import io.beagle.repository.SequenceSetRepo
 import io.beagle.service.ElasticSearchService
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -31,6 +32,8 @@ case class Test(name: String) extends Env {
 
   val controllers = new Controllers with Http4sDsl[IO] {
 
+    def seqset = Controllers.seqset(env)
+
     def upload = Controllers.upload(env)
 
     def health = Controllers.health(env)
@@ -42,6 +45,11 @@ case class Test(name: String) extends Env {
 
   val services: Services = new Services {
     def elasticSearch: ElasticSearchService = ElasticSearchService.instance(env)
+  }
+
+  def repositories: Repositories = new Repositories {
+
+    def sequenceSet: SequenceSetRepo = Repositories.sequenceSet(env)
   }
 }
 

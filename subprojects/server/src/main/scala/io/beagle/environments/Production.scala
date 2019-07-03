@@ -2,6 +2,7 @@ package io.beagle.environments
 
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
+import io.beagle.repository.SequenceSetRepo
 
 object Production extends Env {
 
@@ -25,6 +26,9 @@ object Production extends Env {
   }
 
   val controllers = new Controllers {
+
+    def seqset = Controllers.seqset(env)
+
     def upload = Controllers.upload(env)
 
     def health = Controllers.health(env)
@@ -36,6 +40,11 @@ object Production extends Env {
 
   def services: Services = new Services {
     def elasticSearch = Services.elasticSearch(env)
+  }
+
+  def repositories: Repositories = new Repositories {
+
+    def sequenceSet: SequenceSetRepo = Repositories.sequenceSet(env)
   }
 
 }

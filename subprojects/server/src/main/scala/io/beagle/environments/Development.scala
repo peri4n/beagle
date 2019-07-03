@@ -3,7 +3,8 @@ package io.beagle.environments
 import cats.effect.IO
 import cats.implicits._
 import com.typesafe.config.ConfigFactory
-import io.beagle.components.{Controllers, ElasticSearchSettings, Env, Services, Settings}
+import io.beagle.components._
+import io.beagle.repository.SequenceSetRepo
 import io.beagle.service.ElasticSearchService
 import org.http4s.HttpRoutes
 
@@ -34,11 +35,13 @@ object Development extends Env {
 
     def health: HttpRoutes[IO] = Controllers.health(env)
 
-    def search:HttpRoutes[IO] = Controllers.search(env)
+    def search: HttpRoutes[IO] = Controllers.search(env)
 
-    def static :HttpRoutes[IO] = Controllers.static(env)
+    def static: HttpRoutes[IO] = Controllers.static(env)
 
-    override def all: HttpRoutes[IO] = upload <+> health <+> search <+> static
+    def seqset: HttpRoutes[IO] = Controllers.seqset(env)
+
+    override def all: HttpRoutes[IO] = upload <+> health <+> search <+> seqset <+> static
 
   }
 
@@ -46,4 +49,8 @@ object Development extends Env {
     def elasticSearch: ElasticSearchService = ElasticSearchService.instance(env)
   }
 
+  def repositories: Repositories = new Repositories {
+
+    def sequenceSet: SequenceSetRepo = SequenceSetRepo.instance(env)
+  }
 }

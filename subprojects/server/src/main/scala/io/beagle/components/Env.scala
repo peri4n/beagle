@@ -3,7 +3,7 @@ package io.beagle.components
 import cats.data.Reader
 import io.beagle.environments.{Development, Production}
 
-trait Env extends SettingsComponent with ControllerComponent with ServiceComponent
+trait Env extends SettingsComponent with ControllerComponent with ServiceComponent with RepositoryComponent
 
 object Env {
 
@@ -20,5 +20,7 @@ object Env {
   val controllers = env map { _.controllers }
 
   val services = env map { _.services }
+
+  val repositories = env map { _.repositories }
 
 }
