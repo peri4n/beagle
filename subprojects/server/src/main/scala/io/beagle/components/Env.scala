@@ -7,7 +7,7 @@ trait Env extends SettingsComponent with ControllerComponent with ServiceCompone
 
 object Env {
 
-  def selection = Option(System.getProperty("mode")).map(_.toLowerCase) match {
+  def autoDetect = Option(System.getProperty("mode")).map(_.toLowerCase) match {
     case Some("production") => Production
     case Some("development") => Development
     case _ => Development
@@ -16,8 +16,6 @@ object Env {
   val env = Reader[Env, Env](identity)
 
   val settings = env map { _.settings }
-
-  val elasticSearchSettings = settings map { _.elasticSearch }
 
   val controllers = env map { _.controllers }
 

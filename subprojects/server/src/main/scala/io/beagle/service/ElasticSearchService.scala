@@ -1,6 +1,8 @@
 package io.beagle.service
 
-import cats.effect.IO
+import scala.concurrent.duration._
+import cats.syntax.all._
+import cats.effect.{IO, Timer}
 import com.sksamuel.elastic4s.analyzers.{CustomAnalyzerDefinition, NGramTokenizer, StandardAnalyzer, UppercaseTokenFilter}
 import com.sksamuel.elastic4s.cats.effect.instances._
 import com.sksamuel.elastic4s.http.ElasticDsl._
@@ -12,6 +14,8 @@ import com.sksamuel.elastic4s.http.search.SearchResponse
 import com.sksamuel.elastic4s.mappings.{MappingDefinition, TextField}
 import io.beagle.components.{ElasticSearchSettings, Settings}
 import io.beagle.fasta.FastaEntry
+
+import scala.concurrent.duration.FiniteDuration
 
 case class ElasticSearchService(settings: ElasticSearchSettings) {
 
@@ -34,8 +38,17 @@ case class ElasticSearchService(settings: ElasticSearchSettings) {
     settings.client.execute { search(settings.sequenceIndex) query sequence }
   }
 
-  def connectionCheck(): IO[Response[ClusterHealthResponse]] = {
-    settings.client.execute { clusterHealth() }
+  def connectionCheck()(implicit timer: Timer[IO]): IO[Response[ClusterHealthResponse]] = {
+    def retryWithBackOff[A](ioa: IO[A], initialDelay: FiniteDuration, maxRetries: Int)(implicit timer: Timer[IO]): IO[A] = {
+      ioa.handleErrorWith { error =>
+        if (maxRetries > 0)
+          IO.sleep(initialDelay) *> retryWithBackOff(ioa, initialDelay * 2, maxRetries - 1)
+        else
+          IO.raiseError(error)
+      }
+    }
+
+    retryWithBackOff(settings.client.execute { clusterHealth() }, 5.seconds, 100)
   }
 
   def createSequenceIndex(): IO[Response[CreateIndexResponse]] = settings.client.execute {

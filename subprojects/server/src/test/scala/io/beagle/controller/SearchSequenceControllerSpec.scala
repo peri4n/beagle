@@ -19,7 +19,7 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]
 
   "The SearchSequenceController" should {
-    "finds a previously indexed sequences with shared ngrams" in {
+    "finds a previously indexed sequences with shared n-grams" in {
       val environment = Test.of[SearchSequenceControllerSpec]
       val es = Services.elasticSearch(environment)
       val testCase = for {

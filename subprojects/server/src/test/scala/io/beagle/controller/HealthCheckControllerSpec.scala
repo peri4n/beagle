@@ -17,7 +17,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
 
   "The HealthCheckController" should {
-    "returns true if Elasticsearch can be reached" in {
+    "returns true if ElasticSearch can be reached" in {
       val settings = LocalElasticSearchSettings()
       val response = runAwait(new HealthCheckController(settings).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")
@@ -26,7 +26,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
       response must haveStatus(Status.Ok)
       response must haveBody(HealthCheckResponse(true))
     }
-    "returns false if Elasticsearch can't be reached" in {
+    "returns false if ElasticSearch can't be reached" in {
       val settings = LocalElasticSearchSettings().copy(port = 1234)
       val response = runAwait(new HealthCheckController(settings).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")

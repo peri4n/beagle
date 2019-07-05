@@ -16,7 +16,7 @@ class FileUploadControllerSpec extends Specification with Http4sMatchers[IO] wit
 
   implicit val responseDecoder: EntityDecoder[IO, FileUploadResponse] = jsonOf[IO, FileUploadResponse]
 
-  "The FileUplloadControllerSpec" should {
+  "The FileUploadControllerSpec" should {
     "returns success if the file is correctly uploaded" in {
       val environment = Test.of[FileUploadControllerSpec]
       val response = runAwait(Controllers.upload(environment).orNotFound.run(
