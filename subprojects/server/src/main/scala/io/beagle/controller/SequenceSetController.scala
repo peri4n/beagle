@@ -1,7 +1,7 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.components.{DatabaseSettings, Repositories, Settings}
+import io.beagle.components.Repositories
 import io.beagle.domain.DNA
 import io.beagle.repository.SequenceSetRepo
 import io.circe.generic.auto._
@@ -11,16 +11,13 @@ import org.http4s.{EntityDecoder, HttpRoutes}
 
 object SequenceSetController {
 
-  val instance = for {
-    settings <- Settings.database
-    repo <- Repositories.sequenceSet
-  } yield SequenceSetController(settings, repo).route
+  val instance = Repositories.sequenceSet map { SequenceSetController(_).route }
 
   case class CreateSequenceSetRequest(name: String, alphabet: String)
 
 }
 
-case class SequenceSetController(settings: DatabaseSettings, repository: SequenceSetRepo) extends Http4sDsl[IO] {
+case class SequenceSetController(repository: SequenceSetRepo) extends Http4sDsl[IO] {
 
   import SequenceSetController._
 

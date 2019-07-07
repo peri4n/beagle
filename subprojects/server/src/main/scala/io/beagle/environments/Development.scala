@@ -51,6 +51,6 @@ object Development extends Env {
 
   def repositories: Repositories = new Repositories {
 
-    def sequenceSet: SequenceSetRepo = SequenceSetRepo.instance(env)
+    def sequenceSet: SequenceSetRepo = SequenceSetRepo.inMemory
   }
 }

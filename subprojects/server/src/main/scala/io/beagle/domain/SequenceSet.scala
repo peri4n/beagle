@@ -13,8 +13,8 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 case class SequenceSet(
                         id: Int,
                         name: String,
-                        created: Date,
-                        lastModified: Date
+                        created: Date = Date.from(Instant.now()),
+                        lastModified: Date = Date.from(Instant.now)
                       )
 
 object SequenceSet {

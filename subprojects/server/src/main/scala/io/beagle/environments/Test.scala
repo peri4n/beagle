@@ -15,11 +15,9 @@ case class Test(name: String) extends Env {
   env =>
 
   val settings = new Settings {
-
     val uiRoot: String = "dist"
 
     val elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
-
       override val sequenceIndex = s"${ name.toLowerCase() }-${ System.currentTimeMillis() }-fasta"
 
       val protocol = "http"
@@ -31,7 +29,6 @@ case class Test(name: String) extends Env {
   }
 
   val controllers = new Controllers with Http4sDsl[IO] {
-
     def seqset = Controllers.seqset(env)
 
     def upload = Controllers.upload(env)
@@ -47,9 +44,8 @@ case class Test(name: String) extends Env {
     def elasticSearch: ElasticSearchService = ElasticSearchService.instance(env)
   }
 
-  def repositories: Repositories = new Repositories {
-
-    def sequenceSet: SequenceSetRepo = Repositories.sequenceSet(env)
+  val repositories: Repositories = new Repositories {
+    val sequenceSet: SequenceSetRepo = SequenceSetRepo.inMemory
   }
 }
 
