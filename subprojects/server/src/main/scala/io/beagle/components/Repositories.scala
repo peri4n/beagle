@@ -1,10 +1,10 @@
 package io.beagle.components
 
-import io.beagle.repository.SequenceSetRepo
+import io.beagle.repository.seqset.SeqSetRepo
 
 trait Repositories {
 
-  def sequenceSet: SequenceSetRepo
+  def sequenceSet: SeqSetRepo
 
 }
 

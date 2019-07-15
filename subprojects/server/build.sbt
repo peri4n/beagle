@@ -30,12 +30,11 @@ libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.7.0"
 libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.7.0"
 
 // Elastic Search
-val elastic4sVersion = "6.5.1"
+val elastic4sVersion = "7.1.0"
 libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-cats-effect" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
+  "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
 )
 
 // Scala test
@@ -56,7 +55,7 @@ scalacOptions ++= Seq(
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
-  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
+//  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
   "-Xfuture", // Turn on future language features.
   "-Xlint:adapted-args", // Warn if an argument list is modified to match the receiver.
   "-Xlint:by-name-right-associative", // By-name parameter of right associative operator.

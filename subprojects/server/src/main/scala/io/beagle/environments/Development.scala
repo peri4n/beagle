@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.implicits._
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
-import io.beagle.repository.SequenceSetRepo
+import io.beagle.repository.seqset.SeqSetRepo
 import io.beagle.service.ElasticSearchService
 import org.http4s.HttpRoutes
 
@@ -51,6 +51,6 @@ object Development extends Env {
 
   def repositories: Repositories = new Repositories {
 
-    def sequenceSet: SequenceSetRepo = SequenceSetRepo.inMemory
+    def sequenceSet: SeqSetRepo = SeqSetRepo.inMemory
   }
 }

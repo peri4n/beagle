@@ -2,7 +2,7 @@ package io.beagle.environments
 
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
-import io.beagle.repository.SequenceSetRepo
+import io.beagle.repository.seqset.SeqSetRepo
 
 object Production extends Env {
 
@@ -44,7 +44,7 @@ object Production extends Env {
 
   def repositories: Repositories = new Repositories {
 
-    def sequenceSet: SequenceSetRepo = Repositories.sequenceSet(env)
+    def sequenceSet: SeqSetRepo = Repositories.sequenceSet(env)
   }
 
 }

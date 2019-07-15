@@ -1,16 +1,18 @@
 package io.beagle.controller
 
-import cats.effect.IO
-import io.beagle.components._
+import cats.effect.{ContextShift, IO, Timer}
+import com.sksamuel.elastic4s.ElasticDsl
 import com.sksamuel.elastic4s.cats.effect.instances._
-import com.sksamuel.elastic4s.http.ElasticDsl
-import com.sksamuel.elastic4s.indexes.IndexRequest
-import io.beagle.components.ElasticSearchSettings
+import io.beagle.components._
 import io.beagle.fasta.FastaParser
 import io.circe.generic.auto._
+import fs2._
+import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl._
-import org.http4s.{HttpRoutes, UrlForm}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object FileUploadController {
 
@@ -24,24 +26,23 @@ case class FileUploadController(searchSettings: ElasticSearchSettings) extends H
 
   import FileUploadController._
 
+  implicit val cs: ContextShift[IO] = IO.contextShift(global)
+  implicit val timer: Timer[IO] = IO.timer(global)
+
   implicit val entityEncoder = jsonEncoderOf[IO, FileUploadResponse]
 
   val route =
     HttpRoutes.of[IO] {
       case req@POST -> Root / "upload" =>
-        req.decode[UrlForm] { form =>
-          val indexRequests = listOfIndexRequests(form.values("file").toList.mkString("\n"))
-          searchSettings.client.execute(bulk(indexRequests)).unsafeRunSync()
-          Ok(FileUploadResponse("success"))
-        }
+        Ok(req.body.through(FastaParser.parse)
+          .groupWithin(20, 1.seconds)
+          .map(chunk => chunk.toList.map { elem =>
+            indexInto("fasta") fields(
+              "header" -> elem.header,
+              "sequence" -> elem.sequence
+            )
+          })
+          .flatMap(r => Stream.eval(searchSettings.client.execute(bulk(r))))
+          .map(_.toString))
     }
-
-  def listOfIndexRequests(content: String): List[IndexRequest] = {
-    FastaParser.parse(content) map { elem =>
-      indexInto("fasta", "sequence") fields(
-        "header" -> elem.header,
-        "sequence" -> elem.sequence
-      )
-    }
-  }
 }

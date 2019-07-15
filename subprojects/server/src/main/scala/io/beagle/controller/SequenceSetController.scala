@@ -2,8 +2,8 @@ package io.beagle.controller
 
 import cats.effect.IO
 import io.beagle.components.Repositories
-import io.beagle.domain.DNA
-import io.beagle.repository.SequenceSetRepo
+import io.beagle.domain.SeqSet
+import io.beagle.repository.seqset.SeqSetRepo
 import io.circe.generic.auto._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
@@ -15,9 +15,11 @@ object SequenceSetController {
 
   case class CreateSequenceSetRequest(name: String, alphabet: String)
 
+  case class CreateSequenceSetResponse(name: String, alphabet: String)
+
 }
 
-case class SequenceSetController(repository: SequenceSetRepo) extends Http4sDsl[IO] {
+case class SequenceSetController(repository: SeqSetRepo) extends Http4sDsl[IO] {
 
   import SequenceSetController._
 
@@ -27,8 +29,8 @@ case class SequenceSetController(repository: SequenceSetRepo) extends Http4sDsl[
     case req@POST -> Root / "sequences" =>
       for {
         request <- req.as[CreateSequenceSetRequest]
-        sequenceSet <- repository.create(request.name, DNA)
-        response <- Ok(sequenceSet)
+        sequenceSetView <- repository.create(SeqSet(request.name))
+        response <- Ok(sequenceSetView)
       } yield response
   }
 

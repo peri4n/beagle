@@ -1,31 +1,27 @@
 package io.beagle.fasta
 
-import cats.effect.IO
+import cats.implicits._
+import cats.effect.{ContextShift, IO}
+import scala.concurrent.ExecutionContext.Implicits.global
 import fs2._
-import org.apache.http.HttpHost
-import org.elasticsearch.client.RestClient
 
 object FastaParser {
 
-  implicit val client: RestClient = RestClient.builder(new HttpHost("localhost", 9200)).build()
+  implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
-  def parse(content: String): List[FastaEntry] = {
-    content.split(">")
-      .tail
-      .map(entry => entry.span(_ != '\n'))
-      .map { case (h, s) => (h, s.trim) }
-      .map(FastaEntry.tupled)
-      .toList
+  def toFasta(chunk: String): FastaEntry = {
+    val ( header :: body ) = chunk.lines.toList
+    FastaEntry(
+      header,
+      body.map(_.trim).mkString("")
+    )
   }
 
-  def parseStream(entityBody: Stream[IO, Byte]): Stream[IO, FastaEntry] = {
-    entityBody.split(_ == '>'.toByte)
+  def parse: Pipe[IO, Byte, FastaEntry] = s =>
+    s.through(text.utf8Decode)
+      .repartition(c => Chunk.array(c.split(">")))
       .tail
-      .map(chunk => chunk.toString().span(_ != '\n'))
-      .map { case (h, s) => (h, s.trim) }
-      .map(FastaEntry.tupled)
-  }
-
+      .map(FastaParser.toFasta)
 }
 
 case class FastaEntry(header: String, sequence: String)

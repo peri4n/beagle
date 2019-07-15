@@ -2,8 +2,8 @@ package io.beagle.controller
 
 import cats.effect.IO
 import com.sksamuel.elastic4s.cats.effect.instances._
-import com.sksamuel.elastic4s.http.cluster.ClusterHealthResponse
-import com.sksamuel.elastic4s.http.{ElasticDsl, Response}
+import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
+import com.sksamuel.elastic4s.{ElasticDsl, Response}
 import io.beagle.components.{ElasticSearchSettings, Settings}
 import io.circe.generic.auto._
 import org.http4s.circe._

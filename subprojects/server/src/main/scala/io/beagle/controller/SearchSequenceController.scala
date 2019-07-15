@@ -1,8 +1,8 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import com.sksamuel.elastic4s.http.Response
-import com.sksamuel.elastic4s.http.search.SearchResponse
+import com.sksamuel.elastic4s.Response
+import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import io.beagle.components._
 import io.beagle.service.ElasticSearchService
 import io.circe.generic.auto._
