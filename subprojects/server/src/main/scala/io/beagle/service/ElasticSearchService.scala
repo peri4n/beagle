@@ -57,12 +57,8 @@ case class ElasticSearchService(settings: ElasticSearchSettings) {
       .analysis(Analysis(
         analyzers = List(
           StandardAnalyzer("header_analyzer"),
-          CustomAnalyzer(
-            "sequence_analyzer",
-            "nGram",
-            List.empty,
-            List.empty)),
-        tokenizers = List(NGramTokenizer("nGram", 3, 5))
+          CustomAnalyzer( "sequence_analyzer", "test", List.empty, List.empty)),
+        tokenizers = List(NGramTokenizer("test", 4, 5))
       ))
   }
 
