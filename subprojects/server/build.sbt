@@ -13,11 +13,12 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 // Webapp
-libraryDependencies += "org.http4s" %% "http4s-core" % "0.20.3"
-libraryDependencies += "org.http4s" %% "http4s-dsl" % "0.20.3"
-libraryDependencies += "org.http4s" %% "http4s-circe" % "0.20.3"
-libraryDependencies += "org.http4s" %% "http4s-testing" % "0.20.3"
-libraryDependencies += "org.http4s" %% "http4s-blaze-server" % "0.20.3"
+val http4sVersion = "0.20.6"
+libraryDependencies += "org.http4s" %% "http4s-core" % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-dsl" % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-circe" % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-testing" % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 
 // Circe
 libraryDependencies += "io.circe" %% "circe-generic" % "0.11.1"
@@ -30,11 +31,12 @@ libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.7.0"
 libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.7.0"
 
 // Elastic Search
-val elastic4sVersion = "7.1.0"
+val elastic4sVersion = "6.5.1"
 libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion
+  "com.sksamuel.elastic4s" %% "elastic4s-cats-effect" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
 )
 
 // Scala test

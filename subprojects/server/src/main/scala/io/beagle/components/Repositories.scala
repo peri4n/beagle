@@ -10,6 +10,6 @@ trait Repositories {
 
 object Repositories {
 
-  val sequenceSet = Env.repositories map { _.sequenceSet }
+  def sequenceSet = Env.repositories map { _.sequenceSet }
 
 }

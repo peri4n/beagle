@@ -2,19 +2,18 @@ package io.beagle.environments
 
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
-import io.beagle.repository.seqset.SeqSetRepo
 
-object Production extends Env {
+case class Production() extends Env {
 
   env =>
 
-  override val settings: Settings = new Settings {
+  override val settings = new Settings {
 
     private val config = ConfigFactory.load("production.conf")
 
     def uiRoot = config.getString("ui.root")
 
-    val elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
+    val elasticSearch = new ElasticSearchSettings {
 
       val protocol = config.getString("elasticsearch.protocol")
 
@@ -27,24 +26,24 @@ object Production extends Env {
 
   val controllers = new Controllers {
 
-    def seqset = Controllers.seqset(env)
+    def seqset = Controllers.seqset.run(env)
 
-    def upload = Controllers.upload(env)
+    def upload = Controllers.upload.run(env)
 
-    def health = Controllers.health(env)
+    def health = Controllers.health.run(env)
 
-    def search = Controllers.search(env)
+    def search = Controllers.search.run(env)
 
-    def static = ??? // the UI is served by a dedicated web server
+    def static = Controllers.static.run(env)
   }
 
-  def services: Services = new Services {
-    def elasticSearch = Services.elasticSearch(env)
+  val services = new Services {
+    def elasticSearch = Services.elasticSearch.run(env)
   }
 
-  def repositories: Repositories = new Repositories {
+  val repositories = new Repositories {
 
-    def sequenceSet: SeqSetRepo = Repositories.sequenceSet(env)
+    def sequenceSet = Repositories.sequenceSet(env)
   }
 
 }

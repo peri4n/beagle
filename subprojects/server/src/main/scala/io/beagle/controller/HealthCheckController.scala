@@ -1,32 +1,34 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import com.sksamuel.elastic4s.cats.effect.instances._
-import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
-import com.sksamuel.elastic4s.{ElasticDsl, Response}
-import io.beagle.components.{ElasticSearchSettings, Settings}
+import com.sksamuel.elastic4s.http.Response
+import com.sksamuel.elastic4s.http.cluster.ClusterHealthResponse
+import io.beagle.components.Services
+import io.beagle.service.ElasticSearchService
 import io.circe.generic.auto._
+import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object HealthCheckController {
 
-  val instance = Settings.elasticSearch map { HealthCheckController(_).route }
+  def instance = Services.elasticSearch map { HealthCheckController(_).route }
 
   case class HealthCheckRequest()
 
   case class HealthCheckResponse(healthy: Boolean)
 
-  implicit val requestDecoder: EntityDecoder[IO, HealthCheckRequest] = jsonOf[IO, HealthCheckRequest]
-  implicit val responseEncoder: EntityEncoder[IO, HealthCheckResponse] = jsonEncoderOf[IO, HealthCheckResponse]
-
+  implicit val requestDecoder = jsonOf[IO, HealthCheckRequest]
+  implicit val responseEncoder = jsonEncoderOf[IO, HealthCheckResponse]
 }
 
-case class HealthCheckController(searchSettings: ElasticSearchSettings) extends Http4sDsl[IO] {
+case class HealthCheckController(elasticSearchService: ElasticSearchService) extends Http4sDsl[IO] {
 
   import HealthCheckController._
-  import ElasticDsl._
+
+  implicit val timer = IO.timer(global)
 
   def convertToResponse(value: Response[ClusterHealthResponse]): HealthCheckResponse = {
     if (value.isError) {
@@ -43,8 +45,7 @@ case class HealthCheckController(searchSettings: ElasticSearchSettings) extends 
   val route =
     HttpRoutes.of[IO] {
       case GET -> Root / "health" =>
-        Ok(searchSettings.client.execute(clusterHealth())
+        Ok(elasticSearchService.connectionCheck()
           .redeem(_ => HealthCheckResponse(false), convertToResponse))
     }
 }
-

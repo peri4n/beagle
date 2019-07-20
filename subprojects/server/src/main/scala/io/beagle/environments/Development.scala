@@ -1,24 +1,21 @@
 package io.beagle.environments
 
-import cats.effect.IO
-import cats.implicits._
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
 import io.beagle.repository.seqset.SeqSetRepo
-import io.beagle.service.ElasticSearchService
-import org.http4s.HttpRoutes
 
-object Development extends Env {
+
+case class Development() extends Env {
 
   env =>
 
-  override val settings: Settings = new Settings {
+  override val settings = new Settings {
 
     private val config = ConfigFactory.load("development.conf")
 
     def uiRoot = config.getString("ui.root")
 
-    val elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
+    val elasticSearch = new ElasticSearchSettings {
 
       val protocol = config.getString("elasticsearch.protocol")
 
@@ -31,26 +28,23 @@ object Development extends Env {
 
   val controllers = new Controllers {
 
-    def upload: HttpRoutes[IO] = Controllers.upload(env)
+    def seqset = Controllers.seqset.run(env)
 
-    def health: HttpRoutes[IO] = Controllers.health(env)
+    def upload = Controllers.upload.run(env)
 
-    def search: HttpRoutes[IO] = Controllers.search(env)
+    def health = Controllers.health.run(env)
 
-    def static: HttpRoutes[IO] = Controllers.static(env)
+    def search = Controllers.search.run(env)
 
-    def seqset: HttpRoutes[IO] = Controllers.seqset(env)
-
-    override def all: HttpRoutes[IO] = upload <+> health <+> search <+> seqset <+> static
-
+    def static = Controllers.static.run(env)
   }
 
-  def services: Services = new Services {
-    def elasticSearch: ElasticSearchService = ElasticSearchService.instance(env)
+  val services = new Services {
+    def elasticSearch = Services.elasticSearch.run(env)
   }
 
-  def repositories: Repositories = new Repositories {
+  def repositories = new Repositories {
 
-    def sequenceSet: SeqSetRepo = SeqSetRepo.inMemory
+    def sequenceSet = SeqSetRepo.inMemory
   }
 }

@@ -8,19 +8,19 @@ trait Env extends SettingsComponent with ControllerComponent with ServiceCompone
 object Env {
 
   def autoDetect = Option(System.getProperty("mode")).map(_.toLowerCase) match {
-    case Some("production") => Production
-    case Some("development") => Development
-    case _ => Development
+    case Some("production") => Production()
+    case Some("development") => Development()
+    case _ => Development()
   }
 
-  val env = Reader[Env, Env](identity)
+  def env= Reader[Env, Env](identity)
 
-  val settings = env map { _.settings }
+  def settings= env map { _.settings }
 
-  val controllers = env map { _.controllers }
+  def controllers= env map { _.controllers }
 
-  val services = env map { _.services }
+  def services= env map { _.services }
 
-  val repositories = env map { _.repositories }
+  def repositories= env map { _.repositories }
 
 }

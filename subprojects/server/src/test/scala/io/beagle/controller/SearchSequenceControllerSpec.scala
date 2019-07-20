@@ -11,6 +11,8 @@ import org.http4s.implicits._
 import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
 
   import SearchSequenceController._
@@ -18,15 +20,18 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
   implicit val requestEncoder: EntityEncoder[IO, SearchSequenceRequest] = jsonEncoderOf[IO, SearchSequenceRequest]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]
 
+  implicit val cs = IO.contextShift(global)
+  implicit val timer = IO.timer(global)
+
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {
       val environment = Test.of[SearchSequenceControllerSpec]
-      val es = Services.elasticSearch(environment)
+      val es = Services.elasticSearch.run(environment)
       val testCase = for {
         _ <- es.createSequenceIndex()
         _ <- es.index(FastaEntry("header1", "AAACGT"), refresh = true)
         _ <- es.index(FastaEntry("header2", "CAAAAT"), refresh = true)
-        response <- Controllers.search(environment).orNotFound.run(
+        response <- Controllers.search.run(environment).orNotFound.run(
           Request(method = Method.POST, uri = uri"/search", body = requestEncoder.toEntity(SearchSequenceRequest(sequence = "AAA")).body)
         )
       } yield response

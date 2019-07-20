@@ -1,12 +1,7 @@
 package io.beagle.environments
 
-import cats.effect.IO
 import io.beagle.components._
 import io.beagle.repository.seqset.SeqSetRepo
-import io.beagle.service.ElasticSearchService
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.Allow
 
 import scala.reflect.ClassTag
 
@@ -15,9 +10,10 @@ case class Test(name: String) extends Env {
   env =>
 
   val settings = new Settings {
+
     val uiRoot: String = "dist"
 
-    val elasticSearch: ElasticSearchSettings = new ElasticSearchSettings {
+    val elasticSearch = new ElasticSearchSettings {
       override val sequenceIndex = s"${ name.toLowerCase() }-${ System.currentTimeMillis() }-fasta"
 
       val protocol = "http"
@@ -28,24 +24,25 @@ case class Test(name: String) extends Env {
     }
   }
 
-  val controllers = new Controllers with Http4sDsl[IO] {
-    def seqset = Controllers.seqset(env)
+  val controllers = new Controllers {
 
-    def upload = Controllers.upload(env)
+    def seqset = Controllers.seqset.run(env)
 
-    def health = Controllers.health(env)
+    def upload = Controllers.upload.run(env)
 
-    def search = Controllers.search(env)
+    def health = Controllers.health.run(env)
 
-    def static = HttpRoutes.of[IO] { case _ -> Root => MethodNotAllowed(Allow(GET)) } // not needed while testing
+    def search = Controllers.search.run(env)
+
+    def static = ??? // the UI is served by a dedicated web server
   }
 
-  val services: Services = new Services {
-    def elasticSearch: ElasticSearchService = ElasticSearchService.instance(env)
+  val services = new Services {
+    def elasticSearch = Services.elasticSearch.run(env)
   }
 
-  val repositories: Repositories = new Repositories {
-    val sequenceSet: SeqSetRepo = SeqSetRepo.inMemory
+  val repositories = new Repositories {
+    val sequenceSet = SeqSetRepo.inMemory
   }
 }
 

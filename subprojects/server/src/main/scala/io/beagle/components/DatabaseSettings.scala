@@ -30,3 +30,6 @@ trait DatabaseSettings {
     pass = password
   )
 }
+ object DatabaseSettings {
+   val transactor = Settings.database map { _.transactor }
+ }

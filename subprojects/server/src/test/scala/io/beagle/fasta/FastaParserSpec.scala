@@ -4,7 +4,6 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 
 import cats.effect._
-import cats.implicits._
 import fs2._
 import org.specs2.mutable.Specification
 
@@ -23,7 +22,6 @@ class FastaParserSpec extends Specification {
         .through(FastaParser.parse)
         .compile
         .toList
-        .unsafeRunSync()
 
       entries must beEmpty
     }
@@ -76,7 +74,7 @@ class FastaParserSpec extends Specification {
             |TTCTGAACTGGTTACCTGCCGTGAGTAAATTAAAATTTTATTGACTTAGGTCACTAAATACTTTAACCAA
             |TATAGGCATAGCGCACAGACAGATAAAAATTACAGAGTACACAACATCCATGAAACGCATTAGCACCACC
             |ATTACCACCACCATCACCATTACCACAGGTAACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAG""".stripMargin.replace("\n", "")),
-          FastaEntry("Test2 description",
+        FastaEntry("Test2 description",
           """CCCGCACCTGACAGTGCGGGCTTTTTTTTTCGACCAAAGGTAACGAGGTAACAACCATGCGAGTGTTGAA
             |GTTCGGCGGTACATCAGTGGCAAATGCAGAACGTTTTCTGCGTGTTGCCGATATTCTGGAAAGCAATGCC
             |AGGCAGGGGCAGGTGGCCACCGTCCTCTCTGCCCCCGCCAAAATCACCAACCACCTGGTGGCGATGATTG

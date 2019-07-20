@@ -1,7 +1,6 @@
 package io.beagle.components
 
-import com.sksamuel.elastic4s.http.JavaClient
-import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties}
+import com.sksamuel.elastic4s.http.{ElasticClient, ElasticProperties}
 
 trait ElasticSearchSettings {
   val sequenceIndex: String = "fasta"
@@ -14,8 +13,7 @@ trait ElasticSearchSettings {
 
   val port: Int
 
-  lazy val client = ElasticClient(JavaClient(ElasticProperties(s"${ protocol }://${ host }:${ port }")))
-
+  lazy val client = ElasticClient(ElasticProperties(s"${ protocol }://${ host }:${ port }"))
 }
 
 object ElasticSearchSettings {

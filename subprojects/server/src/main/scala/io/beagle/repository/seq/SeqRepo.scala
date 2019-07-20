@@ -5,11 +5,11 @@ import io.beagle.domain._
 
 trait SeqRepo {
 
-  def create(seq: Seq): IO[SeqView]
+  def create(seq: Seq): IO[SeqItem]
 
-  def update(id: SeqId, seq: Seq): IO[SeqView]
+  def update(id: SeqId, seq: Seq): IO[SeqItem]
 
-  def find(id: SeqId): IO[Option[SeqView]]
+  def find(id: SeqId): IO[Option[SeqItem]]
 
   def delete(id: SeqId): IO[Unit]
 }

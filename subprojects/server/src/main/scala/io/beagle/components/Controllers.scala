@@ -1,8 +1,8 @@
 package io.beagle.components
 
 import cats.effect.IO
-import cats.implicits._
-import io.beagle.controller.{FileUploadController, HealthCheckController, SearchSequenceController, SequenceSetController, StaticContentController}
+import cats.syntax.semigroupk._
+import io.beagle.controller._
 import org.http4s.HttpRoutes
 
 trait Controllers {
@@ -13,11 +13,14 @@ trait Controllers {
 
   def search: HttpRoutes[IO]
 
-  def static: HttpRoutes[IO]
-
   def seqset: HttpRoutes[IO]
 
-  def all = upload <+> search <+> health <+> seqset
+  def static: HttpRoutes[IO]
+
+  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> seqset
+
+  def all: HttpRoutes[IO] = static <+> endpoints
+
 }
 
 object Controllers {
@@ -30,4 +33,5 @@ object Controllers {
   def upload = FileUploadController.instance
 
   def static = StaticContentController.instance
+
 }

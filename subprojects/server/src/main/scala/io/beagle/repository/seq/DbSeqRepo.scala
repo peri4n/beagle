@@ -2,43 +2,43 @@ package io.beagle.repository.seq
 
 import cats.effect.IO
 import doobie.implicits._
-import io.beagle.components.{DatabaseSettings, Settings}
-import io.beagle.domain.{Seq, SeqId, SeqView}
+import doobie.util.transactor.Transactor
+import io.beagle.components.DatabaseSettings
+import io.beagle.domain.{Seq, SeqId, SeqItem}
 
-object DbSeqRepo {
-
-  val TableName = "sequence"
-
-  val instance = Settings.database map { DbSeqRepo(_) }
-}
-
-case class DbSeqRepo(settings: DatabaseSettings) extends SeqRepo {
+case class DbSeqRepo(xa: Transactor[IO]) extends SeqRepo {
 
   import DbSeqRepo._
 
-  def create(seq: Seq): IO[SeqView] = {
-    sql"insert into $TableName (identifier, sequence) values (${seq.identifier}, ${seq.sequence})".update
-      .withUniqueGeneratedKeys[SeqView]("id", "identifier", "sequence")
-      .transact(settings.transactor)
+  def create(seq: Seq): IO[SeqItem] = {
+    sql"INSERT INTO $TableName (identifier, sequence) VALUES (${ seq.identifier }, ${ seq.sequence })".update
+      .withUniqueGeneratedKeys[SeqItem]("id", "identifier", "sequence")
+      .transact(xa)
   }
 
-  def update(id: SeqId, seq: Seq): IO[SeqView] = {
+  def update(id: SeqId, seq: Seq): IO[SeqItem] = {
     sql"UPDATE $TableName SET (identifier, sequence) WHERE id = $id".update
-      .withUniqueGeneratedKeys[SeqView]("id", "identifier", "sequence")
-      .transact(settings.transactor)
+      .withUniqueGeneratedKeys[SeqItem]("id", "identifier", "sequence")
+      .transact(xa)
   }
 
-  def find(id: SeqId): IO[Option[SeqView]] = {
-    sql"SELECT * FROM $TableName WHERE id = $id".query[SeqView]
-        .option
-        .transact(settings.transactor)
+  def find(id: SeqId): IO[Option[SeqItem]] = {
+    sql"SELECT * FROM $TableName WHERE id = $id".query[SeqItem]
+      .option
+      .transact(xa)
   }
 
   def delete(id: SeqId): IO[Unit] = {
     sql"DELETE FROM $TableName WHERE id = $id".update
       .run
-      .transact(settings.transactor)
+      .transact(xa)
       .map(_ => Unit)
   }
+}
 
+object DbSeqRepo {
+
+  val TableName = "sequences"
+
+  val instance = DatabaseSettings.transactor map { DbSeqRepo(_) }
 }

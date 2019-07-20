@@ -1,16 +1,8 @@
 package io.beagle.components
 
-import cats.effect.{ContextShift, IO, Timer}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
 trait Settings {
 
   def uiRoot: String
-
-  implicit val contextShift: ContextShift[IO] = IO.contextShift(global)
-
-  implicit val timer: Timer[IO] = IO.timer(global)
 
   def elasticSearch: ElasticSearchSettings
 
@@ -30,15 +22,14 @@ trait Settings {
 
     val database: String = "beagle"
   }
-
 }
 
 object Settings {
 
-  val uiRoot = Env.settings map { _.uiRoot }
+  def uiRoot = Env.settings map { _.uiRoot }
 
-  val elasticSearch = Env.settings map { _.elasticSearch }
+  def elasticSearch = Env.settings map { _.elasticSearch }
 
-  val database = Env.settings map { _.database }
+  def database = Env.settings map { _.database }
 
 }

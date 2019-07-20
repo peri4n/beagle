@@ -10,16 +10,21 @@ import org.http4s.implicits._
 import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class FileUploadControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
 
   import FileUploadController._
 
   implicit val responseDecoder: EntityDecoder[IO, FileUploadResponse] = jsonOf[IO, FileUploadResponse]
 
+  implicit val cs = IO.contextShift(global)
+  implicit val timer = IO.timer(global)
+
   "The FileUploadControllerSpec" should {
     "returns success if the file is correctly uploaded" in {
       val environment = Test.of[FileUploadControllerSpec]
-      val response = runAwait(Controllers.upload(environment).orNotFound.run(
+      val response = runAwait(Controllers.upload.run(environment).orNotFound.run(
         Request(method = Method.POST, uri = uri"/upload", body = UrlForm.entityEncoder.toEntity(UrlForm("file" -> ">Some header\nACGT")).body )
       ))
 
