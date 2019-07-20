@@ -6,6 +6,12 @@ import doobie.util.transactor.Transactor
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait DatabaseSettings {
+  lazy val transactor = Transactor.fromDriverManager[IO](
+    driver = driver,
+    url = s"$protocol://$host:$port/$database",
+    user = username,
+    pass = password
+  )
 
   def protocol: String
 
@@ -19,17 +25,11 @@ trait DatabaseSettings {
 
   def password: String
 
-  def driver: String
-
   implicit val contextShift: ContextShift[IO] = IO.contextShift(global)
 
-  lazy val transactor = Transactor.fromDriverManager[IO](
-    driver = driver,
-    url = s"$protocol://$host:$port/$database",
-    user = username,
-    pass = password
-  )
+  def driver: String
 }
- object DatabaseSettings {
-   val transactor = Settings.database map { _.transactor }
- }
+
+object DatabaseSettings {
+  val transactor = Settings.database map { _.transactor }
+}

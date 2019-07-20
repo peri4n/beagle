@@ -2,7 +2,7 @@ package io.beagle.controller
 
 import cats.effect.IO
 import io.beagle.components.Services
-import io.beagle.environments.Test
+import io.beagle.environments.TestEnv
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.circe._
@@ -19,7 +19,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
 
   "The HealthCheckController" should {
     "returns true if ElasticSearch can be reached" in {
-      val environment = Test.of[HealthCheckController]
+      val environment = TestEnv.of[HealthCheckController]
       val es = Services.elasticSearch.run(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")
@@ -29,7 +29,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
       response must haveBody(HealthCheckResponse(true))
     }
     "returns false if ElasticSearch can't be reached" in {
-      val environment = Test.of[HealthCheckController]
+      val environment = TestEnv.of[HealthCheckController]
       val es = Services.elasticSearch.run(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")

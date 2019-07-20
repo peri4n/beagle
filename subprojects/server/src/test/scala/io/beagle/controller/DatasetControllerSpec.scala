@@ -3,7 +3,7 @@ package io.beagle.controller
 import cats.effect.IO
 import io.beagle.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain.{DatasetId, DatasetItem}
-import io.beagle.environments.Test
+import io.beagle.environments.TestEnv
 import io.circe.generic.auto._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -16,9 +16,9 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
 
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
 
-  "DatasetController" should {
+  "The DatasetController" should {
     "must return 200 if the user was successfully created" in {
-      val environment = Test.of[DatasetControllerSpec]
+      val environment = TestEnv.of[DatasetControllerSpec]
       val createRequest1 = CreateSequenceSetRequest("set1", "DNA")
       val createRequest2 = CreateSequenceSetRequest("set2", "DNA")
       val controller = new DatasetController(environment.repositories.sequenceSet).route.orNotFound

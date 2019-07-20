@@ -29,6 +29,12 @@ case class HealthCheckController(elasticSearchService: ElasticSearchService) ext
   import HealthCheckController._
 
   implicit val timer = IO.timer(global)
+  val route =
+    HttpRoutes.of[IO] {
+      case GET -> Root / "health" =>
+        Ok(elasticSearchService.connectionCheck()
+          .redeem(_ => HealthCheckResponse(false), convertToResponse))
+    }
 
   def convertToResponse(value: Response[ClusterHealthResponse]): HealthCheckResponse = {
     if (value.isError) {
@@ -41,11 +47,4 @@ case class HealthCheckController(elasticSearchService: ElasticSearchService) ext
       }
     }
   }
-
-  val route =
-    HttpRoutes.of[IO] {
-      case GET -> Root / "health" =>
-        Ok(elasticSearchService.connectionCheck()
-          .redeem(_ => HealthCheckResponse(false), convertToResponse))
-    }
 }

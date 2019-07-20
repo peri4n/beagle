@@ -2,7 +2,7 @@ package io.beagle.components
 
 import io.beagle.service.ElasticSearchService
 
-trait Services{
+trait Services {
 
   def elasticSearch: ElasticSearchService
 
@@ -11,4 +11,5 @@ trait Services{
 object Services {
 
   def elasticSearch = ElasticSearchService.instance
+
 }

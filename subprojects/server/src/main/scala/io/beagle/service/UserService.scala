@@ -19,7 +19,7 @@ case class UserService(repo: UserRepo) {
   def delete(user: User): IO[Unit] = {
     repo.findByName(user.name).flatMap {
       case Some(userItem) => repo.delete(userItem.id)
-      case None => IO.raiseError[Unit](UserDoesNotExist(user))
+      case None           => IO.raiseError[Unit](UserDoesNotExist(user))
     }
   }
 }

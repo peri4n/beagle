@@ -2,9 +2,9 @@ package io.beagle.service
 
 import cats.effect.{IO, Timer}
 import cats.implicits._
-import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.analyzers.{CustomAnalyzerDefinition, NGramTokenizer, StandardAnalyzer, UppercaseTokenFilter}
 import com.sksamuel.elastic4s.cats.effect.instances._
+import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.Response
 import com.sksamuel.elastic4s.http.bulk.BulkResponse
 import com.sksamuel.elastic4s.http.cluster.ClusterHealthResponse

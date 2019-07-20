@@ -5,7 +5,7 @@ import io.beagle.repository.dataset.DatasetRepo
 
 import scala.reflect.ClassTag
 
-case class Test(name: String) extends Env {
+case class TestEnv(name: String) extends Env {
 
   env =>
 
@@ -26,7 +26,7 @@ case class Test(name: String) extends Env {
 
   val controllers = new Controllers {
 
-    def seqset = Controllers.seqset.run(env)
+    def seqset = Controllers.dataset.run(env)
 
     def upload = Controllers.upload.run(env)
 
@@ -46,6 +46,6 @@ case class Test(name: String) extends Env {
   }
 }
 
-object Test {
-  def of[A: ClassTag] = Test(scala.reflect.classTag[A].runtimeClass.getSimpleName)
+object TestEnv {
+  def of[A: ClassTag] = TestEnv(scala.reflect.classTag[A].runtimeClass.getSimpleName)
 }

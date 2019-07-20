@@ -2,7 +2,7 @@ package io.beagle.controller
 
 import cats.effect.IO
 import io.beagle.components.Controllers
-import io.beagle.environments.Test
+import io.beagle.environments.TestEnv
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.circe._
@@ -16,9 +16,9 @@ class FileUploadControllerSpec extends Specification with Http4sMatchers[IO] wit
 
   implicit val responseDecoder: EntityDecoder[IO, FileUploadResponse] = jsonOf[IO, FileUploadResponse]
 
-  "The FileUploadControllerSpec" should {
+  "The FileUploadController" should {
     "returns success if the file is correctly uploaded" in {
-      val environment = Test.of[FileUploadControllerSpec]
+      val environment = TestEnv.of[FileUploadControllerSpec]
       val response = runAwait(Controllers.upload.run(environment).orNotFound.run(
         Request(method = Method.POST, uri = uri"/upload", body = UrlForm.entityEncoder.toEntity(UrlForm("file" -> ">Some header\nACGT")).body )
       ))

@@ -21,9 +21,9 @@ class InMemUserRepo(db: Ref[IO, Map[UserId, UserItem]], counter: Ref[IO, Long]) 
       (map.updated(id, view), view)
     })
 
-  def findById(id: UserId): IO[Option[UserItem]] = db.get.map( _.get(id))
+  def findById(id: UserId): IO[Option[UserItem]] = db.get.map(_.get(id))
 
-  def findByName(name: String): IO[Option[UserItem]] = db.get.map( _.values.find( _.user.name == name))
+  def findByName(name: String): IO[Option[UserItem]] = db.get.map(_.values.find(_.user.name == name))
 
   def delete(id: UserId): IO[Unit] = db.update(map => map - id)
 

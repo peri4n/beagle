@@ -22,7 +22,7 @@ case class InMemDatasetRepo(db: Ref[IO, Map[DatasetId, DatasetItem]], counter: R
     })
   }
 
-  def find(id: DatasetId): IO[Option[DatasetItem]] = db.get.map( _.get(id))
+  def find(id: DatasetId): IO[Option[DatasetItem]] = db.get.map(_.get(id))
 
   def delete(id: DatasetId): IO[Unit] = db.update(map => map - id)
 

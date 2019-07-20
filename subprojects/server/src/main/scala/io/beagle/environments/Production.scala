@@ -3,7 +3,7 @@ package io.beagle.environments
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
 
-case class Production() extends Env {
+case object Production extends Env {
 
   env =>
 
@@ -26,19 +26,19 @@ case class Production() extends Env {
 
   val controllers = new Controllers {
 
-    def seqset = Controllers.seqset.run(env)
+    def seqset = Controllers.dataset(env)
 
-    def upload = Controllers.upload.run(env)
+    def upload = Controllers.upload(env)
 
-    def health = Controllers.health.run(env)
+    def health = Controllers.health(env)
 
-    def search = Controllers.search.run(env)
+    def search = Controllers.search(env)
 
-    def static = Controllers.static.run(env)
+    def static = Controllers.static(env)
   }
 
   val services = new Services {
-    def elasticSearch = Services.elasticSearch.run(env)
+    val elasticSearch = Services.elasticSearch(env)
   }
 
   val repositories = new Repositories {

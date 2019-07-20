@@ -2,7 +2,7 @@ package io.beagle.controller
 
 import cats.effect.IO
 import io.beagle.components.{Controllers, Services}
-import io.beagle.environments.Test
+import io.beagle.environments.TestEnv
 import io.beagle.fasta.FastaEntry
 import io.circe.generic.auto._
 import org.http4s._
@@ -20,7 +20,7 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
 
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {
-      val environment = Test.of[SearchSequenceControllerSpec]
+      val environment = TestEnv.of[SearchSequenceControllerSpec]
       val es = Services.elasticSearch.run(environment)
       val testCase = for {
         _ <- es.createSequenceIndex()

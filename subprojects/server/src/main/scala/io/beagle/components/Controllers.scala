@@ -17,14 +17,15 @@ trait Controllers {
 
   def static: HttpRoutes[IO]
 
-  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> seqset
-
   def all: HttpRoutes[IO] = static <+> endpoints
+
+  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> seqset
 
 }
 
 object Controllers {
-  def seqset = DatasetController.instance
+
+  def dataset = DatasetController.instance
 
   def health = HealthCheckController.instance
 

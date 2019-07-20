@@ -5,7 +5,7 @@ import io.beagle.components._
 import io.beagle.repository.dataset.DatasetRepo
 
 
-case class Development() extends Env {
+case object Development extends Env {
 
   env =>
 
@@ -28,19 +28,19 @@ case class Development() extends Env {
 
   val controllers = new Controllers {
 
-    def seqset = Controllers.seqset.run(env)
+    def seqset = Controllers.dataset(env)
 
-    def upload = Controllers.upload.run(env)
+    def upload = Controllers.upload(env)
 
-    def health = Controllers.health.run(env)
+    def health = Controllers.health(env)
 
-    def search = Controllers.search.run(env)
+    def search = Controllers.search(env)
 
-    def static = Controllers.static.run(env)
+    def static = Controllers.static(env)
   }
 
   val services = new Services {
-    def elasticSearch = Services.elasticSearch.run(env)
+    val elasticSearch = Services.elasticSearch(env)
   }
 
   def repositories = new Repositories {
