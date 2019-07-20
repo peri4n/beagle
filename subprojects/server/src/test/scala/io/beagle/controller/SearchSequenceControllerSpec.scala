@@ -11,17 +11,12 @@ import org.http4s.implicits._
 import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
 
   import SearchSequenceController._
 
   implicit val requestEncoder: EntityEncoder[IO, SearchSequenceRequest] = jsonEncoderOf[IO, SearchSequenceRequest]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]
-
-  implicit val cs = IO.contextShift(global)
-  implicit val timer = IO.timer(global)
 
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {

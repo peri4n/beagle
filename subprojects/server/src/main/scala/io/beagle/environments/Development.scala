@@ -2,7 +2,7 @@ package io.beagle.environments
 
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
-import io.beagle.repository.seqset.SeqSetRepo
+import io.beagle.repository.dataset.DatasetRepo
 
 
 case class Development() extends Env {
@@ -45,6 +45,6 @@ case class Development() extends Env {
 
   def repositories = new Repositories {
 
-    def sequenceSet = SeqSetRepo.inMemory
+    def sequenceSet = DatasetRepo.inMemory
   }
 }

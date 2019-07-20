@@ -5,7 +5,7 @@ import doobie.implicits._
 import doobie.util.transactor.Transactor
 import io.beagle.domain.{User, UserId, UserItem}
 
-class DbUserRepoIO(xa: Transactor[IO]) extends UserRepo {
+class DbUserRepo(xa: Transactor[IO]) extends UserRepo {
 
   import DbUserRepo._
 
@@ -19,8 +19,13 @@ class DbUserRepoIO(xa: Transactor[IO]) extends UserRepo {
       .withUniqueGeneratedKeys[UserItem]("id", "name", "password")
       .transact(xa)
 
-  def find(id: UserId): IO[Option[UserItem]] =
+  def findById(id: UserId): IO[Option[UserItem]] =
     sql"SELECT * FROM $TableName WHERE id = $id".query[UserItem]
+      .option
+      .transact(xa)
+
+  def findByName(name: String): IO[Option[UserItem]] =
+    sql"SELECT * FROM $TableName WHERE name = $name".query[UserItem]
       .option
       .transact(xa)
 

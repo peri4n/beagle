@@ -11,9 +11,9 @@ CREATE TABLE sequences (
 );
 
 -------------------------------------------
--- Collections
+-- Data sets
 -------------------------------------------
-CREATE TABLE collections (
+CREATE TABLE datasets (
     id serial PRIMARY KEY,
     name VARCHAR(80), 
     createdDate DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -42,13 +42,13 @@ CREATE TABLE users (
 -------------------------------------------
 -- Associations
 -------------------------------------------
-CREATE TABLE sequences_collections_assoc (
+CREATE TABLE sequences_datasets_assoc (
     sequenceId INTEGER REFERENCES sequences(id),
-    collectionId INTEGER REFERENCES collections(id)
+    datasetId INTEGER REFERENCES datasets(id)
 );
 
-CREATE TABLE collections_projects_assoc (
-    collectionId INTEGER REFERENCES collections(id),
+CREATE TABLE datasets_projects_assoc (
+    datasetId INTEGER REFERENCES datasets(id),
     projectId INTEGER REFERENCES projects(id)
 );
 

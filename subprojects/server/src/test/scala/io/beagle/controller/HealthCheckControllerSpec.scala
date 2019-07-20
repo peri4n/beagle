@@ -10,17 +10,12 @@ import org.http4s.implicits._
 import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
 
   import HealthCheckController._
 
   implicit val requestEncoder: EntityEncoder[IO, HealthCheckRequest] = jsonEncoderOf[IO, HealthCheckRequest]
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
-
-  implicit val cs = IO.contextShift(global)
-  implicit val timer = IO.timer(global)
 
   "The HealthCheckController" should {
     "returns true if ElasticSearch can be reached" in {

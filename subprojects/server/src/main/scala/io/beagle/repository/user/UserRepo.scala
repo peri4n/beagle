@@ -9,7 +9,9 @@ trait UserRepo {
 
   def update(id: UserId, user: User): IO[UserItem]
 
-  def find(id: UserId): IO[Option[UserItem]]
+  def findById(id: UserId): IO[Option[UserItem]]
+
+  def findByName(name: String): IO[Option[UserItem]]
 
   def delete(id: UserId): IO[Unit]
 

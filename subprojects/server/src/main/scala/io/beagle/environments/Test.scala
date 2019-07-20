@@ -1,7 +1,7 @@
 package io.beagle.environments
 
 import io.beagle.components._
-import io.beagle.repository.seqset.SeqSetRepo
+import io.beagle.repository.dataset.DatasetRepo
 
 import scala.reflect.ClassTag
 
@@ -42,7 +42,7 @@ case class Test(name: String) extends Env {
   }
 
   val repositories = new Repositories {
-    val sequenceSet = SeqSetRepo.inMemory
+    val sequenceSet = DatasetRepo.inMemory
   }
 }
 

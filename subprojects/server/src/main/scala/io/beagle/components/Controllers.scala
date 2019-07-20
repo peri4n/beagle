@@ -24,7 +24,7 @@ trait Controllers {
 }
 
 object Controllers {
-  def seqset = SequenceSetController.instance
+  def seqset = DatasetController.instance
 
   def health = HealthCheckController.instance
 
