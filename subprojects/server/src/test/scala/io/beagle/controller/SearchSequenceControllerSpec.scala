@@ -21,7 +21,7 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {
       val environment = TestEnv.of[SearchSequenceControllerSpec]
-      val es = Services.elasticSearch.run(environment)
+      val es = Services.elasticSearch(environment)
       val testCase = for {
         _ <- es.createSequenceIndex()
         _ <- es.index(FastaEntry("header1", "AAACGT"), refresh = true)

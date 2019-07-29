@@ -21,7 +21,7 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
       val environment = TestEnv.of[DatasetControllerSpec]
       val createRequest1 = CreateSequenceSetRequest("set1", "DNA")
       val createRequest2 = CreateSequenceSetRequest("set2", "DNA")
-      val controller = new DatasetController(environment.repositories.sequenceSet).route.orNotFound
+      val controller = new DatasetController(environment.repositories.dataset).route.orNotFound
 
       val test = for {
         response1 <- controller.run(

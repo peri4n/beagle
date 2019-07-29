@@ -3,6 +3,9 @@ package io.beagle.environments
 import com.typesafe.config.ConfigFactory
 import io.beagle.components._
 import io.beagle.repository.dataset.DatasetRepo
+import io.beagle.repository.project.ProjectRepo
+import io.beagle.repository.seq.SeqRepo
+import io.beagle.repository.user.UserRepo
 
 
 case object Development extends Env {
@@ -41,10 +44,19 @@ case object Development extends Env {
 
   val services = new Services {
     val elasticSearch = Services.elasticSearch(env)
+
+    val user = Services.user(env)
+
   }
 
-  def repositories = new Repositories {
+  val repositories = new Repositories {
 
-    def sequenceSet = DatasetRepo.inMemory
+    def dataset = DatasetRepo.inMemory
+
+    def sequence: SeqRepo = SeqRepo.inMemory
+
+    def user: UserRepo = UserRepo.inMemory
+
+    def project: ProjectRepo = ProjectRepo.inMemory
   }
 }

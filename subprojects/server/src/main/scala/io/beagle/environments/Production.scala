@@ -24,26 +24,10 @@ case object Production extends Env {
     }
   }
 
-  val controllers = new Controllers {
+  val controllers = Development.controllers
 
-    def seqset = Controllers.dataset(env)
+  val services = Development.services
 
-    def upload = Controllers.upload(env)
-
-    def health = Controllers.health(env)
-
-    def search = Controllers.search(env)
-
-    def static = Controllers.static(env)
-  }
-
-  val services = new Services {
-    val elasticSearch = Services.elasticSearch(env)
-  }
-
-  val repositories = new Repositories {
-
-    def sequenceSet = Repositories.sequenceSet(env)
-  }
+  val repositories = Development.repositories
 
 }

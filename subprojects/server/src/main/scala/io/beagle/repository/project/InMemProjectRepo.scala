@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import io.beagle.domain._
 
-class InMemProjectRepo(db: Ref[IO, Map[ProjectId, ProjectItem]], counter: Ref[IO, Long]) extends ProjectRepo {
+case class InMemProjectRepo(db: Ref[IO, Map[ProjectId, ProjectItem]], counter: Ref[IO, Long]) extends ProjectRepo {
   def create(project: Project): IO[ProjectItem] =
     for {
       c <- counter.get

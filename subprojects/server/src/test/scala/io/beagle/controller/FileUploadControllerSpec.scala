@@ -19,7 +19,7 @@ class FileUploadControllerSpec extends Specification with Http4sMatchers[IO] wit
   "The FileUploadController" should {
     "returns success if the file is correctly uploaded" in {
       val environment = TestEnv.of[FileUploadControllerSpec]
-      val response = runAwait(Controllers.upload.run(environment).orNotFound.run(
+      val response = runAwait(Controllers.upload(environment).orNotFound.run(
         Request(method = Method.POST, uri = uri"/upload", body = UrlForm.entityEncoder.toEntity(UrlForm("file" -> ">Some header\nACGT")).body )
       ))
 

@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import io.beagle.domain.{Seq, SeqId, SeqItem}
 
-class InMemSeqRepo(db: Ref[IO, Map[SeqId, SeqItem]], counter: Ref[IO, Long]) extends SeqRepo {
+case class InMemSeqRepo(db: Ref[IO, Map[SeqId, SeqItem]], counter: Ref[IO, Long]) extends SeqRepo {
 
   def create(seq: Seq): IO[SeqItem] = {
     for {

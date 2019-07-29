@@ -2,6 +2,9 @@ package io.beagle.environments
 
 import io.beagle.components._
 import io.beagle.repository.dataset.DatasetRepo
+import io.beagle.repository.project.ProjectRepo
+import io.beagle.repository.seq.SeqRepo
+import io.beagle.repository.user.UserRepo
 
 import scala.reflect.ClassTag
 
@@ -9,7 +12,7 @@ case class TestEnv(name: String) extends Env {
 
   env =>
 
-  val settings = new Settings {
+  lazy val settings = new Settings {
 
     val uiRoot: String = "dist"
 
@@ -24,25 +27,35 @@ case class TestEnv(name: String) extends Env {
     }
   }
 
-  val controllers = new Controllers {
+  lazy val controllers = new Controllers {
 
-    def seqset = Controllers.dataset.run(env)
+    def seqset = Controllers.dataset(env)
 
-    def upload = Controllers.upload.run(env)
+    def upload = Controllers.upload(env)
 
-    def health = Controllers.health.run(env)
+    def health = Controllers.health(env)
 
-    def search = Controllers.search.run(env)
+    def search = Controllers.search(env)
 
     def static = ??? // the UI is served by a dedicated web server
   }
 
-  val services = new Services {
-    def elasticSearch = Services.elasticSearch.run(env)
+  lazy val services = new Services {
+    val elasticSearch = Services.elasticSearch(env)
+
+    val user = Services.user(env)
+
   }
 
-  val repositories = new Repositories {
-    val sequenceSet = DatasetRepo.inMemory
+  lazy val repositories = new Repositories {
+
+    def dataset = DatasetRepo.inMemory
+
+    def sequence: SeqRepo = SeqRepo.inMemory
+
+    def user: UserRepo = UserRepo.inMemory
+
+    def project: ProjectRepo = ProjectRepo.inMemory
   }
 }
 

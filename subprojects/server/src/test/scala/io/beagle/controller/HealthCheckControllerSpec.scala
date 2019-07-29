@@ -20,7 +20,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
   "The HealthCheckController" should {
     "returns true if ElasticSearch can be reached" in {
       val environment = TestEnv.of[HealthCheckController]
-      val es = Services.elasticSearch.run(environment)
+      val es = Services.elasticSearch(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")
       ))
@@ -30,7 +30,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
     }
     "returns false if ElasticSearch can't be reached" in {
       val environment = TestEnv.of[HealthCheckController]
-      val es = Services.elasticSearch.run(environment)
+      val es = Services.elasticSearch(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")
       ))

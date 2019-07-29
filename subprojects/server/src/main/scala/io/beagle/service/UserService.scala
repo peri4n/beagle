@@ -1,6 +1,7 @@
 package io.beagle.service
 
 import cats.effect.IO
+import io.beagle.components.Repositories
 import io.beagle.domain.{User, UserItem}
 import io.beagle.repository.user.UserRepo
 
@@ -25,6 +26,8 @@ case class UserService(repo: UserRepo) {
 }
 
 object UserService {
+
+  def instance = Repositories.user map { UserService(_) }
 
   case class UserAlreadyExists(user: User) extends Exception(user.name)
 

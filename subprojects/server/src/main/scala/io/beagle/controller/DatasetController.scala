@@ -15,7 +15,7 @@ object DatasetController {
 
   val PathName = "seqsets"
 
-  def instance = Repositories.sequenceSet map { DatasetController(_).route }
+  def instance = Repositories.dataset map { DatasetController(_).route }
 
   case class CreateSequenceSetRequest(name: String, alphabet: String)
 
