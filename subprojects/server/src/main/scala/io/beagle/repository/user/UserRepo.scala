@@ -2,20 +2,22 @@ package io.beagle.repository.user
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import doobie.free.connection.ConnectionIO
 import io.beagle.domain.{User, UserId, UserItem}
 
 trait UserRepo {
 
-  def create(user: User): IO[UserItem]
+  def create(user: User): ConnectionIO[UserItem]
 
-  def update(id: UserId, user: User): IO[UserItem]
+  def update(id: UserId, user: User): ConnectionIO[UserItem]
 
-  def findById(id: UserId): IO[Option[UserItem]]
+  def findById(id: UserId): ConnectionIO[Option[UserItem]]
 
-  def findByName(name: String): IO[Option[UserItem]]
+  def findByName(name: String): ConnectionIO[Option[UserItem]]
 
-  def delete(id: UserId): IO[Unit]
+  def delete(id: UserId): ConnectionIO[Unit]
 
+  def deleteAll(): ConnectionIO[Unit]
 }
 
 object UserRepo {

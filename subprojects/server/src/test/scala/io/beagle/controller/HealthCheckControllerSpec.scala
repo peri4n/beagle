@@ -17,9 +17,10 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
   implicit val requestEncoder: EntityEncoder[IO, HealthCheckRequest] = jsonEncoderOf[IO, HealthCheckRequest]
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
 
+  val environment = TestEnv.of[HealthCheckController]
+
   "The HealthCheckController" should {
     "returns true if ElasticSearch can be reached" in {
-      val environment = TestEnv.of[HealthCheckController]
       val es = Services.elasticSearch(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")
@@ -29,7 +30,6 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
       response must haveBody(HealthCheckResponse(true))
     }
     "returns false if ElasticSearch can't be reached" in {
-      val environment = TestEnv.of[HealthCheckController]
       val es = Services.elasticSearch(environment)
       val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
         Request(method = Method.GET, uri = uri"/health")

@@ -1,6 +1,6 @@
 package io.beagle.components
 
-import io.beagle.service.{ElasticSearchService, UserService}
+import io.beagle.service.{ElasticSearchService, ProjectService, SeqService, UserService}
 
 trait Services {
 
@@ -15,5 +15,9 @@ object Services {
   def elasticSearch = ElasticSearchService.instance
 
   def user = UserService.instance
+
+  def project = ProjectService.instance
+
+  def sequence = SeqService.instance
 
 }

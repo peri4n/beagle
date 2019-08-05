@@ -1,5 +1,7 @@
 package io.beagle.service
 
+import doobie.free.connection.ConnectionIO
+import doobie.implicits._
 import io.beagle.Generators._
 import io.beagle.components.Services
 import io.beagle.domain.User
@@ -10,56 +12,62 @@ import org.scalatest.{FunSpec, Matchers}
 
 class UserServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Matchers {
 
-  describe("The UserService") {
-    it("can create new users") {
-      val environment = TestEnv.of[UserService]
-      val service = Services.user(environment)
+  val environment = TestEnv.of[UserService]
 
+  val service = Services.user(environment)
+
+  def run[A](cio: ConnectionIO[A]): A = {
+    cio.transact(environment.settings.database.transactor).unsafeRunSync()
+  }
+
+  describe("Creating users") {
+    it("can create new users") {
       forAll { user: User =>
-        val item = service.create(user).unsafeRunSync().user
-        item.name should be(user.name)
-        item.password should be(user.password)
-        item.email should be(user.email)
+        run(service.create(user)).user should be(user)
       }
     }
 
     it("fails to create if a user is already present") {
-      val environment = TestEnv.of[UserService]
-      val service = Services.user(environment)
-
       forAll { user: User =>
-        val prog = for {
+        val test = for {
           _ <- service.create(user)
           _ <- service.create(user)
         } yield ()
 
-        an[UserAlreadyExists] should be thrownBy ( prog.unsafeRunSync() )
+        an[UserAlreadyExists] should be thrownBy run(test)
       }
     }
-    it("can delete a already present user") {
-      val environment = TestEnv.of[UserService]
-      val service = Services.user(environment)
+  }
 
+  describe("Updating users") {
+    it("can update existing users") {
       forAll { user: User =>
-        val prog = for {
+        val test = for {
           _ <- service.create(user)
-          _ <- service.delete(user)
-        } yield ()
+          newItem <- service.update(user, user.copy(email = "foo@bar.com"))
+        } yield newItem
 
-        prog.unsafeRunSync()
+        run(test).user should be(user.copy(email = "foo@bar.com"))
       }
     }
-    it("fails to delete if a user is not present") {
-      val environment = TestEnv.of[UserService]
-      val service = Services.user(environment)
+  }
 
-      forAll { user: User =>
-        val prog = for {
-          _ <- service.delete(user)
-        } yield ()
+  it("can delete an already present user") {
+    forAll { user: User =>
+      val test = for {
+        _ <- service.create(user)
+        _ <- service.delete(user)
+      } yield ()
 
-        an[UserDoesNotExist] should be thrownBy ( prog.unsafeRunSync() )
-      }
+      run(test)
+    }
+  }
+
+  it("fails to delete if the user is not present") {
+    forAll { user: User =>
+      val test = service.delete(user)
+
+      an[UserDoesNotExist] should be thrownBy run(test)
     }
   }
 }

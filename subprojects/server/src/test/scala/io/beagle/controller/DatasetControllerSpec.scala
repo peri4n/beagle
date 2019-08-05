@@ -1,6 +1,7 @@
 package io.beagle.controller
 
 import cats.effect.IO
+import io.beagle.components.Controllers
 import io.beagle.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain.{DatasetId, DatasetItem}
 import io.beagle.environments.TestEnv
@@ -21,7 +22,8 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
       val environment = TestEnv.of[DatasetControllerSpec]
       val createRequest1 = CreateSequenceSetRequest("set1", "DNA")
       val createRequest2 = CreateSequenceSetRequest("set2", "DNA")
-      val controller = new DatasetController(environment.repositories.dataset).route.orNotFound
+
+      val controller = Controllers.dataset(environment).orNotFound
 
       val test = for {
         response1 <- controller.run(

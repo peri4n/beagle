@@ -1,6 +1,7 @@
 package io.beagle.service
 
-import cats.effect.IO
+import cats.effect.Sync
+import doobie.free.connection.ConnectionIO
 import io.beagle.components.Repositories
 import io.beagle.domain.{User, UserItem}
 import io.beagle.repository.user.UserRepo
@@ -9,18 +10,25 @@ case class UserService(repo: UserRepo) {
 
   import UserService._
 
-  def create(user: User): IO[UserItem] = {
+  def create(user: User): ConnectionIO[UserItem] = {
     repo.findByName(user.name).flatMap { maybeUser =>
       maybeUser.fold(repo.create(user)) { _ =>
-        IO.raiseError(UserAlreadyExists(user))
+        Sync[ConnectionIO].raiseError(UserAlreadyExists(user))
       }
     }
   }
 
-  def delete(user: User): IO[Unit] = {
+  def update(oldUser: User, newUser: User): ConnectionIO[UserItem] = {
+    repo.findByName(oldUser.name).flatMap {
+      case Some(userItem) => repo.update(userItem.id, newUser)
+      case None           => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser))
+    }
+  }
+
+  def delete(user: User): ConnectionIO[Unit] = {
     repo.findByName(user.name).flatMap {
       case Some(userItem) => repo.delete(userItem.id)
-      case None           => IO.raiseError[Unit](UserDoesNotExist(user))
+      case None           => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user))
     }
   }
 }

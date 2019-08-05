@@ -5,8 +5,8 @@ CREATE TABLE sequences (
     id serial PRIMARY KEY,
     identifier VARCHAR(80),
     sequence TEXT,
-    createdDate DATE NOT NULL DEFAULT CURRENT_DATE,
-    lastModifiedDate DATE NOT NULL DEFAULT CURRENT_DATE,
+    created DATE NOT NULL DEFAULT CURRENT_DATE,
+    lastModified DATE NOT NULL DEFAULT CURRENT_DATE,
     alphabet VARCHAR(4) NOT NULL
 );
 
@@ -16,8 +16,8 @@ CREATE TABLE sequences (
 CREATE TABLE datasets (
     id serial PRIMARY KEY,
     name VARCHAR(80), 
-    createdDate DATE NOT NULL DEFAULT CURRENT_DATE,
-    lastModifiedDate DATE NOT NULL DEFAULT CURRENT_DATE
+    created DATE NOT NULL DEFAULT CURRENT_DATE,
+    lastModified DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 -------------------------------------------
@@ -26,7 +26,8 @@ CREATE TABLE datasets (
 CREATE TABLE projects (
     id serial PRIMARY KEY,
     name VARCHAR(80),
-    createdDate DATE NOT NULL DEFAULT CURRENT_DATE,
+    created DATE NOT NULL DEFAULT CURRENT_DATE,
+    lastModified DATE NOT NULL DEFAULT CURRENT_DATE,
 );
 
 -------------------------------------------
@@ -36,7 +37,7 @@ CREATE TABLE users (
     id serial PRIMARY KEY,
     username VARCHAR(80),
     password VARCHAR(80),
-    createdDate DATE NOT NULL DEFAULT CURRENT_DATE,
+    created DATE NOT NULL DEFAULT CURRENT_DATE,
 );
 
 -------------------------------------------

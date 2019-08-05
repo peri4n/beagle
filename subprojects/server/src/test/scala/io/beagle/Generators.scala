@@ -1,6 +1,6 @@
 package io.beagle
 
-import io.beagle.domain.User
+import io.beagle.domain.{Project, User, Seq}
 import org.scalacheck.{Arbitrary, Gen}
 
 object Generators {
@@ -11,10 +11,28 @@ object Generators {
     tld <- Gen.oneOf("com", "de", "us", "org")
   } yield preAt + "@" + domain + "." + tld
 
-  implicit val user = Arbitrary(for {
-    name <- Gen.alphaNumStr
-    email <- email
-    password <- Gen.alphaNumStr
-  } yield User(name, password, email))
+  implicit val userGenerator = Arbitrary(
+    for {
+      name <- Gen.alphaNumStr.suchThat(!_.isEmpty)
+      email <- email
+      password <- Gen.alphaNumStr
+    } yield User(name, password, email))
 
+  implicit val projectGenerator = Arbitrary(
+    for {
+      name <- Gen.alphaNumStr.suchThat(!_.isEmpty)
+    } yield Project(name)
+  )
+
+  implicit val dnaStringGenerator =
+    for {
+      list <- Gen.listOf(Gen.oneOf('A', 'C', 'G', 'T', 'a', 'c', 'g', 't'))
+    } yield list.mkString
+
+  implicit val sequenceGenerator = Arbitrary(
+    for {
+      name <- Gen.alphaNumStr.suchThat(!_.isEmpty)
+      sequence <- dnaStringGenerator
+    } yield Seq(name, sequence)
+  )
 }

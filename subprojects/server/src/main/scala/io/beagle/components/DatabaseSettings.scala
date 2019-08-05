@@ -31,5 +31,5 @@ trait DatabaseSettings {
 }
 
 object DatabaseSettings {
-  val transactor = Settings.database map { _.transactor }
+  def transactor = Settings.database map { _.transactor }
 }

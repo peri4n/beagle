@@ -43,9 +43,9 @@ case object Development extends Env {
   }
 
   val services = new Services {
-    val elasticSearch = Services.elasticSearch(env)
+    def elasticSearch = Services.elasticSearch(env)
 
-    val user = Services.user(env)
+    def user = Services.user(env)
 
   }
 

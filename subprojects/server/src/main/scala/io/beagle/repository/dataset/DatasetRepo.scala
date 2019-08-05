@@ -2,17 +2,18 @@ package io.beagle.repository.dataset
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import doobie.free.connection.ConnectionIO
 import io.beagle.domain.{Dataset, DatasetId, DatasetItem}
 
 trait DatasetRepo {
 
-  def create(seqSet: Dataset): IO[DatasetItem]
+  def create(seqSet: Dataset): ConnectionIO[DatasetItem]
 
-  def update(id: DatasetId, seqSet: Dataset): IO[DatasetItem]
+  def update(id: DatasetId, seqSet: Dataset): ConnectionIO[DatasetItem]
 
-  def find(id: DatasetId): IO[Option[DatasetItem]]
+  def find(id: DatasetId): ConnectionIO[Option[DatasetItem]]
 
-  def delete(id: DatasetId): IO[Unit]
+  def delete(id: DatasetId): ConnectionIO[Unit]
 }
 
 object DatasetRepo {
