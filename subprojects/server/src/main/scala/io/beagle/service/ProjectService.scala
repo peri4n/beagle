@@ -2,42 +2,56 @@ package io.beagle.service
 
 import cats.effect.Sync
 import doobie.free.connection.ConnectionIO
-import io.beagle.components.Repositories
-import io.beagle.domain.{Project, ProjectItem}
+import io.beagle.components.{Repositories, Services}
+import io.beagle.domain.{Project, ProjectItem, User}
 import io.beagle.repository.project.ProjectRepo
-import io.beagle.service.ProjectService.{ProjectAlreadyExists, ProjectDoesNotExist}
-
-case class ProjectService(repo: ProjectRepo) {
-
-  def create(project: Project): ConnectionIO[ProjectItem] = {
-    repo.findByName(project.name).flatMap { maybeProject =>
-      maybeProject.fold(repo.create(project)) { _ =>
-        Sync[ConnectionIO].raiseError(ProjectAlreadyExists(project))
-      }
-    }
-  }
-
-  def update(oldProject: Project, newProject: Project): ConnectionIO[ProjectItem] = {
-    repo.findByName(oldProject.name).flatMap {
-      case Some(projectItem) => repo.update(projectItem.id, newProject)
-      case None              => Sync[ConnectionIO].raiseError[ProjectItem](ProjectAlreadyExists(newProject))
-    }
-  }
-
-  def delete(project: Project): ConnectionIO[Unit] = {
-    repo.findByName(project.name).flatMap {
-      case Some(projectItem) => repo.delete(projectItem.id)
-      case None              => Sync[ConnectionIO].raiseError[Unit](ProjectDoesNotExist(project))
-    }
-  }
-}
+import io.beagle.service.ProjectService.ProjectAlreadyExists
 
 object ProjectService {
 
-  def instance = Repositories.project map { ProjectService(_) }
+  def instance =
+    for {
+      projectRepo <- Repositories.project
+      userService <- Services.user
+    } yield ProjectService(projectRepo, userService)
 
   case class ProjectAlreadyExists(project: Project) extends Exception(project.name)
 
   case class ProjectDoesNotExist(project: Project) extends Exception(project.name)
 
+}
+
+case class ProjectService(projectRepo: ProjectRepo, userService: UserService) {
+
+  def create(project: Project): ConnectionIO[ProjectItem] = {
+    for {
+      owner <- userService.findByIdStrict(project.ownerId)
+      maybeProject <- projectRepo.findByName(project.name, owner.id)
+      create <- maybeProject.fold(projectRepo.create(project)) { _ =>
+        Sync[ConnectionIO].raiseError[ProjectItem](ProjectAlreadyExists(project))
+      }
+    } yield create
+  }
+
+  def update(oldProject: Project, newProject: Project): ConnectionIO[ProjectItem] = {
+    for {
+      owner <- userService.findByIdStrict(newProject.ownerId)
+      maybeProject <- projectRepo.findByName(oldProject.name, owner.id)
+      update <- maybeProject.fold(Sync[ConnectionIO].raiseError[ProjectItem](ProjectAlreadyExists(newProject))) { projectItem =>
+        projectRepo.update(projectItem.id, newProject)
+      }
+    } yield update
+  }
+
+  def delete(project: Project, owner: User): ConnectionIO[Unit] = {
+    for {
+      ownerItem <- userService.findByNameStrict(owner.name)
+      maybeProject <- projectRepo.findByName(project.name, ownerItem.id)
+      _ <- maybeProject.fold(Sync[ConnectionIO].raiseError[Unit](ProjectService.ProjectDoesNotExist(project))) { projectItem =>
+        projectRepo.delete(projectItem.id)
+      }
+    } yield ()
+  }
+
+  def deleteAll(): ConnectionIO[Unit] = projectRepo.deleteAll()
 }

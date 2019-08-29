@@ -28,4 +28,6 @@ object UserRepo {
       Ref.unsafe[IO, Long](1L)
     )
 
+  def inDB = DbUserRepo
+
 }

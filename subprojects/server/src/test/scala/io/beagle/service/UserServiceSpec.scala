@@ -7,10 +7,14 @@ import io.beagle.components.Services
 import io.beagle.domain.User
 import io.beagle.environments.TestEnv
 import io.beagle.service.UserService.{UserAlreadyExists, UserDoesNotExist}
+import org.scalactic.source.Position
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
-class UserServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Matchers {
+class UserServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Matchers with BeforeAndAfter {
+
+  implicit override val generatorDrivenConfig =
+    PropertyCheckConfiguration(minSize = 0, sizeRange = 80)
 
   val environment = TestEnv.of[UserService]
 
@@ -18,6 +22,10 @@ class UserServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Ma
 
   def run[A](cio: ConnectionIO[A]): A = {
     cio.transact(environment.settings.database.transactor).unsafeRunSync()
+  }
+
+  after {
+    run(service.deleteAll())
   }
 
   describe("Creating users") {

@@ -1,7 +1,10 @@
 package io.beagle.domain
 
-case class UserId(id: Long) extends AnyVal
+import java.time.ZonedDateTime
 
-case class User(name: String, password: String, email: String)
+case class UserId(val id: Long) extends AnyVal
+
+case class User(name: String, password: String, email: String, created: ZonedDateTime = ZonedDateTime.now())
 
 case class UserItem(id: UserId, user: User)
+

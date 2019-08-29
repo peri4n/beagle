@@ -1,19 +1,12 @@
 package io.beagle.domain
 
-import java.time.OffsetDateTime
-
-import doobie.util.Meta
-
+import java.time.ZonedDateTime
 
 case class ProjectId(value: Long) extends AnyVal
 
 case class Project(name: String,
-                   createdBy: OffsetDateTime = OffsetDateTime.now(),
-                   lastModified: OffsetDateTime = OffsetDateTime.now())
-
-object ProjectItem {
-  implicit val date2String: Meta[OffsetDateTime] = Meta[String].timap(OffsetDateTime.parse)(_.toString)
-
-}
+                   ownerId: UserId,
+                   created: ZonedDateTime = ZonedDateTime.now())
 
 case class ProjectItem(id: ProjectId, project: Project)
+

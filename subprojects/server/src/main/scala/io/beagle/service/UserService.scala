@@ -3,7 +3,7 @@ package io.beagle.service
 import cats.effect.Sync
 import doobie.free.connection.ConnectionIO
 import io.beagle.components.Repositories
-import io.beagle.domain.{User, UserItem}
+import io.beagle.domain.{User, UserId, UserItem}
 import io.beagle.repository.user.UserRepo
 
 case class UserService(repo: UserRepo) {
@@ -18,19 +18,37 @@ case class UserService(repo: UserRepo) {
     }
   }
 
+  def findById(id: UserId): ConnectionIO[Option[UserItem]] = repo.findById(id)
+
+  def findByIdStrict(id: UserId): ConnectionIO[UserItem] = repo.findById(id).flatMap { maybeUser =>
+    maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist("foo"))) { owner =>
+      Sync[ConnectionIO].pure(owner)
+    }
+  }
+
+  def findByName(userName: String): ConnectionIO[Option[UserItem]] = repo.findByName(userName)
+
+  def findByNameStrict(userName: String): ConnectionIO[UserItem] = repo.findByName(userName).flatMap { maybeUser =>
+    maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(userName))) { owner =>
+      Sync[ConnectionIO].pure(owner)
+    }
+  }
+
   def update(oldUser: User, newUser: User): ConnectionIO[UserItem] = {
     repo.findByName(oldUser.name).flatMap {
       case Some(userItem) => repo.update(userItem.id, newUser)
-      case None           => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser))
+      case None           => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser.name))
     }
   }
 
   def delete(user: User): ConnectionIO[Unit] = {
     repo.findByName(user.name).flatMap {
       case Some(userItem) => repo.delete(userItem.id)
-      case None           => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user))
+      case None           => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user.name))
     }
   }
+
+  def deleteAll(): ConnectionIO[Unit] = repo.deleteAll()
 }
 
 object UserService {
@@ -39,6 +57,6 @@ object UserService {
 
   case class UserAlreadyExists(user: User) extends Exception(user.name)
 
-  case class UserDoesNotExist(user: User) extends Exception(user.name)
+  case class UserDoesNotExist(user: String) extends Exception(user)
 
 }

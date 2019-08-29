@@ -3,10 +3,10 @@
 -------------------------------------------
 CREATE TABLE sequences (
     id serial PRIMARY KEY,
-    identifier VARCHAR(80),
+    identifier VARCHAR(255),
     sequence TEXT,
-    created DATE NOT NULL DEFAULT CURRENT_DATE,
-    lastModified DATE NOT NULL DEFAULT CURRENT_DATE,
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    lastModified TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     alphabet VARCHAR(4) NOT NULL
 );
 
@@ -15,19 +15,9 @@ CREATE TABLE sequences (
 -------------------------------------------
 CREATE TABLE datasets (
     id serial PRIMARY KEY,
-    name VARCHAR(80), 
-    created DATE NOT NULL DEFAULT CURRENT_DATE,
-    lastModified DATE NOT NULL DEFAULT CURRENT_DATE
-);
-
--------------------------------------------
--- Projects
--------------------------------------------
-CREATE TABLE projects (
-    id serial PRIMARY KEY,
-    name VARCHAR(80),
-    created DATE NOT NULL DEFAULT CURRENT_DATE,
-    lastModified DATE NOT NULL DEFAULT CURRENT_DATE,
+    name VARCHAR(255),
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    lastModified TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -------------------------------------------
@@ -35,9 +25,21 @@ CREATE TABLE projects (
 -------------------------------------------
 CREATE TABLE users (
     id serial PRIMARY KEY,
-    username VARCHAR(80),
-    password VARCHAR(80),
-    created DATE NOT NULL DEFAULT CURRENT_DATE,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255),
+    email VARCHAR(255),
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-------------------------------------------
+-- Projects
+-------------------------------------------
+CREATE TABLE projects (
+    id serial PRIMARY KEY,
+    name VARCHAR(255),
+    owner INTEGER REFERENCES users(id),
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (name, owner)
 );
 
 -------------------------------------------

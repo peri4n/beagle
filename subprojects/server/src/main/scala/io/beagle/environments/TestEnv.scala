@@ -53,9 +53,17 @@ case class TestEnv(name: String) extends Env {
 
     def sequence: SeqRepo = SeqRepo.inMemory
 
-    def user: UserRepo = UserRepo.inMemory
+    def user: UserRepo =
+      if (System.getProperties.getOrDefault("dbMode", "db") == "mem")
+        UserRepo.inMemory
+      else
+        UserRepo.inDB
 
-    def project: ProjectRepo = ProjectRepo.inMemory
+    def project: ProjectRepo =
+      if (System.getProperties.getOrDefault("dbMode", "db") == "mem")
+        ProjectRepo.inMemory
+      else
+        ProjectRepo.inDB
   }
 }
 

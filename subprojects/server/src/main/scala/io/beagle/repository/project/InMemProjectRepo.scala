@@ -27,10 +27,14 @@ case class InMemProjectRepo(db: Ref[IO, Map[ProjectId, ProjectItem]], counter: R
   def find(id: ProjectId): ConnectionIO[Option[ProjectItem]] =
     Async[ConnectionIO].liftIO(db.get.map(_.get(id)))
 
-  def findByName(name: String): ConnectionIO[Option[ProjectItem]] =
-    Async[ConnectionIO].liftIO(db.get.map(_.values.find(_.project.name == name)))
+  def findByName(name: String, owner: UserId): ConnectionIO[Option[ProjectItem]] =
+    Async[ConnectionIO].liftIO(db.get.map(_.values.find(item =>
+      item.project.name == name && item.project.ownerId == owner))
+    )
 
   def delete(id: ProjectId): ConnectionIO[Unit] =
     Async[ConnectionIO].liftIO(db.update(map => map - id))
 
+  def deleteAll(): ConnectionIO[Unit] =
+    Async[ConnectionIO].liftIO(db.update(_ => Map.empty))
 }

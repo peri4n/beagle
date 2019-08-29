@@ -35,6 +35,5 @@ case class InMemUserRepo(db: Ref[IO, Map[UserId, UserItem]], counter: Ref[IO, Lo
 
   def deleteAll(): ConnectionIO[Unit] =
     Async[ConnectionIO].liftIO(db.update(_ => Map.empty))
-
 }
 
