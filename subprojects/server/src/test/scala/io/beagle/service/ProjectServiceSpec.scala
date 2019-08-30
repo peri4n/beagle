@@ -7,13 +7,10 @@ import io.beagle.components.Services
 import io.beagle.domain.{Project, User}
 import io.beagle.environments.TestEnv
 import io.beagle.service.ProjectService.{ProjectAlreadyExists, ProjectDoesNotExist}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class ProjectServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Matchers with BeforeAndAfter {
-
-  implicit override val generatorDrivenConfig =
-    PropertyCheckConfiguration(minSize = 0, sizeRange = 80)
+class ProjectServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers with BeforeAndAfter {
 
   val environment = TestEnv.of[SeqService]
 

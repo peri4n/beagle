@@ -4,7 +4,6 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import doobie.free.connection.ConnectionIO
 import io.beagle.domain.{Project, ProjectId, ProjectItem, UserId}
-import io.beagle.repository.user.DbUserRepo
 
 trait ProjectRepo {
 

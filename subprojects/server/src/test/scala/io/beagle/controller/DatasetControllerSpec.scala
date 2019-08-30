@@ -5,7 +5,7 @@ import io.beagle.components.Controllers
 import io.beagle.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain.{DatasetId, DatasetItem}
 import io.beagle.environments.TestEnv
-import io.circe.generic.auto._
+import io.circe.generic.simple.auto._
 import org.http4s.circe._
 import org.http4s.implicits._
 import org.http4s.testing.{Http4sMatchers, IOMatchers}

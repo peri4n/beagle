@@ -4,7 +4,7 @@ name := "beagle"
 
 version := "0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.0"
 
 enablePlugins(JavaAppPackaging)
 
@@ -13,7 +13,7 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 // Webapp
-val http4sVersion = "0.20.6"
+val http4sVersion = "0.21.0-M4"
 libraryDependencies += "org.http4s" %% "http4s-core" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-dsl" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-circe" % http4sVersion
@@ -21,28 +21,28 @@ libraryDependencies += "org.http4s" %% "http4s-testing" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 
 // Circe
-libraryDependencies += "io.circe" %% "circe-generic" % "0.11.1"
+libraryDependencies += "io.circe" %% "circe-generic-simple" % "0.12.0-RC4"
 
 // cats
 libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
 
 // doobie
-libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.7.0"
-libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.7.0"
+libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.0-RC1"
+libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.0-RC1"
 
 // Elastic Search
-val elastic4sVersion = "6.5.1"
+val elastic4sVersion = "7.3.0"
 libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-cats-effect" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
+  "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
+//  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
 )
 
 // Scala test
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-libraryDependencies += "org.specs2" %% "specs2-core" % "4.3.4" % "test"
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+libraryDependencies += "org.specs2" %% "specs2-core" % "4.6.0" % "test"
+//libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 
 fork := true
 connectInput := true
@@ -59,9 +59,7 @@ scalacOptions ++= Seq(
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
 //  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
-  "-Xfuture", // Turn on future language features.
   "-Xlint:adapted-args", // Warn if an argument list is modified to match the receiver.
-  "-Xlint:by-name-right-associative", // By-name parameter of right associative operator.
   "-Xlint:constant", // Evaluation of a constant arithmetic expression results in an error.
   "-Xlint:delayedinit-select", // Selecting member of DelayedInit.
   "-Xlint:doc-detached", // A Scaladoc comment appears to be detached from its element.
@@ -76,15 +74,8 @@ scalacOptions ++= Seq(
   "-Xlint:private-shadow", // A private field (or class parameter) shadows a superclass field.
   "-Xlint:stars-align", // Pattern sequence wildcard must align with sequence component.
   "-Xlint:type-parameter-shadow", // A local type parameter shadows a type already in scope.
-  "-Xlint:unsound-match", // Pattern match may not be typesafe.
-  "-Yno-adapted-args", // Do not adapt an argument list (either by inserting () or creating a tuple) to match the receiver.
-  "-Ypartial-unification", // Enable partial unification in type constructor inference
   "-Ywarn-dead-code", // Warn when dead code is identified.
   "-Ywarn-extra-implicit", // Warn when more than one implicit parameter section is defined.
-  "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
-  "-Ywarn-infer-any", // Warn when a type argument is inferred to be `Any`.
-  "-Ywarn-nullary-override", // Warn when non-nullary `def f()' overrides nullary `def f'.
-  "-Ywarn-nullary-unit", // Warn when nullary methods return Unit.
   "-Ywarn-numeric-widen", // Warn when numerics are widened.
   "-Ywarn-unused:implicits", // Warn if an implicit parameter is unused.
   "-Ywarn-unused:imports", // Warn if an import selector is not referenced.

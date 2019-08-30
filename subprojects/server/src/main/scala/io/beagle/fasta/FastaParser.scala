@@ -12,7 +12,7 @@ object FastaParser {
       .map(FastaParser.toFasta)
 
   def toFasta(chunk: String): FastaEntry = {
-    val ( header :: body ) = chunk.lines.toList
+    val ( header :: body ) = chunk.linesIterator.toList
     FastaEntry(
       header,
       body.map(_.trim).mkString("")

@@ -1,11 +1,11 @@
 package io.beagle.controller
 
 import cats.effect.{ContextShift, IO, Timer}
-import com.sksamuel.elastic4s.http.ElasticDsl
+import com.sksamuel.elastic4s.ElasticDsl
 import io.beagle.components._
 import io.beagle.fasta.FastaParser
 import io.beagle.service.ElasticSearchService
-import io.circe.generic.auto._
+import io.circe.generic.simple.auto._
 import fs2._
 import org.http4s.HttpRoutes
 import org.http4s.circe._

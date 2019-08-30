@@ -18,6 +18,6 @@ case class StaticContentController(uiRoot: String) extends Http4sDsl[IO] {
 
   implicit val contextShift: ContextShift[IO] = IO.contextShift(global)
 
-  val route: HttpRoutes[IO] = fileService[IO](FileService.Config[IO](uiRoot))
+  val route: HttpRoutes[IO] = fileService[IO](FileService.Config[IO](uiRoot, Blocker.liftExecutionContext(global)))
 
 }

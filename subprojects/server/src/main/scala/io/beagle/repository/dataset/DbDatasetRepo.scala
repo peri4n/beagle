@@ -23,5 +23,5 @@ case object DbDatasetRepo extends DatasetRepo {
   def delete(id: DatasetId): ConnectionIO[Unit] =
     sql"DELETE FROM $TableName WHERE id = $id".update
       .run
-      .map(_ => Unit)
+      .map(_ => ())
 }

@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.Date
 
 import io.circe.Decoder.Result
-import io.circe.generic.semiauto._
+import io.circe.generic.simple.semiauto._
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
 case class DatasetId(value: Long) extends AnyVal

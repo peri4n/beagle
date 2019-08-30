@@ -28,6 +28,6 @@ case object DbSeqRepo extends SeqRepo {
   def delete(id: SeqId): ConnectionIO[Unit] = {
     sql"DELETE FROM $TableName WHERE id = $id".update
       .run
-      .map(_ => Unit)
+      .map(_ => ())
   }
 }

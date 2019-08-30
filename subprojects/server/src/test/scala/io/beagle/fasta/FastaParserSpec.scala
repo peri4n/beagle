@@ -12,7 +12,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class FastaParserSpec extends Specification {
 
-  val blockingExecutionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2))
+  val blocker = Blocker.liftExecutionContext(
+    ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2)))
 
   implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
@@ -29,7 +30,7 @@ class FastaParserSpec extends Specification {
       val path = Paths.get(getClass.getResource("invalid.fasta").toURI)
 
       val entries = io.file
-        .readAll[IO](path, blockingExecutionContext, 4096)
+        .readAll[IO](path, blocker, 4096)
         .through(FastaParser.parse)
         .compile
         .toList
@@ -45,7 +46,7 @@ class FastaParserSpec extends Specification {
       val path = Paths.get(getClass.getResource("easy_split.fasta").toURI)
 
       val entries = io.file
-        .readAll[IO](path, blockingExecutionContext, 4096)
+        .readAll[IO](path, blocker, 4096)
         .through(FastaParser.parse)
         .compile
         .toList
@@ -61,7 +62,7 @@ class FastaParserSpec extends Specification {
       val path = Paths.get(getClass.getResource("easy.fasta").toURI)
 
       val entries = io.file
-        .readAll[IO](path, blockingExecutionContext, 4096)
+        .readAll[IO](path, blocker, 4096)
         .through(FastaParser.parse)
         .compile
         .toList

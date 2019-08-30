@@ -7,10 +7,10 @@ import io.beagle.components.Services
 import io.beagle.domain.Seq
 import io.beagle.environments.TestEnv
 import io.beagle.service.SeqService.{SequenceAlreadyExists, SequenceDoesNotExist}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSpec, Matchers}
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class SeqServiceSpec extends FunSpec with GeneratorDrivenPropertyChecks with Matchers {
+class SeqServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers {
 
   val environment = TestEnv.of[SeqService]
 
