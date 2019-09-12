@@ -11,7 +11,7 @@ trait ProjectRepo {
 
   def update(id: ProjectId, project: Project): ConnectionIO[ProjectItem]
 
-  def find(id: ProjectId): ConnectionIO[Option[ProjectItem]]
+  def findById(id: ProjectId): ConnectionIO[Option[ProjectItem]]
 
   def findByName(name: String, owner: UserId): ConnectionIO[Option[ProjectItem]]
 

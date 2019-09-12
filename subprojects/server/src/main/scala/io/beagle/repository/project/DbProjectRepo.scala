@@ -8,21 +8,21 @@ import io.beagle.domain.metas._
 case object DbProjectRepo extends ProjectRepo {
 
   def create(project: Project): ConnectionIO[ProjectItem] =
-    sql"""INSERT INTO projects (name, owner, created)
+    sql"""INSERT INTO projects (name, owner_id, created)
         VALUES (${ project.name }, ${ project.ownerId }, ${ project.created })"""
       .update
-      .withUniqueGeneratedKeys[ProjectItem]("id", "name", "owner", "created")
+      .withUniqueGeneratedKeys[ProjectItem]("id", "name", "owner_id", "created")
 
   def update(id: ProjectId, project: Project): ConnectionIO[ProjectItem] =
     sql"UPDATE projects SET name = ${ project.name } WHERE id = $id".update
-      .withUniqueGeneratedKeys[ProjectItem]("id", "name", "owner", "created")
+      .withUniqueGeneratedKeys[ProjectItem]("id", "name", "owner_id", "created")
 
-  def find(id: ProjectId): ConnectionIO[Option[ProjectItem]] =
+  def findById(id: ProjectId): ConnectionIO[Option[ProjectItem]] =
     sql"SELECT * FROM projects WHERE id = $id".query[ProjectItem]
       .option
 
   def findByName(name: String, owner: UserId): ConnectionIO[Option[ProjectItem]] =
-    sql"SELECT * FROM projects WHERE name = $name AND owner = $owner".query[ProjectItem]
+    sql"SELECT * FROM projects WHERE name = $name AND owner_id = $owner".query[ProjectItem]
       .option
 
   def delete(id: ProjectId): ConnectionIO[Unit] =

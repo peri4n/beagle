@@ -18,12 +18,10 @@ case object DbSeqRepo extends SeqRepo {
       .withUniqueGeneratedKeys[SeqItem]("id", "identifier", "sequence")
   }
 
-  def find(id: SeqId): ConnectionIO[Option[SeqItem]] = {
+  def findById(id: SeqId): ConnectionIO[Option[SeqItem]] = {
     sql"SELECT * FROM $TableName WHERE id = $id".query[SeqItem]
       .option
   }
-
-  def findByIdentifier(name: String): ConnectionIO[Option[SeqItem]] = ???
 
   def delete(id: SeqId): ConnectionIO[Unit] = {
     sql"DELETE FROM $TableName WHERE id = $id".update

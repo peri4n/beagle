@@ -1,6 +1,6 @@
 package io.beagle
 
-import io.beagle.domain.{Project, Seq, User, UserId}
+import io.beagle.domain.{Dataset, Project, ProjectId, Seq, User, UserId}
 import org.scalacheck.{Arbitrary, Gen}
 
 object Generators {
@@ -29,6 +29,13 @@ object Generators {
     } yield Project(name, UserId(id))
   )
 
+  implicit val datasetGenerator = Arbitrary(
+    for {
+      name <- Gen.alphaNumStr
+        .suchThat(!_.isEmpty)
+      id <- Gen.posNum[Long]
+    } yield Dataset(name, ProjectId(id))
+  )
   implicit val dnaStringGenerator =
     for {
       list <- Gen.listOf(Gen.oneOf('A', 'C', 'G', 'T', 'a', 'c', 'g', 't'))

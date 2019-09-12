@@ -11,9 +11,7 @@ trait SeqRepo {
 
   def update(id: SeqId, seq: Seq): ConnectionIO[SeqItem]
 
-  def find(id: SeqId): ConnectionIO[Option[SeqItem]]
-
-  def findByIdentifier(name: String): ConnectionIO[Option[SeqItem]]
+  def findById(id: SeqId): ConnectionIO[Option[SeqItem]]
 
   def delete(id: SeqId): ConnectionIO[Unit]
 }

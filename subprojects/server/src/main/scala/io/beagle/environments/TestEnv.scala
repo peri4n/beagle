@@ -49,18 +49,22 @@ case class TestEnv(name: String) extends Env {
 
   lazy val repositories = new Repositories {
 
-    def dataset = DatasetRepo.inMemory
+    def dataset =
+      if (System.getProperty("dbMode", "db") == "mem")
+        DatasetRepo.inMemory
+      else
+        DatasetRepo.inDB
 
     def sequence: SeqRepo = SeqRepo.inMemory
 
     def user: UserRepo =
-      if (System.getProperties.getOrDefault("dbMode", "db") == "mem")
+      if (System.getProperty("dbMode", "db") == "mem")
         UserRepo.inMemory
       else
         UserRepo.inDB
 
     def project: ProjectRepo =
-      if (System.getProperties.getOrDefault("dbMode", "db") == "mem")
+      if (System.getProperty("dbMode", "db") == "mem")
         ProjectRepo.inMemory
       else
         ProjectRepo.inDB

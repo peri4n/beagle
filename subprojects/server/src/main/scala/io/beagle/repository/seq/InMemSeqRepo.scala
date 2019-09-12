@@ -26,9 +26,7 @@ case class InMemSeqRepo(db: Ref[IO, Map[SeqId, SeqItem]], counter: Ref[IO, Long]
       }))
   }
 
-  def find(id: SeqId): ConnectionIO[Option[SeqItem]] = Async[ConnectionIO].liftIO(db.get.map(_.get(id)))
-
-  def findByIdentifier(name: String): ConnectionIO[Option[SeqItem]] = ???
+  def findById(id: SeqId): ConnectionIO[Option[SeqItem]] = Async[ConnectionIO].liftIO(db.get.map(_.get(id)))
 
   def delete(id: SeqId): ConnectionIO[Unit] = Async[ConnectionIO].liftIO(db.update(map => map - id))
 }

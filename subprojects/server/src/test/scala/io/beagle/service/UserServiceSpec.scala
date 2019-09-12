@@ -12,7 +12,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class UserServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers with BeforeAndAfter {
 
-  val environment = TestEnv.of[UserService]
+  val environment = TestEnv.of[UserServiceSpec]
 
   val service = Services.user(environment)
 

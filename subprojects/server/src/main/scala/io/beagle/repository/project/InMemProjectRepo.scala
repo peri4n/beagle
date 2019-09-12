@@ -24,7 +24,7 @@ case class InMemProjectRepo(db: Ref[IO, Map[ProjectId, ProjectItem]], counter: R
         (map.updated(id, view), view)
       }))
 
-  def find(id: ProjectId): ConnectionIO[Option[ProjectItem]] =
+  def findById(id: ProjectId): ConnectionIO[Option[ProjectItem]] =
     Async[ConnectionIO].liftIO(db.get.map(_.get(id)))
 
   def findByName(name: String, owner: UserId): ConnectionIO[Option[ProjectItem]] =

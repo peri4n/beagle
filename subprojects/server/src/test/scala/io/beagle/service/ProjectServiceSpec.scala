@@ -12,7 +12,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class ProjectServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers with BeforeAndAfter {
 
-  val environment = TestEnv.of[SeqService]
+  val environment = TestEnv.of[ProjectServiceSpec]
 
   val userService = Services.user(environment)
 
@@ -30,7 +30,7 @@ class ProjectServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks wit
   }
 
   describe("Creating projects") {
-    it("can create new projects") {
+    it("succeeds if all requirements are met") {
       forAll { (project: Project, user: User) =>
         val test = for {
           owner <- userService.create(user)
@@ -57,7 +57,7 @@ class ProjectServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks wit
   }
 
   describe("Updating projects") {
-    it("can update existing projects") {
+    it("succeeds if all requirements are met") {
       forAll { (project: Project, user: User) =>
         val test = for {
           owner <- userService.create(user)
