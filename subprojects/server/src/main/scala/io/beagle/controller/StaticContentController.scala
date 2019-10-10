@@ -1,5 +1,7 @@
 package io.beagle.controller
 
+import java.io.File
+
 import cats.effect._
 import io.beagle.components.Settings
 import org.http4s.HttpRoutes
@@ -18,6 +20,7 @@ case class StaticContentController(uiRoot: String) extends Http4sDsl[IO] {
 
   implicit val contextShift: ContextShift[IO] = IO.contextShift(global)
 
-  val route: HttpRoutes[IO] = fileService[IO](FileService.Config[IO](uiRoot, Blocker.liftExecutionContext(global)))
+  val route: HttpRoutes[IO] = fileService[IO](FileService.Config[IO](absolutePathOf(uiRoot), Blocker.liftExecutionContext(global)))
 
+  private def absolutePathOf(dir: String) = new File(dir).getAbsolutePath
 }
