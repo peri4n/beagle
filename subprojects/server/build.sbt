@@ -2,7 +2,7 @@ name := "beagle"
 
 version := "0.1"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.1"
 
 enablePlugins(JavaAppPackaging)
 
@@ -15,7 +15,7 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 // Webapp
-val http4sVersion = "0.21.0-M4"
+val http4sVersion = "0.21.0-M5"
 libraryDependencies += "org.http4s" %% "http4s-core" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-dsl" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-circe" % http4sVersion
@@ -23,14 +23,14 @@ libraryDependencies += "org.http4s" %% "http4s-testing" % http4sVersion % "test"
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 
 // Circe
-libraryDependencies += "io.circe" %% "circe-generic-simple" % "0.12.0-RC4"
+libraryDependencies += "io.circe" %% "circe-generic-simple" % "0.12.2"
 
 // cats
-libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 
 // doobie
-libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.0-RC1"
-libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.0-RC1"
+libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.4"
+libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.4"
 
 // security
 val tsecV = "0.2.0-M1"
@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
 )
 
 // Elastic Search
-val elastic4sVersion = "7.3.0"
+val elastic4sVersion = "7.3.1"
 libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
 
 // Scala test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
-libraryDependencies += "org.specs2" %% "specs2-core" % "4.6.0" % "test"
+libraryDependencies += "org.specs2" %% "specs2-core" % "4.7.1" % "test"
 //libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 
 fork := true

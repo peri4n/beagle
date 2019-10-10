@@ -29,23 +29,23 @@ object Repository {
   def project = Env.repositories map { _.project }
 
   case class DevRepository() extends Repository {
-    val sequence: SeqRepo = SeqRepo.inMemory
+    lazy val sequence: SeqRepo = SeqRepo.inMemory
 
-    val dataset: DatasetRepo = DatasetRepo.inMemory
+    lazy val dataset: DatasetRepo = DatasetRepo.inMemory
 
-    val user: UserRepo = UserRepo.inMemory
+    lazy val user: UserRepo = UserRepo.inMemory
 
-    val project: ProjectRepo = ProjectRepo.inMemory
+    lazy val project: ProjectRepo = ProjectRepo.inMemory
   }
 
   case class ProdRepository() extends Repository {
-    val sequence: SeqRepo = ???
+    lazy val sequence: SeqRepo = ???
 
-    val dataset: DatasetRepo = DatasetRepo.inDB
+    lazy val dataset: DatasetRepo = DatasetRepo.inDB
 
-    val user: UserRepo = UserRepo.inDB
+    lazy val user: UserRepo = UserRepo.inDB
 
-    val project: ProjectRepo = ProjectRepo.inDB
+    lazy val project: ProjectRepo = ProjectRepo.inDB
   }
 
 }

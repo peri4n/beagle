@@ -1,6 +1,7 @@
 package io.beagle
 
 import cats.effect.IO
+import cats.implicits._
 import io.beagle.components.{Service, Settings}
 import io.beagle.domain.User
 import io.beagle.environments.Development
@@ -17,7 +18,7 @@ object App {
   private val Logger = LoggerFactory.getLogger(classOf[App])
 
   def main(args: Array[String]): Unit = {
-    Logger.info("Welcome to bIO - the search engine for biological sequences.")
+    Logger.info("Welcome to bIO - the search engine for biological sequences")
 
     val environment = for {
       runMode <- detectRunMode
@@ -25,6 +26,7 @@ object App {
     } yield Development(settings)
 
     val env = environment.unsafeRunSync()
+    Logger.info("Done creating the environment")
 
     implicit val timer = env.execution.timer
     implicit val cs = env.execution.threadPool
@@ -42,14 +44,9 @@ object App {
       .withHttpApp(env.controllers.all.orNotFound)
       .resource
 
-    val program = for {
-      _ <- preconditions
-      code <- server.use(_ => IO.never).start
-
-    } yield code
-
-
-    program.unsafeRunSync()
+    (preconditions, server.use(_ => IO.never).start)
+      .parMapN( (_, _) => () )
+      .unsafeRunSync()
   }
 
   def detectRunMode: IO[RunMode] = IO(sys.env.get("mode")) map {

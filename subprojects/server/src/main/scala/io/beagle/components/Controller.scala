@@ -42,16 +42,16 @@ object Controller {
 
   case class DefaultController(env: Env) extends Controller {
 
-    val dataset = Controller.dataset(env)
+    lazy val dataset = Controller.dataset(env)
 
-    val upload = Controller.upload(env)
+    lazy val upload = Controller.upload(env)
 
-    val health = Controller.health(env)
+    lazy val health = Controller.health(env)
 
-    val search = Controller.search(env)
+    lazy val search = Controller.search(env)
 
-    val login = Controller.login(env)
+    lazy val login = Controller.login(env)
 
-    val static = Controller.static(env)
+    lazy val static = Controller.static(env)
   }
 }

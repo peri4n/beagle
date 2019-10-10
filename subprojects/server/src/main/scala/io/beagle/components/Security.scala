@@ -15,7 +15,7 @@ object Security {
 
   case class DefaultSecurity(env: Env) extends Security {
 
-    val basicAuth: BasicAuthenticator = Security.basicAuth(env)
+    lazy val basicAuth: BasicAuthenticator = Security.basicAuth(env)
 
   }
 

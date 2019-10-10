@@ -24,9 +24,9 @@ object Service {
   def sequence = ???
 
   case class DefaultService(env: Env) extends Service {
-    def elasticSearch = Service.elasticSearch(env)
+    lazy val elasticSearch = Service.elasticSearch(env)
 
-    def user = Service.user(env)
+    lazy val user = Service.user(env)
   }
 
 }

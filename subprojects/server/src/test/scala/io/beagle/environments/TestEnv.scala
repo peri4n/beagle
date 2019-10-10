@@ -2,6 +2,7 @@ package io.beagle.environments
 
 import io.beagle.Env
 import io.beagle.components._
+import io.beagle.environments.execution.GlobalExecution
 import io.beagle.environments.trancaction.JdbcTransaction
 
 import scala.reflect.ClassTag
@@ -12,7 +13,7 @@ case class TestEnv(name: String) extends Env {
 
   val settings = ???
 
-  val execution: Execution = ???
+  val execution: Execution = GlobalExecution
 
   val transaction: Transaction = JdbcTransaction.instance(env)
 
@@ -26,7 +27,7 @@ case class TestEnv(name: String) extends Env {
     else
       Repository.DevRepository()
 
-  def security: Security = ???
+  def security: Security = Security.DefaultSecurity(env)
 
 }
 

@@ -18,7 +18,7 @@ sealed trait ElasticSearchSettings {
 object ElasticSearchSettings {
 
   case class Local(protocol: String = "http", host: String = "localhost", port: Int = 9200) extends ElasticSearchSettings {
-    val client = ElasticClient(JavaClient(ElasticProperties(s"${ protocol }://${ host }:${ port }")))
+    lazy val client = ElasticClient(JavaClient(ElasticProperties(s"${ protocol }://${ host }:${ port }")))
   }
 
 }
