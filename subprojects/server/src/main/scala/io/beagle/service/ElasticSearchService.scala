@@ -11,7 +11,8 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.analysis.{Analysis, CustomAnalyzer, NGramTokenizer, StandardAnalyzer}
 import com.sksamuel.elastic4s.requests.mappings.{MappingDefinition, TextField}
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
-import io.beagle.components.{ElasticSearchSettings, Settings}
+import io.beagle.components.Settings
+import io.beagle.components.settings.ElasticSearchSettings
 import io.beagle.fasta.FastaEntry
 
 import scala.concurrent.duration.{FiniteDuration, _}

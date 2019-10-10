@@ -2,18 +2,17 @@ package io.beagle.service
 
 import cats.effect.Sync
 import doobie.free.connection.ConnectionIO
-import io.beagle.components.{Repositories, Services}
-import io.beagle.domain.{Project, ProjectId, ProjectItem, User, UserId, UserItem}
+import io.beagle.components.{Repository, Service}
+import io.beagle.domain.{Project, ProjectId, ProjectItem, User}
 import io.beagle.repository.project.ProjectRepo
 import io.beagle.service.ProjectService.{ProjectAlreadyExists, ProjectDoesNotExist}
-import io.beagle.service.UserService.UserDoesNotExist
 
 object ProjectService {
 
   def instance =
     for {
-      projectRepo <- Repositories.project
-      userService <- Services.user
+      projectRepo <- Repository.project
+      userService <- Service.user
     } yield ProjectService(projectRepo, userService)
 
   case class ProjectAlreadyExists(project: Project) extends Exception(project.name)

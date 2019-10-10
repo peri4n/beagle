@@ -1,33 +1,23 @@
 package io.beagle.environments
 
-import com.typesafe.config.ConfigFactory
+import io.beagle.Env
 import io.beagle.components._
+import io.beagle.environments.execution.GlobalExecution
+import io.beagle.environments.trancaction.JdbcTransaction
 
-case object Production extends Env {
+case class Production(settings: Settings) extends Env {
 
   env =>
 
-  override val settings = new Settings {
+  val controllers = Controller.DefaultController(env)
 
-    private val config = ConfigFactory.load("production.conf")
+  val services = Service.DefaultService(env)
 
-    def uiRoot = config.getString("ui.root")
+  val repositories = Repository.DevRepository()
 
-    val elasticSearch = new ElasticSearchSettings {
+  def security: Security = ???
 
-      val protocol = config.getString("elasticsearch.protocol")
+  def transaction: Transaction = JdbcTransaction.instance(env)
 
-      val host = config.getString("elasticsearch.host")
-
-      val port = config.getInt("elasticsearch.port")
-
-    }
-  }
-
-  val controllers = Development.controllers
-
-  val services = Development.services
-
-  val repositories = Development.repositories
-
+  def execution: Execution = GlobalExecution
 }

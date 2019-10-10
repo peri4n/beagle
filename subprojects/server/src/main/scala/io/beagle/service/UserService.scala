@@ -2,7 +2,7 @@ package io.beagle.service
 
 import cats.effect.Sync
 import doobie.free.connection.ConnectionIO
-import io.beagle.components.Repositories
+import io.beagle.components.Repository
 import io.beagle.domain.{User, UserId, UserItem}
 import io.beagle.repository.user.UserRepo
 
@@ -27,6 +27,11 @@ case class UserService(repo: UserRepo) {
   }
 
   def findByName(userName: String): ConnectionIO[Option[UserItem]] = repo.findByName(userName)
+
+  def findByNameAndPassword(userName: String, password: String): ConnectionIO[Option[UserItem]] = repo.findByName(userName).map {
+    case Some(item) if item.user.password == password => Some(item)
+    case None => None
+  }
 
   def findByNameStrict(userName: String): ConnectionIO[UserItem] = repo.findByName(userName).flatMap { maybeUser =>
     maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(userName))) { owner =>
@@ -53,7 +58,7 @@ case class UserService(repo: UserRepo) {
 
 object UserService {
 
-  def instance = Repositories.user map { UserService(_) }
+  def instance = Repository.user map { UserService(_) }
 
   case class UserAlreadyExists(user: User) extends Exception(user.name)
 

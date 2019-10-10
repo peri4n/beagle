@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 
 object FileUploadController {
 
-  def instance = Services.elasticSearch map { FileUploadController(_).route }
+  def instance = Service.elasticSearch map { FileUploadController(_).route }
 
   case class FileUploadResponse(status: String)
 

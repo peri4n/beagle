@@ -12,7 +12,7 @@ import org.http4s.dsl._
 
 object SearchSequenceController {
 
-  def instance = Services.elasticSearch map { SearchSequenceController(_).route }
+  def instance = Service.elasticSearch map { SearchSequenceController(_).route }
 
   case class SearchSequenceRequest(sequence: String)
 

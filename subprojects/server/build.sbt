@@ -1,5 +1,3 @@
-import java.nio.file.{Files, StandardCopyOption}
-
 name := "beagle"
 
 version := "0.1"
@@ -7,6 +5,10 @@ version := "0.1"
 scalaVersion := "2.13.0"
 
 enablePlugins(JavaAppPackaging)
+
+// config
+libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.12.1"
+libraryDependencies += "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.12.1"
 
 // logging
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
@@ -17,7 +19,7 @@ val http4sVersion = "0.21.0-M4"
 libraryDependencies += "org.http4s" %% "http4s-core" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-dsl" % http4sVersion
 libraryDependencies += "org.http4s" %% "http4s-circe" % http4sVersion
-libraryDependencies += "org.http4s" %% "http4s-testing" % http4sVersion
+libraryDependencies += "org.http4s" %% "http4s-testing" % http4sVersion % "test"
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
 
 // Circe
@@ -29,6 +31,12 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
 // doobie
 libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.0-RC1"
 libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.0-RC1"
+
+// security
+val tsecV = "0.2.0-M1"
+libraryDependencies ++= Seq(
+  "io.github.jmcardon" %% "tsec-http4s" % tsecV
+)
 
 // Elastic Search
 val elastic4sVersion = "7.3.0"

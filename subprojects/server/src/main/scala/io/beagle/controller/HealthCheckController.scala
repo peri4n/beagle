@@ -3,7 +3,7 @@ package io.beagle.controller
 import cats.effect.IO
 import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
-import io.beagle.components.Services
+import io.beagle.components.Service
 import io.beagle.service.ElasticSearchService
 import io.circe.generic.simple.auto._
 import org.http4s.HttpRoutes
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object HealthCheckController {
 
-  def instance = Services.elasticSearch map { HealthCheckController(_).route }
+  def instance = Service.elasticSearch map { HealthCheckController(_).route }
 
   case class HealthCheckRequest()
 

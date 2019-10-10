@@ -1,8 +1,9 @@
 package io.beagle.components
 
+import io.beagle.Env
 import io.beagle.service.{DatasetService, ElasticSearchService, ProjectService, UserService}
 
-trait Services {
+sealed trait Service {
 
   def elasticSearch: ElasticSearchService
 
@@ -10,7 +11,7 @@ trait Services {
 
 }
 
-object Services {
+object Service {
 
   def elasticSearch = ElasticSearchService.instance
 
@@ -21,5 +22,11 @@ object Services {
   def dataset = DatasetService.instance
 
   def sequence = ???
+
+  case class DefaultService(env: Env) extends Service {
+    def elasticSearch = Service.elasticSearch(env)
+
+    def user = Service.user(env)
+  }
 
 }

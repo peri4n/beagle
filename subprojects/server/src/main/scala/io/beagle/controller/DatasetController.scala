@@ -3,7 +3,9 @@ package io.beagle.controller
 import cats.effect.IO
 import doobie.implicits._
 import doobie.util.transactor.Transactor
-import io.beagle.components.{DatabaseSettings, Repositories}
+import io.beagle.Env
+import io.beagle.components.{Repository, Settings, Transaction}
+import io.beagle.components.settings.DatabaseSettings
 import io.beagle.domain.{Dataset, DatasetId, ProjectId}
 import io.beagle.repository.dataset.DatasetRepo
 import io.circe.generic.simple.auto._
@@ -18,8 +20,8 @@ object DatasetController {
   val PathName = "seqsets"
 
   def instance = for {
-    repo <- Repositories.dataset
-    xa <- DatabaseSettings.transactor
+    xa <- Env.transaction
+    repo <- Repository.dataset
   } yield DatasetController(repo, xa).route
 
   case class CreateSequenceSetRequest(name: String, projectId: ProjectId)
@@ -28,25 +30,25 @@ object DatasetController {
 
 }
 
-case class DatasetController(repository: DatasetRepo, xa: Transactor[IO]) extends Http4sDsl[IO] {
+case class DatasetController(repository: DatasetRepo, xa: Transaction) extends Http4sDsl[IO] {
 
   import DatasetController._
 
   val route = HttpRoutes.of[IO] {
     case req@POST -> Root / PathName => req.decode[CreateSequenceSetRequest] { r =>
       repository.create(Dataset(r.name, r.projectId ))
-        .transact(xa)
+        .transact(xa.transactor)
         .flatMap(datasetItem => Ok(datasetItem.asJson))
     }
 
     case GET -> Root / PathName / LongVar(id) =>
       repository.findById(DatasetId(id))
-        .transact(xa)
+        .transact(xa.transactor)
         .flatMap(maybeDatasetItem => Ok(maybeDatasetItem.asJson))
 
     case DELETE -> Root / PathName / LongVar(id) =>
       repository.delete(DatasetId(id))
-        .transact(xa)
+        .transact(xa.transactor)
         .flatMap(_ => Ok("success"))
   }
 

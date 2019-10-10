@@ -3,7 +3,7 @@ package io.beagle.service
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.Generators._
-import io.beagle.components.Services
+import io.beagle.components.Service
 import io.beagle.domain.User
 import io.beagle.environments.TestEnv
 import io.beagle.service.UserService.{UserAlreadyExists, UserDoesNotExist}
@@ -14,10 +14,10 @@ class UserServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with M
 
   val environment = TestEnv.of[UserServiceSpec]
 
-  val service = Services.user(environment)
+  val service = Service.user(environment)
 
   def run[A](cio: ConnectionIO[A]): A = {
-    cio.transact(environment.settings.database.transactor).unsafeRunSync()
+    cio.transact(environment.transaction.transactor).unsafeRunSync()
   }
 
   after {

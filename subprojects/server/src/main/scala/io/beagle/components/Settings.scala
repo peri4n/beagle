@@ -1,27 +1,18 @@
 package io.beagle.components
 
-trait Settings {
+import io.beagle.Env
+import io.beagle.components.settings.{DatabaseSettings, ElasticSearchSettings, SecuritySettings}
+
+sealed trait Settings {
 
   def uiRoot: String
 
   def elasticSearch: ElasticSearchSettings
 
-  def database: DatabaseSettings = new DatabaseSettings {
+  def database: DatabaseSettings
 
-    val protocol: String = "jdbc:postgresql"
+  def security: SecuritySettings
 
-    val host: String = "localhost"
-
-    val port: Int = 5432
-
-    val username: String = "fbull"
-
-    val password: String = "password"
-
-    val driver: String = "org.postgresql.Driver"
-
-    val database: String = "beagle"
-  }
 }
 
 object Settings {
@@ -31,5 +22,13 @@ object Settings {
   def elasticSearch = Env.settings map { _.elasticSearch }
 
   def database = Env.settings map { _.database }
+
+  def security = Env.settings map { _.security }
+
+  case class Development(uiRoot: String,
+                         elasticSearch: ElasticSearchSettings,
+                         database: DatabaseSettings,
+                         security: SecuritySettings
+                        ) extends Settings
 
 }
