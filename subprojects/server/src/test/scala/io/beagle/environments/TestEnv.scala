@@ -2,6 +2,7 @@ package io.beagle.environments
 
 import io.beagle.Env
 import io.beagle.components._
+import io.beagle.environments.trancaction.JdbcTransaction
 
 import scala.reflect.ClassTag
 
@@ -11,11 +12,15 @@ case class TestEnv(name: String) extends Env {
 
   val settings = ???
 
-  lazy val controllers = Controller.DefaultController(env)
+  val execution: Execution = ???
+
+  val transaction: Transaction = JdbcTransaction.instance(env)
+
+  val controllers = Controller.DefaultController(env)
 
   val services = Service.DefaultService(env)
 
-  lazy val repositories =
+  val repositories =
     if (System.getProperty("dbMode", "db") == "mem")
       Repository.ProdRepository()
     else
@@ -23,9 +28,6 @@ case class TestEnv(name: String) extends Env {
 
   def security: Security = ???
 
-  def transaction: Transaction = ???
-
-  def execution: Execution = ???
 }
 
 object TestEnv {

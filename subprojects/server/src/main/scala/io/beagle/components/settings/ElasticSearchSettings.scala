@@ -3,9 +3,8 @@ package io.beagle.components.settings
 import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties}
 
-
 sealed trait ElasticSearchSettings {
-  def client = ElasticClient(JavaClient(ElasticProperties(s"${ protocol }://${ host }:${ port }")))
+  def client: ElasticClient
 
   def sequenceIndex: String = "fasta"
 
@@ -17,7 +16,11 @@ sealed trait ElasticSearchSettings {
 }
 
 object ElasticSearchSettings {
-  case class Local(protocol: String = "http", host: String = "localhost", port: Int = 9200) extends ElasticSearchSettings
+
+  case class Local(protocol: String = "http", host: String = "localhost", port: Int = 9200) extends ElasticSearchSettings {
+    val client = ElasticClient(JavaClient(ElasticProperties(s"${ protocol }://${ host }:${ port }")))
+  }
+
 }
 
 

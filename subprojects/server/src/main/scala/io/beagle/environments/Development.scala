@@ -9,15 +9,16 @@ case class Development(settings: Settings) extends Env {
 
   env =>
 
-  val controllers = Controller.DefaultController(env)
+  val execution: Execution = GlobalExecution
 
-  val services = Service.DefaultService(env)
+  val transaction: Transaction = JdbcTransaction.instance(env)
 
   val repositories = Repository.DevRepository()
 
-  def security: Security = ???
+  val services = Service.DefaultService(env)
 
-  def transaction: Transaction = JdbcTransaction.instance(env)
+  val security: Security = Security.DefaultSecurity(env)
 
-  def execution: Execution = GlobalExecution
+  val controllers = Controller.DefaultController(env)
+
 }

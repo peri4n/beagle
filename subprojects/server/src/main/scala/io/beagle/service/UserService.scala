@@ -30,7 +30,7 @@ case class UserService(repo: UserRepo) {
 
   def findByNameAndPassword(userName: String, password: String): ConnectionIO[Option[UserItem]] = repo.findByName(userName).map {
     case Some(item) if item.user.password == password => Some(item)
-    case None => None
+    case _                                            => None
   }
 
   def findByNameStrict(userName: String): ConnectionIO[UserItem] = repo.findByName(userName).flatMap { maybeUser =>
@@ -42,14 +42,14 @@ case class UserService(repo: UserRepo) {
   def update(oldUser: User, newUser: User): ConnectionIO[UserItem] = {
     repo.findByName(oldUser.name).flatMap {
       case Some(userItem) => repo.update(userItem.id, newUser)
-      case None           => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser.name))
+      case _              => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser.name))
     }
   }
 
   def delete(user: User): ConnectionIO[Unit] = {
     repo.findByName(user.name).flatMap {
       case Some(userItem) => repo.delete(userItem.id)
-      case None           => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user.name))
+      case _              => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user.name))
     }
   }
 

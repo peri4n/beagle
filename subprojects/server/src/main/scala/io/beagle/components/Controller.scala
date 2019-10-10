@@ -22,7 +22,7 @@ sealed trait Controller {
 
   def all: HttpRoutes[IO] = static <+> endpoints
 
-  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> dataset
+  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> dataset <+> login
 
 }
 
@@ -42,16 +42,16 @@ object Controller {
 
   case class DefaultController(env: Env) extends Controller {
 
-    def dataset = Controller.dataset(env)
+    val dataset = Controller.dataset(env)
 
-    def upload = Controller.upload(env)
+    val upload = Controller.upload(env)
 
-    def health = Controller.health(env)
+    val health = Controller.health(env)
 
-    def search = Controller.search(env)
+    val search = Controller.search(env)
 
-    def login = ??? //Controllers.login(env)
+    val login = Controller.login(env)
 
-    def static = Controller.static(env)
+    val static = Controller.static(env)
   }
 }

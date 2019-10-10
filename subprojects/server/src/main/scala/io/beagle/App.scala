@@ -2,8 +2,10 @@ package io.beagle
 
 import cats.effect.IO
 import io.beagle.components.{Service, Settings}
+import io.beagle.domain.User
 import io.beagle.environments.Development
 import org.http4s.implicits._
+import doobie.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.slf4j.LoggerFactory
 import pureconfig.ConfigSource
@@ -26,8 +28,10 @@ object App {
 
     implicit val timer = env.execution.timer
     implicit val cs = env.execution.threadPool
+    implicit val xa = env.transaction.transactor
 
     val preconditions = for {
+      _ <- env.services.user.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
       _ <- Service.elasticSearch(env).connectionCheck()
       _ <- Service.elasticSearch(env).createSequenceIndex()
     } yield ()
