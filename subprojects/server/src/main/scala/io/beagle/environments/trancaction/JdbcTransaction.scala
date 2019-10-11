@@ -8,7 +8,7 @@ import io.beagle.components.settings.DatabaseSettings
 
 case class JdbcTransaction(databaseSettings: DatabaseSettings, execution: Execution) extends Transaction {
 
-  val transactor = {
+  lazy val transactor = {
     import databaseSettings._
     import execution._
 

@@ -1,33 +1,35 @@
 package io.beagle.controller
 
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.IO
 import com.sksamuel.elastic4s.ElasticDsl
 import io.beagle.components._
 import io.beagle.fasta.FastaParser
 import io.beagle.service.ElasticSearchService
 import io.circe.generic.simple.auto._
-import fs2._
+import fs2.Stream
 import org.http4s.HttpRoutes
 import org.http4s.circe._
-import org.http4s.dsl._
+import io.beagle.Env
+import org.http4s.dsl.Http4sDsl
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object FileUploadController {
 
-  def instance = Service.elasticSearch map { FileUploadController(_).route }
+  def instance = for {
+    ex <- Env.execution
+    elasticSearch <- Service.elasticSearch
+  } yield FileUploadController(ex, elasticSearch).route
 
   case class FileUploadResponse(status: String)
 
 }
 
-case class FileUploadController(elasticService: ElasticSearchService) extends Http4sDsl[IO] with ElasticDsl {
+case class FileUploadController(execution: Execution, elasticService: ElasticSearchService) extends Http4sDsl[IO] with ElasticDsl {
 
   import FileUploadController._
 
-  implicit val cs: ContextShift[IO] = IO.contextShift(global)
-  implicit val timer: Timer[IO] = IO.timer(global)
+  import execution._
 
   implicit val entityEncoder = jsonEncoderOf[IO, FileUploadResponse]
 

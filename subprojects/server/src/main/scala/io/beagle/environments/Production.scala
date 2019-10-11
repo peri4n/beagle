@@ -9,15 +9,15 @@ case class Production(settings: Settings) extends Env {
 
   env =>
 
-  val execution: Execution = GlobalExecution
+  val execution = GlobalExecution
 
-  val transaction: Transaction = JdbcTransaction.instance(env)
+  val transaction = JdbcTransaction.instance(env)
 
   val repositories = Repository.DevRepository()
 
   val services = Service.DefaultService(env)
 
-  val security: Security = Security.DefaultSecurity(env)
+  val security = Security.DefaultSecurity(env)
 
   val controllers = Controller.DefaultController(env)
 

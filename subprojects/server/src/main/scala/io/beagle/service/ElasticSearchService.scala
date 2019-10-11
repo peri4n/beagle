@@ -11,15 +11,18 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.requests.analysis.{Analysis, CustomAnalyzer, NGramTokenizer, StandardAnalyzer}
 import com.sksamuel.elastic4s.requests.mappings.{MappingDefinition, TextField}
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
-import io.beagle.components.Settings
+import io.beagle.Env
+import io.beagle.components.{Execution, Settings}
 import io.beagle.components.settings.ElasticSearchSettings
 import io.beagle.fasta.FastaEntry
 
 import scala.concurrent.duration.{FiniteDuration, _}
 
-case class ElasticSearchService(settings: ElasticSearchSettings) {
+case class ElasticSearchService(execution: Execution, settings: ElasticSearchSettings) {
 
   import ElasticSearchService._
+
+  import execution._
 
   def index(entry: FastaEntry, refresh: Boolean = false): IO[Response[IndexResponse]] = {
     if (refresh) {
@@ -38,7 +41,7 @@ case class ElasticSearchService(settings: ElasticSearchSettings) {
     settings.client.execute { search(settings.sequenceIndex) query sequence }
   }
 
-  def connectionCheck()(implicit timer: Timer[IO]): IO[Response[ClusterHealthResponse]] = {
+  def connectionCheck(): IO[Response[ClusterHealthResponse]] = {
     def retryWithBackOff[A](ioa: IO[A], initialDelay: FiniteDuration, maxRetries: Int)(implicit timer: Timer[IO]): IO[A] = {
       ioa.handleErrorWith { error =>
         if (maxRetries > 0)
@@ -67,7 +70,11 @@ case class ElasticSearchService(settings: ElasticSearchSettings) {
 
 object ElasticSearchService {
 
-  def instance = Settings.elasticSearch map { ElasticSearchService(_) }
+  def instance =
+    for {
+      ex <- Env.execution
+      settings <- Settings.elasticSearch
+    } yield ElasticSearchService(ex, settings)
 
   private def indexRequest(entry: FastaEntry, settings: ElasticSearchSettings) = {
     indexInto(settings.sequenceIndex) fields(

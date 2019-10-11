@@ -28,7 +28,6 @@ case class HealthCheckController(elasticSearchService: ElasticSearchService) ext
 
   import HealthCheckController._
 
-  implicit val timer = IO.timer(global)
   val route =
     HttpRoutes.of[IO] {
       case GET -> Root / "health" =>
