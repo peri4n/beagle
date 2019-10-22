@@ -2,7 +2,7 @@ package io.beagle.environments
 
 import io.beagle.Env
 import io.beagle.components._
-import io.beagle.components.persistence.PostgresPersistence
+import io.beagle.components.persistence.Persistence
 import io.beagle.environments.execution.GlobalExecution
 
 case class Production(settings: Settings) extends Env {
@@ -11,7 +11,7 @@ case class Production(settings: Settings) extends Env {
 
   val execution = GlobalExecution
 
-  val persistence = PostgresPersistence.instance(env)
+  val persistence = Persistence.instance(env)
 
   val repositories = Repository.DevRepository()
 

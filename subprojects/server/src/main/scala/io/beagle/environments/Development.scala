@@ -2,7 +2,7 @@ package io.beagle.environments
 
 import io.beagle.Env
 import io.beagle.components._
-import io.beagle.components.persistence.{InMemoryPersistence, PostgresPersistence}
+import io.beagle.components.persistence.Persistence.InMemoryPersistence
 import io.beagle.environments.execution.GlobalExecution
 
 case class Development(settings: Settings) extends Env {

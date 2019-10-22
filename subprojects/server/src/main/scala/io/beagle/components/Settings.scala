@@ -1,7 +1,7 @@
 package io.beagle.components
 
 import io.beagle.Env
-import io.beagle.components.persistence.PersistenceSettings
+import io.beagle.components.persistence.{LocalPostgre, PersistenceSettings}
 import io.beagle.components.settings.{ElasticSearchSettings, JwtSettings, SecuritySettings}
 
 import scala.concurrent.duration._
@@ -9,6 +9,8 @@ import scala.concurrent.duration._
 sealed trait Settings {
 
   def uiRoot: String
+
+  def persistence: PersistenceSettings
 
   def elasticSearch: ElasticSearchSettings
 
@@ -25,12 +27,15 @@ object Settings {
   def security = Env.settings map { _.security }
 
   case class Development(uiRoot: String,
+                         persistence: PersistenceSettings,
                          elasticSearch: ElasticSearchSettings,
                          security: SecuritySettings
                         ) extends Settings
 
   case class Test(name: String ) extends Settings {
     val uiRoot = "ignored"
+
+    val persistence = LocalPostgre(name)
 
     val security = SecuritySettings("realm", JwtSettings(30.minutes, "secret"))
 

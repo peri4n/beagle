@@ -51,9 +51,13 @@ object App {
     case _                  => Dev
   }
 
-  def loadEnvironment(runMode: RunMode) = runMode match {
-    case Dev => getConfig(runMode).loadF[IO, Settings].map(Development)
-    case Prod => getConfig(runMode).loadF[IO, Settings].map(Production)
+  def loadEnvironment(runMode: RunMode) = {
+    val value = getConfig(runMode).loadF[IO, Settings]
+
+    runMode match {
+      case Dev  => value.map(Development)
+      case Prod => value.map(Production)
+    }
   }
 
   def getConfig(runMode: RunMode) = ConfigSource.resources(runMode match {
