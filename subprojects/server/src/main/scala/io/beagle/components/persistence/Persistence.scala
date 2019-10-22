@@ -1,9 +1,9 @@
-package io.beagle.components
+package io.beagle.components.persistence
 
 import cats.effect.IO
 import doobie.util.transactor.Transactor
 
-trait Transaction {
+trait Persistence {
 
   def transactor: Transactor.Aux[IO, Unit]
 

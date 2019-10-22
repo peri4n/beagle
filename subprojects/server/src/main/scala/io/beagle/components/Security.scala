@@ -1,21 +1,24 @@
 package io.beagle.components
 
+import cats.effect.IO
 import io.beagle.Env
-import io.beagle.security.BasicAuthenticator
+import io.beagle.domain.UserItem
+import io.beagle.security.BasicAuth
+import org.http4s.server.AuthMiddleware
 
 sealed trait Security {
 
-  def basicAuth: BasicAuthenticator
+  def basicAuth: AuthMiddleware[IO, UserItem]
 
 }
 
 object Security {
 
-  def basicAuth = BasicAuthenticator.instance
+  def basicAuth = BasicAuth.instance
 
   case class DefaultSecurity(env: Env) extends Security {
 
-    lazy val basicAuth: BasicAuthenticator = Security.basicAuth(env)
+    lazy val basicAuth = Security.basicAuth(env)
 
   }
 

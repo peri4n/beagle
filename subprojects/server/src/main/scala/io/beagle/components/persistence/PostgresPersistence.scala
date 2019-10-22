@@ -1,12 +1,11 @@
-package io.beagle.environments.trancaction
+package io.beagle.components.persistence
 
 import cats.effect.IO
 import doobie.util.transactor.Transactor
 import io.beagle.Env
-import io.beagle.components.{Execution, Settings, Transaction}
-import io.beagle.components.settings.DatabaseSettings
+import io.beagle.components.{Execution, Settings}
 
-case class JdbcTransaction(databaseSettings: DatabaseSettings, execution: Execution) extends Transaction {
+case class PostgresPersistence(databaseSettings: PersistenceSettings, execution: Execution) extends Persistence {
 
   lazy val transactor = {
     import databaseSettings._
@@ -21,11 +20,10 @@ case class JdbcTransaction(databaseSettings: DatabaseSettings, execution: Execut
   }
 }
 
-object JdbcTransaction {
+object PostgresPersistence {
 
   def instance =
     for {
-      databaseSettings <- Settings.database
       execution <- Env.execution
-    } yield JdbcTransaction(databaseSettings, execution)
+    } yield PostgresPersistence(null, execution)
 }

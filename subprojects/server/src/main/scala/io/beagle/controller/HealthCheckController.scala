@@ -14,6 +14,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object HealthCheckController {
 
+  val PathName = "health"
+
   def instance = Service.elasticSearch map { HealthCheckController(_).route }
 
   case class HealthCheckRequest()
@@ -30,7 +32,7 @@ case class HealthCheckController(elasticSearchService: ElasticSearchService) ext
 
   val route =
     HttpRoutes.of[IO] {
-      case GET -> Root / "health" =>
+      case GET -> Root / PathName =>
         Ok(elasticSearchService.connectionCheck()
           .redeem(_ => HealthCheckResponse(false), convertToResponse))
     }

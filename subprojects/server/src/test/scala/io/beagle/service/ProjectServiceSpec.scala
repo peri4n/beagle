@@ -19,7 +19,7 @@ class ProjectServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks wit
   val projectService = Service.project(environment)
 
   def run[A](cio: ConnectionIO[A]): A = {
-    cio.transact(environment.transaction.transactor).unsafeRunSync()
+    cio.transact(environment.persistence.transactor).unsafeRunSync()
   }
 
   after {

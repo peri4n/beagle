@@ -2,10 +2,11 @@ package io.beagle
 
 import cats.data.Reader
 import io.beagle.components._
+import io.beagle.components.persistence.PersistenceComponent
 
 trait Env extends SettingsComponent
   with ExecutionComponent
-  with TransactionComponent
+  with PersistenceComponent
   with RepositoryComponent
   with ServiceComponent
   with SecurityComponent
@@ -17,7 +18,7 @@ object Env {
 
   def execution = env map { _.execution }
 
-  def transaction = env map { _.transaction }
+  def transaction = env map { _.persistence }
 
   def controllers = env map { _.controllers }
 

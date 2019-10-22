@@ -18,16 +18,22 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
   implicit val requestEncoder: EntityEncoder[IO, SearchSequenceRequest] = jsonEncoderOf[IO, SearchSequenceRequest]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]
 
+  val environment = TestEnv.of[SearchSequenceControllerSpec]
+
+  val elasticSearch = Service.elasticSearch(environment)
+
+  val controller = Controller.search(environment).orNotFound
+
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {
-      val environment = TestEnv.of[SearchSequenceControllerSpec]
-      val es = Service.elasticSearch(environment)
       val testCase = for {
-        _ <- es.createSequenceIndex()
-        _ <- es.index(FastaEntry("header1", "AAACGT"), refresh = true)
-        _ <- es.index(FastaEntry("header2", "CAAAAT"), refresh = true)
-        response <- Controller.search.run(environment).orNotFound.run(
-          Request(method = Method.POST, uri = uri"/search", body = requestEncoder.toEntity(SearchSequenceRequest(sequence = "AAA")).body)
+        _ <- elasticSearch.createSequenceIndex()
+        _ <- elasticSearch.index(FastaEntry("header1", "AAACGT"), refresh = true)
+        _ <- elasticSearch.index(FastaEntry("header2", "CAAAAT"), refresh = true)
+        response <- controller.run(Request(
+          method = Method.POST,
+          uri = uri"/search",
+          body = requestEncoder.toEntity(SearchSequenceRequest(sequence = "AAA")).body)
         )
       } yield response
 

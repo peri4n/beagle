@@ -52,7 +52,7 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
         view.id must beEqualTo(DatasetId(2))
         view.dataset.name must beEqualTo("set2")
       }
-    }.pendingUntilFixed
+    }
   }
 
 }

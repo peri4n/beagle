@@ -1,7 +1,7 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.components.Service
+import io.beagle.components.Controller
 import io.beagle.environments.TestEnv
 import io.circe.generic.simple.auto._
 import org.http4s._
@@ -17,26 +17,24 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
   implicit val requestEncoder: EntityEncoder[IO, HealthCheckRequest] = jsonEncoderOf[IO, HealthCheckRequest]
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
 
-  val environment = TestEnv.of[HealthCheckController]
+  val env = TestEnv.of[HealthCheckController]
+
+  val controller = Controller.health(env).orNotFound
 
   "The HealthCheckController" should {
-    "returns true if ElasticSearch can be reached" in {
-      val es = Service.elasticSearch(environment)
-      val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
-        Request(method = Method.GET, uri = uri"/health")
-      ))
+
+    "return true if ElasticSearch can be reached" in {
+      val response = runAwait(controller.run(Request(method = Method.GET, uri = uri"/health")))
 
       response must haveStatus(Status.Ok)
       response must haveBody(HealthCheckResponse(true))
     }
-    "returns false if ElasticSearch can't be reached" in {
-      val es = Service.elasticSearch(environment)
-      val response = runAwait(new HealthCheckController(es).route.orNotFound.run(
-        Request(method = Method.GET, uri = uri"/health")
-      ))
+
+    "return false if ElasticSearch can't be reached" in {
+      val response = runAwait(controller.run(Request(method = Method.GET, uri = uri"/health")))
 
       response must haveStatus(Status.Ok)
       response must haveBody(HealthCheckResponse(false))
-    }.pendingUntilFixed("This fails until port setting in test environment is easy again.")
+      }.pendingUntilFixed("This fails until port setting in test environment is easy again.")
   }
 }

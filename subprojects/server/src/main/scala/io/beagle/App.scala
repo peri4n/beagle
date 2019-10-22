@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.implicits._
 import io.beagle.components.{Service, Settings}
 import io.beagle.domain.User
-import io.beagle.environments.Development
+import io.beagle.environments.{Development, Production}
 import org.http4s.implicits._
 import doobie.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -20,17 +20,14 @@ object App {
   def main(args: Array[String]): Unit = {
     Logger.info("Welcome to bIO - the search engine for biological sequences")
 
-    val environment = for {
-      runMode <- detectRunMode
-      settings <- loadSettings(runMode)
-    } yield Development(settings)
+    val environment = detectRunMode flatMap loadEnvironment
 
     val env = environment.unsafeRunSync()
     Logger.info("Done creating the environment")
 
     implicit val timer = env.execution.timer
     implicit val cs = env.execution.threadPool
-    implicit val xa = env.transaction.transactor
+    implicit val xa = env.persistence.transactor
 
     val preconditions = for {
       _ <- env.services.user.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
@@ -54,7 +51,10 @@ object App {
     case _                  => Dev
   }
 
-  def loadSettings(runMode: RunMode) = getConfig(runMode).loadF[IO, Settings]
+  def loadEnvironment(runMode: RunMode) = runMode match {
+    case Dev => getConfig(runMode).loadF[IO, Settings].map(Development)
+    case Prod => getConfig(runMode).loadF[IO, Settings].map(Production)
+  }
 
   def getConfig(runMode: RunMode) = ConfigSource.resources(runMode match {
     case Prod => "production.conf"

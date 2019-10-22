@@ -3,7 +3,7 @@ package io.beagle.service
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.Generators._
-import io.beagle.components.{Service, Transaction}
+import io.beagle.components.Service
 import io.beagle.domain.{Dataset, Project, User}
 import io.beagle.environments.TestEnv
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -19,7 +19,7 @@ class DatasetServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks wit
 
   val datasetService = Service.dataset(environment)
 
-  def run[A](cio: ConnectionIO[A]): A = cio.transact(environment.transaction.transactor).unsafeRunSync()
+  def run[A](cio: ConnectionIO[A]): A = cio.transact(environment.persistence.transactor).unsafeRunSync()
 
   after {
     run(for {

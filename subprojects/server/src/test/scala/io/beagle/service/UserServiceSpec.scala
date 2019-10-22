@@ -17,7 +17,7 @@ class UserServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with M
   val service = Service.user(environment)
 
   def run[A](cio: ConnectionIO[A]): A = {
-    cio.transact(environment.transaction.transactor).unsafeRunSync()
+    cio.transact(environment.persistence.transactor).unsafeRunSync()
   }
 
   after {

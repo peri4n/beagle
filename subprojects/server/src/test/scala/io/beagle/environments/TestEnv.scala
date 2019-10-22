@@ -1,9 +1,10 @@
 package io.beagle.environments
 
 import io.beagle.Env
+import io.beagle.components.Settings.Test
 import io.beagle.components._
+import io.beagle.components.persistence.{InMemoryPersistence, PostgresPersistence}
 import io.beagle.environments.execution.GlobalExecution
-import io.beagle.environments.trancaction.JdbcTransaction
 
 import scala.reflect.ClassTag
 
@@ -11,11 +12,11 @@ case class TestEnv(name: String) extends Env {
 
   env =>
 
-  val settings = ???
+  val settings = Test(name)
 
-  val execution: Execution = GlobalExecution
+  val execution = GlobalExecution
 
-  val transaction: Transaction = JdbcTransaction.instance(env)
+  val persistence = InMemoryPersistence(execution)
 
   val controllers = Controller.DefaultController(env)
 
@@ -27,7 +28,7 @@ case class TestEnv(name: String) extends Env {
     else
       Repository.DevRepository()
 
-  def security: Security = Security.DefaultSecurity(env)
+  def security = Security.DefaultSecurity(env)
 
 }
 

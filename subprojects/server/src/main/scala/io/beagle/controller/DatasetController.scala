@@ -4,8 +4,8 @@ import cats.effect.IO
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import io.beagle.Env
-import io.beagle.components.{Repository, Settings, Transaction}
-import io.beagle.components.settings.DatabaseSettings
+import io.beagle.components.persistence.{Persistence, PersistenceSettings}
+import io.beagle.components.{Repository, Settings}
 import io.beagle.domain.{Dataset, DatasetId, ProjectId}
 import io.beagle.repository.dataset.DatasetRepo
 import io.circe.generic.simple.auto._
@@ -30,7 +30,7 @@ object DatasetController {
 
 }
 
-case class DatasetController(repository: DatasetRepo, xa: Transaction) extends Http4sDsl[IO] {
+case class DatasetController(repository: DatasetRepo, xa: Persistence) extends Http4sDsl[IO] {
 
   import DatasetController._
 

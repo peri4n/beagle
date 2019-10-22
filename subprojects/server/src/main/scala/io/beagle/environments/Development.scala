@@ -2,8 +2,8 @@ package io.beagle.environments
 
 import io.beagle.Env
 import io.beagle.components._
+import io.beagle.components.persistence.{InMemoryPersistence, PostgresPersistence}
 import io.beagle.environments.execution.GlobalExecution
-import io.beagle.environments.trancaction.JdbcTransaction
 
 case class Development(settings: Settings) extends Env {
 
@@ -11,7 +11,7 @@ case class Development(settings: Settings) extends Env {
 
   val execution = GlobalExecution
 
-  val transaction = JdbcTransaction.instance(env)
+  val persistence = InMemoryPersistence(execution)
 
   val repositories = Repository.DevRepository()
 
