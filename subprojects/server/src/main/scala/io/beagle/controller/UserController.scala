@@ -4,7 +4,6 @@ import io.circe.generic.simple.auto._
 import org.http4s.circe.CirceEntityDecoder._
 import cats.effect.IO
 import io.beagle.components.Service
-import io.beagle.domain
 import io.beagle.domain.User
 import io.beagle.service.UserService
 import org.http4s.HttpRoutes

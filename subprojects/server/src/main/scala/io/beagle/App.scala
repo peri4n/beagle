@@ -31,9 +31,12 @@ object App {
 
     val preconditions = for {
       _ <- env.services.user.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
-      _ <- Service.elasticSearch(env).connectionCheck()
-      _ <- Service.elasticSearch(env).createSequenceIndex()
+      es = Service.elasticSearch(env)
+      _ <- es.connectionCheck()
+      _ <- es.createSequenceIndex()
     } yield ()
+    Logger.info("Executing preconditions")
+    preconditions.unsafeRunSync();
 
     // Needed by `BlazeServerBuilder`. Provided by `IOApp`.
     val server = BlazeServerBuilder[IO]
@@ -41,8 +44,8 @@ object App {
       .withHttpApp(env.controllers.all.orNotFound)
       .resource
 
-    (preconditions, server.use(_ => IO.never).start)
-      .parMapN( (_, _) => () )
+    Logger.info("Starting webserver")
+    server.use(_ => IO.never).start
       .unsafeRunSync()
   }
 

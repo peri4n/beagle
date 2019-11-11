@@ -7,4 +7,3 @@ case class UserId(id: Long) extends AnyVal
 case class User(name: String, password: String, email: String, created: ZonedDateTime = ZonedDateTime.now())
 
 case class UserItem(id: UserId, user: User)
-

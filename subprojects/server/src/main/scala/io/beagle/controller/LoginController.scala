@@ -3,10 +3,11 @@ package io.beagle.controller
 import cats.effect.IO
 import io.beagle.components.Security
 import io.beagle.domain.UserItem
-import org.http4s.{AuthedRoutes, HttpRoutes}
+import io.circe.generic.simple.auto._
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
+import org.http4s.{AuthedRoutes, HttpRoutes}
 import org.slf4j.LoggerFactory
 
 object LoginController {
@@ -25,9 +26,8 @@ case class LoginController(authenticator: AuthMiddleware[IO, UserItem]) extends 
   private val Logger = LoggerFactory.getLogger(classOf[LoginController])
 
   val route: HttpRoutes[IO] = authenticator(AuthedRoutes.of[UserItem, IO] {
-    case request@PUT -> Root / PathName as user =>
-      Logger.info(request.toString)
-      Logger.info(user.toString)
-      Ok("")
+    case GET -> Root / PathName as userItem =>
+      Logger.info(s"${ userItem.user } just logged in")
+      Ok(userItem)
   })
 }
