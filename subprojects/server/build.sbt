@@ -33,10 +33,7 @@ libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.4"
 libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.4"
 
 // security
-val tsecV = "0.2.0-M1"
-libraryDependencies ++= Seq(
-  "io.github.jmcardon" %% "tsec-http4s" % tsecV
-)
+libraryDependencies += "com.pauldijou" %% "jwt-circe" % "4.2.0"
 
 // Elastic Search
 val elastic4sVersion = "7.3.1"
