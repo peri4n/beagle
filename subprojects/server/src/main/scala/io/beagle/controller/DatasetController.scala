@@ -2,10 +2,9 @@ package io.beagle.controller
 
 import cats.effect.IO
 import doobie.implicits._
-import doobie.util.transactor.Transactor
 import io.beagle.Env
-import io.beagle.components.persistence.{Persistence, PersistenceSettings}
-import io.beagle.components.{Repository, Settings}
+import io.beagle.components.Repository
+import io.beagle.components.persistence.Persistence
 import io.beagle.domain.{Dataset, DatasetId, ProjectId}
 import io.beagle.repository.dataset.DatasetRepo
 import io.circe.generic.simple.auto._

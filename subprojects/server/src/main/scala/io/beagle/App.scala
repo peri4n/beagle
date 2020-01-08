@@ -30,13 +30,12 @@ object App {
     implicit val xa = env.persistence.transactor
 
     val preconditions = for {
-      _ <- env.services.user.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
+      us <- Service.user(env)
+      _ <- us.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
       es = Service.elasticSearch(env)
       _ <- es.connectionCheck()
       _ <- es.createSequenceIndex()
     } yield ()
-    Logger.info("Executing preconditions")
-    preconditions.unsafeRunSync();
 
     // Needed by `BlazeServerBuilder`. Provided by `IOApp`.
     val server = BlazeServerBuilder[IO]
@@ -45,8 +44,12 @@ object App {
       .resource
 
     Logger.info("Starting webserver")
-    server.use(_ => IO.never).start
-      .unsafeRunSync()
+    val program = for {
+      _ <- preconditions
+      _ <- server.use(_ => IO.never).start
+    } yield ()
+
+    program.unsafeRunSync()
   }
 
   def detectRunMode: IO[RunMode] = IO(sys.env.get("mode")) map {
@@ -54,7 +57,7 @@ object App {
     case _                  => Dev
   }
 
-  def loadEnvironment(runMode: RunMode) = {
+  private def loadEnvironment(runMode: RunMode) = {
     val value = getConfig(runMode).loadF[IO, Settings]
 
     runMode match {
@@ -63,7 +66,7 @@ object App {
     }
   }
 
-  def getConfig(runMode: RunMode) = ConfigSource.resources(runMode match {
+  private def getConfig(runMode: RunMode) = ConfigSource.resources(runMode match {
     case Prod => "production.conf"
     case Dev  => "development.conf"
   }).withFallback(ConfigSource.resources("default.conf"))
