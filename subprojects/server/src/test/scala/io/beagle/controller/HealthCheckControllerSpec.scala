@@ -1,8 +1,8 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.components.Controller
-import io.beagle.environments.TestEnv
+import io.beagle.Env.TestEnv
+import io.beagle.components.Web
 import io.circe.generic.simple.auto._
 import org.http4s._
 import org.http4s.circe._
@@ -19,7 +19,7 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
 
   val env = TestEnv.of[HealthCheckController]
 
-  val controller = Controller.health(env).orNotFound
+  val controller = Web.health(env).orNotFound
 
   "The HealthCheckController" should {
 

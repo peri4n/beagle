@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import io.beagle.components._
-import io.beagle.service.ElasticSearchService
+import io.beagle.service.SearchService
 import io.circe.generic.simple.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe._
@@ -12,7 +12,7 @@ import org.http4s.dsl._
 
 object SearchSequenceController {
 
-  def instance = Service.elasticSearch map { SearchSequenceController(_).route }
+  def instance = Search.service map { SearchSequenceController(_).route }
 
   case class SearchSequenceRequest(sequence: String)
 
@@ -22,7 +22,7 @@ object SearchSequenceController {
 
 }
 
-case class SearchSequenceController(searchService: ElasticSearchService) extends Http4sDsl[IO] {
+case class SearchSequenceController(searchService: SearchService) extends Http4sDsl[IO] {
 
   import SearchSequenceController._
 

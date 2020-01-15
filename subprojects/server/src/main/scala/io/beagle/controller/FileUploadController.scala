@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.sksamuel.elastic4s.ElasticDsl
 import io.beagle.components._
 import io.beagle.fasta.FastaParser
-import io.beagle.service.ElasticSearchService
+import io.beagle.service.SearchService
 import io.circe.generic.simple.auto._
 import fs2.Stream
 import org.http4s.HttpRoutes
@@ -18,14 +18,14 @@ object FileUploadController {
 
   def instance = for {
     ex <- Env.execution
-    elasticSearch <- Service.elasticSearch
-  } yield FileUploadController(ex, elasticSearch).route
+    search <- Search.service
+  } yield FileUploadController(ex, search).route
 
   case class FileUploadResponse(status: String)
 
 }
 
-case class FileUploadController(execution: Execution, elasticService: ElasticSearchService) extends Http4sDsl[IO] with ElasticDsl {
+case class FileUploadController(execution: Execution, elasticService: SearchService) extends Http4sDsl[IO] with ElasticDsl {
 
   import FileUploadController._
 

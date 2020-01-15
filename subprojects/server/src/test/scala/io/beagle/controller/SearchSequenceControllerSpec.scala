@@ -1,8 +1,8 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.components.{Controller, Service}
-import io.beagle.environments.TestEnv
+import io.beagle.Env.TestEnv
+import io.beagle.components.{Search, Web}
 import io.beagle.fasta.FastaEntry
 import io.circe.generic.simple.auto._
 import org.http4s._
@@ -20,9 +20,9 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
 
   val environment = TestEnv.of[SearchSequenceControllerSpec]
 
-  val elasticSearch = Service.elasticSearch(environment)
+  val elasticSearch = Search.service(environment)
 
-  val controller = Controller.search(environment).orNotFound
+  val controller = Web.search(environment).orNotFound
 
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {

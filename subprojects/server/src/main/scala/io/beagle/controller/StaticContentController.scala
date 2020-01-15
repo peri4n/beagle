@@ -4,7 +4,7 @@ import java.io.File
 
 import cats.effect._
 import io.beagle.Env
-import io.beagle.components.{Execution, Settings}
+import io.beagle.components.{Execution, Web}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.staticcontent._
@@ -16,7 +16,7 @@ object StaticContentController {
   def instance =
     for {
       execution <- Env.execution
-      settings <- Settings.uiRoot
+      settings <- Web.uiRoot
     } yield StaticContentController(execution, settings).route
 
 }

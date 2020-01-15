@@ -2,6 +2,7 @@ package io.beagle.components.persistence
 
 import java.sql.Connection
 
+import cats.data.Reader
 import cats.effect.{Blocker, IO, Resource}
 import doobie.free.KleisliInterpreter
 import doobie.util.transactor.{Strategy, Transactor}
@@ -17,6 +18,10 @@ trait Persistence {
 }
 
 object Persistence {
+
+  private val persistence = Reader[Env, Persistence](_.persistence)
+
+  val transactor = persistence map { _.transactor }
 
   case class InMemoryPersistence(execution: Execution) extends Persistence {
 
@@ -43,13 +48,13 @@ object Persistence {
     }
   }
 
-  def instance =
-    for {
-      settings <- Env.settings
-      execution <- Env.execution
-    } yield settings.persistence match {
-      case InMemory                      => InMemoryPersistence(execution)
-      case LocalPostgre(db, _, user, pw) => PostgresPersistence(database = db, username = user, password = pw, execution = execution)
-    }
+//  def instance =
+//    for {
+//      settings <- Env.settings
+//      execution <- Env.execution
+//    } yield settings.persistence match {
+//      case InMemory                      => InMemoryPersistence(execution)
+//      case LocalPostgre(db, _, user, pw) => PostgresPersistence(database = db, username = user, password = pw, execution = execution)
+//    }
 }
 

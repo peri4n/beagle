@@ -1,5 +1,6 @@
 package io.beagle.components
 
+import cats.data.Reader
 import io.beagle.Env
 import io.beagle.repository.dataset.DatasetRepo
 import io.beagle.repository.project.ProjectRepo
@@ -20,13 +21,15 @@ sealed trait Repository {
 
 object Repository {
 
-  def sequence = Env.repositories map { _.sequence }
+  private val repository = Reader[Env, Repository](_.repositories)
 
-  def dataset = Env.repositories map { _.dataset }
+  def sequence = repository map { _.sequence }
 
-  def user = Env.repositories map { _.user }
+  def dataset = repository map { _.dataset }
 
-  def project = Env.repositories map { _.project }
+  def user = repository map { _.user }
+
+  def project = repository map { _.project }
 
   case class DevRepository() extends Repository {
     lazy val sequence: SeqRepo = SeqRepo.inMemory

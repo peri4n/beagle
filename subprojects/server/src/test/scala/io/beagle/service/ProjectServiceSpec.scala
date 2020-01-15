@@ -2,10 +2,10 @@ package io.beagle.service
 
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
+import io.beagle.Env.TestEnv
 import io.beagle.Generators._
 import io.beagle.components.Service
 import io.beagle.domain.{Project, User}
-import io.beagle.environments.TestEnv
 import io.beagle.service.ProjectService.{ProjectAlreadyExists, ProjectDoesNotExist}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks

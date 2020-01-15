@@ -1,10 +1,10 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.components.Controller
+import io.beagle.Env.TestEnv
+import io.beagle.components.Web
 import io.beagle.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain.{DatasetId, DatasetItem, ProjectId}
-import io.beagle.environments.TestEnv
 import io.circe.generic.simple.auto._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -24,7 +24,7 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
       val createRequest1 = CreateSequenceSetRequest("set1", ProjectId(1))
       val createRequest2 = CreateSequenceSetRequest("set2", ProjectId(2))
 
-      val controller = Controller.dataset(environment).orNotFound
+      val controller = Web.dataset(environment).orNotFound
 
       val test = for {
         response1 <- controller.run(

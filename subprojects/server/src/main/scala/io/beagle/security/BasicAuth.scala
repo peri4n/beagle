@@ -4,7 +4,7 @@ import cats.effect.IO
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import io.beagle.Env
-import io.beagle.components.{Service, Settings}
+import io.beagle.components.{Security, Service}
 import io.beagle.domain.UserItem
 import io.beagle.service.UserService
 import org.http4s.BasicCredentials
@@ -24,7 +24,7 @@ object BasicAuth {
 
   def instance =
     for {
-      securitySettings <- Settings.security
+      securitySettings <- Security.settings
       jdbc <- Env.transaction
       user <- Service.user
     } yield BasicAuth(securitySettings.basicAuthRealm, jdbc.transactor, user).middleware

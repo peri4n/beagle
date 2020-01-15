@@ -2,11 +2,10 @@ package io.beagle
 
 import cats.effect.IO
 import cats.implicits._
-import io.beagle.components.{Service, Settings}
-import io.beagle.domain.User
-import io.beagle.environments.{Development, Production}
-import org.http4s.implicits._
 import doobie.implicits._
+import io.beagle.components.{Search, Service}
+import io.beagle.domain.User
+import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.slf4j.LoggerFactory
 import pureconfig.ConfigSource
@@ -29,10 +28,13 @@ object App {
     implicit val cs = env.execution.threadPool
     implicit val xa = env.persistence.transactor
 
-    val preconditions = for {
+    val createAdminUser = for {
       us <- Service.user(env)
       _ <- us.create(User("admin", "admin", "admin@beagle.io")).transact(xa)
-      es = Service.elasticSearch(env)
+    } yield ()
+
+    val createSearchIndex = for {
+      es <- Search.service(env)
       _ <- es.connectionCheck()
       _ <- es.createSequenceIndex()
     } yield ()
@@ -40,12 +42,13 @@ object App {
     // Needed by `BlazeServerBuilder`. Provided by `IOApp`.
     val server = BlazeServerBuilder[IO]
       .bindHttp(8080)
-      .withHttpApp(env.controllers.all.orNotFound)
+      .withHttpApp(env.web.all.orNotFound)
       .resource
 
     Logger.info("Starting webserver")
     val program = for {
-      _ <- preconditions
+      _ <- createAdminUser
+      _ <- createSearchIndex
       _ <- server.use(_ => IO.never).start
     } yield ()
 
@@ -57,14 +60,7 @@ object App {
     case _                  => Dev
   }
 
-  private def loadEnvironment(runMode: RunMode) = {
-    val value = getConfig(runMode).loadF[IO, Settings]
-
-    runMode match {
-      case Dev  => value.map(Development)
-      case Prod => value.map(Production)
-    }
-  }
+  private def loadEnvironment(runMode: RunMode) = getConfig(runMode).loadF[IO, Env]
 
   private def getConfig(runMode: RunMode) = ConfigSource.resources(runMode match {
     case Prod => "production.conf"

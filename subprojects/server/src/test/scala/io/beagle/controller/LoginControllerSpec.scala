@@ -2,10 +2,10 @@ package io.beagle.controller
 
 import cats.effect.IO
 import doobie.implicits._
-import io.beagle.components.{Controller, Security, Service}
+import io.beagle.Env.TestEnv
+import io.beagle.components.{Web, Security, Service}
 import io.beagle.controller.LoginController.UserLoginResponse
 import io.beagle.domain.User
-import io.beagle.environments.TestEnv
 import io.circe.generic.simple.auto._
 import org.http4s._
 import org.http4s.circe.CirceEntityCodec._
@@ -21,7 +21,7 @@ class LoginControllerSpec extends Specification with Http4sMatchers[IO] with IOM
 
   val jwt = Security.jwtAuth(env)
 
-  val controller = Controller.login(env).orNotFound
+  val controller = Web.login(env).orNotFound
 
   val xa = env.persistence.transactor
 
