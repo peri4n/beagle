@@ -1,16 +1,21 @@
 package io.beagle.components
 
 import cats.data.Reader
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.{Blocker, ContextShift, IO, Timer}
 import io.beagle.Env
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.global
 
 trait Execution {
 
-  implicit val threadPool: ContextShift[IO]
+  val context: ExecutionContext
 
-  implicit val timer: Timer[IO]
+  def threadPool: ContextShift[IO] = IO.contextShift(context)
+
+  def timer: Timer[IO] = IO.timer(context)
+
+  def blocker = Blocker.liftExecutionContext(context)
 
 }
 
@@ -24,8 +29,7 @@ object Execution {
 
   case object GlobalExecution extends Execution {
 
-    val threadPool: ContextShift[IO] = IO.contextShift(global)
+    val context: ExecutionContext = global
 
-    val timer: Timer[IO] = IO.timer(global)
   }
 }

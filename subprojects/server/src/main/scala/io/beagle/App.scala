@@ -47,6 +47,7 @@ object App {
 
     Logger.info("Starting webserver")
     val program = for {
+      _ <- env.persistence.hook
       _ <- createAdminUser
       _ <- createSearchIndex
       _ <- server.use(_ => IO.never).start

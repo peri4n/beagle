@@ -25,7 +25,7 @@ object BasicAuth {
   def instance =
     for {
       securitySettings <- Security.settings
-      jdbc <- Env.transaction
+      jdbc <- Env.persistence
       user <- Service.user
     } yield BasicAuth(securitySettings.basicAuthRealm, jdbc.transactor, user).middleware
 }

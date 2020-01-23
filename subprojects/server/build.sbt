@@ -30,7 +30,8 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 
 // doobie
 libraryDependencies += "org.tpolecat" %% "doobie-core" % "0.8.4"
-libraryDependencies += "org.tpolecat" %% "doobie-postgres"  % "0.8.4"
+libraryDependencies += "org.tpolecat" %% "doobie-postgres" % "0.8.4"
+libraryDependencies += "org.tpolecat" %% "doobie-hikari" % "0.8.4"
 
 // security
 libraryDependencies += "com.pauldijou" %% "jwt-circe" % "4.2.0"
@@ -41,7 +42,7 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
-//  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
+  //  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test"
 )
 
 // Scala test
@@ -63,7 +64,7 @@ scalacOptions ++= Seq(
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
-//  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
+  //  "-Xfatal-warnings", // Fail the compilation if there are any warnings.
   "-Xlint:adapted-args", // Warn if an argument list is modified to match the receiver.
   "-Xlint:constant", // Evaluation of a constant arithmetic expression results in an error.
   "-Xlint:delayedinit-select", // Selecting member of DelayedInit.
@@ -88,5 +89,18 @@ scalacOptions ++= Seq(
   "-Ywarn-unused:params", // Warn if a value parameter is unused.
   "-Ywarn-unused:patvars", // Warn if a variable bound in a pattern is unused.
   "-Ywarn-unused:privates", // Warn if a private member is unused.
-//  "-Ywarn-value-discard" // Warn when non-Unit expression results are unused.
+  //  "-Ywarn-value-discard" // Warn when non-Unit expression results are unused.
 )
+
+lazy val InMem = config("InMem") extend (Test)
+lazy val InDb = config("InDb") extend (Test)
+
+lazy val root = (project in file("."))
+  .configs(InMem, InDb)
+  .settings(
+    inConfig(InMem)(Defaults.testTasks ++ Seq(forkOptions := Defaults.forkOptionsTask.value)),
+    inConfig(InDb)(Defaults.testTasks ++ Seq(forkOptions := Defaults.forkOptionsTask.value)),
+    InMem / javaOptions += "-Dmode=mem",
+    InDb / javaOptions += "-Dmode=db"
+  )
+

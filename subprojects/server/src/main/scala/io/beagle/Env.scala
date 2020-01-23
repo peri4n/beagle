@@ -3,6 +3,7 @@ package io.beagle
 import cats.data.Reader
 import io.beagle.components.Execution.GlobalExecution
 import io.beagle.components._
+import io.beagle.components.persistence.Persistence.InMemoryPersistence
 import io.beagle.components.persistence.{Persistence, PersistenceComponent}
 
 import scala.reflect.ClassTag
@@ -21,7 +22,7 @@ object Env {
 
   val execution = env map { _.execution }
 
-  val transaction = env map { _.persistence }
+  val persistence = env map { _.persistence }
 
   val controllers = env map { _.web }
 
@@ -57,7 +58,7 @@ object Env {
 
     val execution = GlobalExecution
 
-    val persistence = Persistence.InMemoryPersistence(execution)
+    val persistence = Persistence.PostgresPersistence("beagle", "fbull", "", execution = execution)
 
     val repositories = Repository.DevRepository()
 
@@ -77,7 +78,11 @@ object Env {
 
     val execution = GlobalExecution
 
-    val persistence = Persistence.InMemoryPersistence(execution)
+    val persistence =
+      if (System.getProperty("mode", "db") == "mem")
+        Persistence.InMemoryPersistence(execution)
+      else
+        Persistence.PostgresPersistence("beagle", "fbull", "", execution = execution)
 
     val web = Web.DefaultWeb(env)
 
@@ -86,10 +91,10 @@ object Env {
     val search = Search.DefaultSearch(env)
 
     val repositories =
-      if (System.getProperty("dbMode", "db") == "mem")
-        Repository.ProdRepository()
-      else
+      if (System.getProperty("mode", "db") == "mem")
         Repository.DevRepository()
+      else
+        Repository.ProdRepository()
 
     def security = Security.DefaultSecurity(env)
 

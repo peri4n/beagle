@@ -24,7 +24,6 @@ case class SearchService(execution: Execution, client: ElasticClient, settings: 
   private val Logger = LoggerFactory.getLogger(classOf[SearchService])
 
   import SearchService._
-  import execution._
 
   def index(entry: FastaEntry, refresh: Boolean = false): IO[Response[IndexResponse]] = {
     if (refresh) {
@@ -54,6 +53,7 @@ case class SearchService(execution: Execution, client: ElasticClient, settings: 
       }
     }
 
+    implicit val timer = execution.timer
     retryWithBackOff(client.execute { clusterHealth() }, 5.seconds, 100)
   }
 

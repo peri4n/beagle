@@ -19,7 +19,7 @@ object DatasetController {
   val PathName = "seqsets"
 
   def instance = for {
-    xa <- Env.transaction
+    xa <- Env.persistence
     repo <- Repository.dataset
   } yield DatasetController(repo, xa).route
 

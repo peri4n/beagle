@@ -23,9 +23,12 @@ object StaticContentController {
 
 case class StaticContentController(execution: Execution, uiRoot: String) extends Http4sDsl[IO] {
 
-  import execution._
 
-  val route: HttpRoutes[IO] = fileService[IO](FileService.Config[IO](absolutePathOf(uiRoot), Blocker.liftExecutionContext(global)))
+
+  val route: HttpRoutes[IO] = {
+    implicit val e = execution.threadPool
+    fileService[IO](FileService.Config[IO](absolutePathOf(uiRoot), execution.blocker))
+  }
 
   private def absolutePathOf(dir: String) = new File(dir).getAbsolutePath
 }
