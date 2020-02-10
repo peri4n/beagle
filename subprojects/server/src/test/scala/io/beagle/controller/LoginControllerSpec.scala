@@ -3,7 +3,7 @@ package io.beagle.controller
 import cats.effect.IO
 import doobie.implicits._
 import io.beagle.Env.TestEnv
-import io.beagle.components.{Web, Security, Service}
+import io.beagle.components.{Security, Service, Web}
 import io.beagle.controller.LoginController.UserLoginResponse
 import io.beagle.domain.User
 import io.circe.generic.simple.auto._
@@ -15,15 +15,16 @@ import org.specs2.mutable.Specification
 
 class LoginControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
 
-  val env = TestEnv.of[LoginControllerSpec]
+  val setup = for {
+    env <- TestEnv.of[LoginControllerSpec]
+    userService = Service.user(env)
+    jwt = Security.jwtAuth(env)
+    controller = Web.login(env).orNotFound
+  } yield (env, userService, jwt, controller)
 
-  val userService = Service.user(env)
+  val (environment, userService, jwt, controller) = setup.unsafeRunSync()
 
-  val jwt = Security.jwtAuth(env)
-
-  val controller = Web.login(env).orNotFound
-
-  val xa = env.persistence.transactor
+  val xa = environment.persistence.transactor
 
   "The LoginController" should {
     "return OK if the auth is successful" in {

@@ -18,7 +18,7 @@ case object DbUserRepo extends UserRepo {
 
   def update(id: UserId, user: User): ConnectionIO[UserItem] =
     sql"""UPDATE users
-          SET username = ${ user.name }, password = ${ user.password }, email = ${user.email}, created = ${user.created}
+          SET username = ${ user.name }, password = ${ user.password }, email = ${ user.email }, created = ${ user.created }
           WHERE id = $id""".update
       .withUniqueGeneratedKeys[UserItem]("id", "username", "password", "email", "created")
 

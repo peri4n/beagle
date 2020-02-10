@@ -18,10 +18,17 @@ class FileUploadControllerSpec extends Specification with Http4sMatchers[IO] wit
 
   "The FileUploadController" should {
     "returns success if the file is correctly uploaded" in {
-      val environment = TestEnv.of[FileUploadControllerSpec]
-      val response = runAwait(Web.upload(environment).orNotFound.run(
-        Request(method = Method.POST, uri = uri"/upload", body = UrlForm.entityEncoder.toEntity(UrlForm("file" -> ">Some header\nACGT")).body )
-      ))
+      val test = for {
+        // setup
+        environment <- TestEnv.of[FileUploadControllerSpec]
+        controller = Web.upload(environment).orNotFound
+
+        // test
+        response <- controller.run(
+          Request(method = Method.POST, uri = uri"/upload", body = UrlForm.entityEncoder.toEntity(UrlForm("file" -> ">Some header\nACGT")).body )
+        )
+      } yield response
+      val response = runAwait(test)
 
       response must haveStatus(Status.Ok)
       response must haveBody(FileUploadResponse("success"))

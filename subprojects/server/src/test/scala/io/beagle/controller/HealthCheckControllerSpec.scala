@@ -17,9 +17,10 @@ class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] wi
   implicit val requestEncoder: EntityEncoder[IO, HealthCheckRequest] = jsonEncoderOf[IO, HealthCheckRequest]
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
 
-  val env = TestEnv.of[HealthCheckController]
-
-  val controller = Web.health(env).orNotFound
+  val controller = runAwait(for {
+    env <- TestEnv.of[HealthCheckController]
+    controller = Web.health(env).orNotFound
+  } yield controller)
 
   "The HealthCheckController" should {
 

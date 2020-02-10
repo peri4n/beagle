@@ -20,13 +20,15 @@ class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with I
   "The DatasetController" should {
 
     "must return 200 if the user was successfully created" in {
-      val environment = TestEnv.of[DatasetControllerSpec]
       val createRequest1 = CreateSequenceSetRequest("set1", ProjectId(1))
       val createRequest2 = CreateSequenceSetRequest("set2", ProjectId(2))
 
-      val controller = Web.dataset(environment).orNotFound
-
       val test = for {
+        // setup
+        env <- TestEnv.of[DatasetControllerSpec]
+        controller = Web.dataset(env).orNotFound
+
+        // test
         response1 <- controller.run(
           Request(
             method = Method.POST,

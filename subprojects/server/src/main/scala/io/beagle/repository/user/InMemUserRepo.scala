@@ -14,7 +14,7 @@ case class InMemUserRepo(db: Ref[IO, Map[UserId, UserItem]], counter: Ref[IO, Lo
         _ <- counter.update(_ + 1)
         id = UserId(c)
         view = UserItem(id, user)
-        _ <- db.update(store => store + ( id -> view ))
+        _ <- db.update(store => store + (id -> view))
       } yield view)
 
   def update(id: UserId, user: User): ConnectionIO[UserItem] =

@@ -17,6 +17,7 @@ trait SeqRepo {
 }
 
 object SeqRepo {
+  def inDB: SeqRepo = DbSeqRepo
 
   def inMemory =
     InMemSeqRepo(

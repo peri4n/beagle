@@ -1,6 +1,11 @@
 package io.beagle.components
 
 import cats.data.Reader
+import cats.effect.Async
+import com.sksamuel.elastic4s.requests.searches.queries.SimpleQueryStringFlag.NOT
+import doobie.free.connection.ConnectionIO
+import doobie.implicits._
+import doobie.util.update
 import io.beagle.Env
 import io.beagle.repository.dataset.DatasetRepo
 import io.beagle.repository.project.ProjectRepo
@@ -42,7 +47,7 @@ object Repository {
   }
 
   case class ProdRepository() extends Repository {
-    lazy val sequence: SeqRepo = ???
+    lazy val sequence: SeqRepo = SeqRepo.inDB
 
     lazy val dataset: DatasetRepo = DatasetRepo.inDB
 

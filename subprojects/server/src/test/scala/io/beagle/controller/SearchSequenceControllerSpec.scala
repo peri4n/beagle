@@ -18,11 +18,13 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
   implicit val requestEncoder: EntityEncoder[IO, SearchSequenceRequest] = jsonEncoderOf[IO, SearchSequenceRequest]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]
 
-  val environment = TestEnv.of[SearchSequenceControllerSpec]
+  val setup = for {
+    environment <- TestEnv.of[SearchSequenceControllerSpec]
+    elasticSearch = Search.service(environment)
+    controller = Web.search(environment).orNotFound
+  } yield (environment, elasticSearch, controller)
 
-  val elasticSearch = Search.service(environment)
-
-  val controller = Web.search(environment).orNotFound
+  val (environment, elasticSearch, controller) = setup.unsafeRunSync()
 
   "The SearchSequenceController" should {
     "finds a previously indexed sequences with shared n-grams" in {
@@ -40,8 +42,9 @@ class SearchSequenceControllerSpec extends Specification with Http4sMatchers[IO]
       val response = runAwait(testCase)
 
       response must haveStatus(Status.Ok)
-      response must haveBody { body: SearchSequenceResponse =>
-        body.sequences must containAllOf(List(SearchHit("header1", "AAACGT"), SearchHit("header2", "CAAAAT")))
+      response must haveBody {
+        body: SearchSequenceResponse =>
+          body.sequences must containAllOf(List(SearchHit("header1", "AAACGT"), SearchHit("header2", "CAAAAT")))
       }
     }
 

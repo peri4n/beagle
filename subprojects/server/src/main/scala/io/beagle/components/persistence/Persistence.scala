@@ -8,9 +8,12 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import doobie.free.KleisliInterpreter
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
+import cats.implicits._
 import doobie.util.transactor.{Strategy, Transactor}
 import io.beagle.Env
 import io.beagle.components.Execution
+import doobie.FC
+import doobie.util.fragment.Fragment
 
 trait Persistence {
 
@@ -48,11 +51,10 @@ object Persistence {
                                  execution: Execution) extends Persistence {
 
     lazy val transactor = {
-
       implicit val e = execution.threadPool
 
       val config = new HikariConfig()
-      config.setJdbcUrl(s"jdbc:postgresql://$host:$port/$database")
+      config.setJdbcUrl(s"jdbc:postgresql://$host:$port/${database.toLowerCase}")
       config.setUsername(username)
       config.setPassword(password)
       config.setMaximumPoolSize(5)
@@ -61,13 +63,23 @@ object Persistence {
     }
 
     def hook: IO[Unit] = {
-      def createDb = sql"CREATE DATABASE IF NOT EXISTS $database"
+      implicit val e = execution.threadPool
+      def createDb = (fr"CREATE DATABASE" ++ Fragment.const(database))
         .update
         .run
-        .transact(transactor)
-        .map(_ => ())
 
-      createDb
+      def createUserTable =
+        sql"""CREATE TABLE IF NOT EXISTS users (
+             | id serial PRIMARY KEY,
+             | username VARCHAR(255) UNIQUE NOT NULL,
+             | password VARCHAR(255),
+             | email VARCHAR(255),
+             | created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP)""".stripMargin.update.run
+
+      (for {
+        _ <- FC.setAutoCommit(true) *> createDb <* FC.setAutoCommit(false)
+      } yield ())
+        .transact(Transactor.fromDriverManager[IO]("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/postgres", "fbull", ""))
     }
 
   }

@@ -3,10 +3,9 @@ package io.beagle
 import cats.data.Reader
 import io.beagle.components.Execution.GlobalExecution
 import io.beagle.components._
-import io.beagle.components.persistence.Persistence.InMemoryPersistence
 import io.beagle.components.persistence.{Persistence, PersistenceComponent}
 
-import scala.reflect.ClassTag
+import scala.reflect._
 
 sealed trait Env extends ExecutionComponent
   with PersistenceComponent
@@ -82,7 +81,7 @@ object Env {
       if (System.getProperty("mode", "db") == "mem")
         Persistence.InMemoryPersistence(execution)
       else
-        Persistence.PostgresPersistence("beagle", "fbull", "", execution = execution)
+        Persistence.PostgresPersistence(name, "fbull", "", execution = execution)
 
     val web = Web.DefaultWeb(env)
 
@@ -96,12 +95,15 @@ object Env {
       else
         Repository.ProdRepository()
 
-    def security = Security.DefaultSecurity(env)
+    val security = Security.DefaultSecurity(env)
 
   }
 
   object TestEnv {
-    def of[A: ClassTag] = TestEnv(scala.reflect.classTag[A].runtimeClass.getSimpleName)
+    def of[A: ClassTag] = {
+      val env = TestEnv(classTag[A].runtimeClass.getSimpleName)
+      env.persistence.hook.map( _ => env)
+    }
   }
 
 }

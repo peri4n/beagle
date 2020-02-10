@@ -1,5 +1,7 @@
 package io.beagle.service
 
+import cats.Id
+import cats.effect.IO
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.Env.TestEnv
@@ -12,9 +14,12 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class UserServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers with BeforeAndAfter {
 
-  val environment = TestEnv.of[UserServiceSpec]
+ val setup: IO[(TestEnv, Id[UserService])] = for {
+    environment <- TestEnv.of[UserServiceSpec]
+    service = Service.user(environment)
+  } yield (environment, service)
 
-  val service = Service.user(environment)
+  val (environment, service) = setup.unsafeRunSync()
 
   def run[A](cio: ConnectionIO[A]): A = {
     cio.transact(environment.persistence.transactor).unsafeRunSync()

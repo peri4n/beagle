@@ -11,13 +11,14 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class DatasetServiceSpec extends FunSpec with ScalaCheckDrivenPropertyChecks with Matchers with BeforeAndAfter {
 
-  val environment = TestEnv.of[DatasetServiceSpec]
+  val setup = for {
+    environment <- TestEnv.of[DatasetServiceSpec]
+    userService = Service.user(environment)
+    projectService = Service.project(environment)
+    datasetService = Service.dataset(environment)
+  } yield (environment, userService, projectService, datasetService)
 
-  val userService = Service.user(environment)
-
-  val projectService = Service.project(environment)
-
-  val datasetService = Service.dataset(environment)
+  val (environment, userService, projectService, datasetService) = setup.unsafeRunSync()
 
   def run[A](cio: ConnectionIO[A]): A = cio.transact(environment.persistence.transactor).unsafeRunSync()
 
