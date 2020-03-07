@@ -5,15 +5,15 @@ import io.beagle.Env.TestEnv
 import io.beagle.components.Web
 import io.beagle.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain.{DatasetId, DatasetItem, ProjectId}
-import io.circe.generic.simple.auto._
+import io.beagle.testsupport.ResponseMatchers
+import io.circe.generic.auto._
 import org.http4s.circe._
 import org.http4s.implicits._
-import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.http4s.{Request, _}
 import org.http4s.circe.CirceEntityDecoder._
 import org.specs2.mutable.Specification
 
-class DatasetControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
+class DatasetControllerSpec extends Specification with ResponseMatchers {
 
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
 

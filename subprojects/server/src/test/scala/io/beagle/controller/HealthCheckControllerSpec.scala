@@ -3,14 +3,14 @@ package io.beagle.controller
 import cats.effect.IO
 import io.beagle.Env.TestEnv
 import io.beagle.components.Web
-import io.circe.generic.simple.auto._
+import io.beagle.testsupport.ResponseMatchers
+import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
-import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
-class HealthCheckControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
+class HealthCheckControllerSpec extends Specification with ResponseMatchers {
 
   import HealthCheckController._
 

@@ -5,7 +5,7 @@ import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import io.beagle.components._
 import io.beagle.service.SearchService
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl._

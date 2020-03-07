@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.beagle.components.Security
 import io.beagle.domain.{UserId, UserItem}
 import io.beagle.security.JwtAuth
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware

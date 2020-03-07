@@ -5,7 +5,7 @@ import com.sksamuel.elastic4s.ElasticDsl
 import io.beagle.components._
 import io.beagle.fasta.FastaParser
 import io.beagle.service.SearchService
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
 import fs2.Stream
 import org.http4s.HttpRoutes
 import org.http4s.circe._

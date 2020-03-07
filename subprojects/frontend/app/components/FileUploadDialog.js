@@ -35,7 +35,7 @@ export default function FileUploadDialog() {
         fetch('http://localhost:8080/upload', {
             method: 'POST',
             body: formData
-        }).catch(error => alert('There has been a problem with your fetch operation: ', error.message));
+        }).catch(error => alert('There has been a problem with your fetch operation: '));
 
         handleClose()
     }

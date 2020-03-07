@@ -4,16 +4,19 @@ import cats.effect.IO
 import doobie.implicits._
 import io.beagle.Env.TestEnv
 import io.beagle.components.{Security, Service, Web}
-import io.beagle.controller.LoginController.UserLoginResponse
 import io.beagle.domain.User
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
+import io.beagle.testsupport.ResponseMatchers
 import org.http4s._
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.circe.jsonOf
 import org.http4s.implicits._
-import org.http4s.testing.{Http4sMatchers, IOMatchers}
 import org.specs2.mutable.Specification
 
-class LoginControllerSpec extends Specification with Http4sMatchers[IO] with IOMatchers {
+class LoginControllerSpec extends Specification with ResponseMatchers {
+
+  import LoginController._
+
+  implicit val responseDecoder = jsonOf[IO, UserLoginResponse]
 
   val setup = for {
     env <- TestEnv.of[LoginControllerSpec]
@@ -42,7 +45,7 @@ class LoginControllerSpec extends Specification with Http4sMatchers[IO] with IOM
       } yield response
 
       val response = runAwait(testCase)
-      response must haveStatus(Status.Ok)
+      response must beEqualTo(Status.Ok) ^^ { r: Response[IO] => r.status }
       response must haveBody { body: UserLoginResponse =>
         body.jwtToken must beEqualTo(jwt.generateToken("admin"))
       }

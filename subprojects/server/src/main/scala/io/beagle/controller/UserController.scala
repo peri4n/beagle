@@ -1,6 +1,6 @@
 package io.beagle.controller
 
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityDecoder._
 import cats.effect.IO
 import io.beagle.components.Service

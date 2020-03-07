@@ -75,7 +75,7 @@ export default function SearchBar(props) {
         })
             .then(response => response.json())
             .then(hits => hits.sequences.forEach( hit => props.addHit(hit)))
-            .catch(error => alert('There has been a problem with your fetch operation: ', error.message))
+            .catch(error => alert('There has been a problem with your fetch operation: '))
     }
 
     function handleEnter(event) {

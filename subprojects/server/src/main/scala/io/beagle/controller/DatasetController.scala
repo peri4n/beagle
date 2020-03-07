@@ -7,7 +7,7 @@ import io.beagle.components.Repository
 import io.beagle.components.persistence.Persistence
 import io.beagle.domain.{Dataset, DatasetId, ProjectId}
 import io.beagle.repository.dataset.DatasetRepo
-import io.circe.generic.simple.auto._
+import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._

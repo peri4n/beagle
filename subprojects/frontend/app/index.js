@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import SearchBar from './components/SearchBar'
 import HitList from './components/HitList'
 
-export default function App() {
+function App(){
 
     const [searchSequence, setSearchSequence] = useState('')
     const [hits, setHits] = useState([])
