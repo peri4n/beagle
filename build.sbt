@@ -1,17 +1,71 @@
+import sbt.Keys.libraryDependencies
 
-lazy val global = project
+lazy val beagle = project
   .in(file("."))
   .aggregate(
     frontend,
-    server
+    webserver
   )
 
-lazy val server = project
-  .in(file("subprojects/server"))
+lazy val app = project
+  .in(file("subprojects/app"))
   .settings(
-    name := "server",
-    version := "0.1",
-    commonSettings
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(webserver)
+
+lazy val webserver = project
+  .in(file("subprojects/webserver"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(persistence, execution, search)
+
+lazy val persistence = project
+  .in(file("subprojects/persistence"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(domain % "compile->compile;test->test", execution)
+
+lazy val execution = project
+  .in(file("subprojects/execution"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+
+lazy val search = project
+  .in(file("subprojects/search"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(domain, execution)
+
+lazy val security = project
+  .in(file("subprojects/security"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(persistence, execution)
+
+lazy val parser = project
+  .in(file("subprojects/parser"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+
+lazy val domain = project
+  .in(file("subprojects/domain"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
   )
 
 
@@ -19,6 +73,7 @@ lazy val frontend = project
   .in(file("subprojects/frontend"))
 
 lazy val commonSettings = Seq(
+  scalaVersion := "2.13.1",
   scalacOptions ++= compilerOptions,
   resolvers ++= Seq(
     "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
@@ -35,6 +90,7 @@ lazy val compilerOptions = Seq(
   "-language:existentials", // Existential types (besides wildcard types) can be written and inferred
   "-language:experimental.macros", // Allow macro definition (besides implementation and application)
   "-language:higherKinds", // Allow higher-kinded types
+  "-language:postfixOps", // Allow postfix operations
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
@@ -65,4 +121,43 @@ lazy val compilerOptions = Seq(
   "-Ywarn-unused:privates", // Warn if a private member is unused.
   //  "-Ywarn-value-discard" // Warn when non-Unit expression results are unused.
 )
+
+lazy val dependencies = new {
+
+  val specsV = "4.8.3"
+  val checkV = "1.14.0"
+  val catsV = "2.1.0"
+  val logbackV = "1.2.3"
+  val loggingV = "3.9.2"
+  val testV = "3.1.1"
+
+  // logging
+  val logging = "com.typesafe.scala-logging" %% "scala-logging" % loggingV
+  val logback = "ch.qos.logback" % "logback-classic" % logbackV
+
+  // cats
+  val catsCore = "org.typelevel" %% "cats-core" % catsV
+  val catsEffect = "org.typelevel" %% "cats-effect" % catsV
+
+  // Scala test
+  val scalaTest = "org.scalatest" %% "scalatest" % testV
+  val scalaTestPlus = "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2"
+  val scalaCheck = "org.scalacheck" %% "scalacheck" % checkV
+}
+
+lazy val commonDependencies = Seq(
+  // logging
+  dependencies.logback,
+  dependencies.logging,
+
+  // cats
+  dependencies.catsCore,
+  dependencies.catsEffect,
+
+  // tests
+  dependencies.scalaTest % "test",
+  dependencies.scalaTestPlus % "test",
+  dependencies.scalaCheck % "test"
+)
+
 
