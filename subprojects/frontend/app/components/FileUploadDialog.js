@@ -28,7 +28,7 @@ export default function FileUploadDialog() {
         const files = fileInput.files;
         const formData = new FormData();
 
-        for (var i = 0; i < files.length; i++) {
+        for (let i = 0; i < files.length; i++) {
             formData.append('file', files[i]);
         }
 
