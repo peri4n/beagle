@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useRef, useState} from 'react'
 
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
@@ -8,9 +8,10 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-export default function FileUploadDialog() {
+export const FileUpload: React.FC = () => {
 
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState<boolean>(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     function handleClickOpen() {
         setVisible(true);
@@ -20,12 +21,11 @@ export default function FileUploadDialog() {
         setVisible(false);
     }
 
-    let fileInput
 
-    function sendFile(event) {
+    function sendFile(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault();
 
-        const files = fileInput.files;
+        const files = inputRef.current.files;
         const formData = new FormData();
 
         for (let i = 0; i < files.length; i++) {
@@ -56,7 +56,7 @@ export default function FileUploadDialog() {
                         label="Fasta File"
                         type="file"
                         fullWidth
-                        inputRef={(input) => fileInput = input}
+                        inputRef={inputRef}
                     />
                 </DialogContent>
                 <DialogActions>

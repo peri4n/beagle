@@ -1,9 +1,8 @@
-import React, {useState} from 'react'
-import PropTypes from 'prop-types'
+import React, {ChangeEvent, useState} from 'react'
 
-import FileUploadDialog from './FileUploadDialog'
+import {FileUpload} from './FileUpload'
 
-import {fade, makeStyles} from '@material-ui/core/styles'
+import {fade, makeStyles, Theme} from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
@@ -12,10 +11,22 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 import InputBase from '@material-ui/core/InputBase'
+import useTheme from "@material-ui/core/styles/useTheme";
+import {HitProps} from "./Hit";
 
-export default function SearchBar(props) {
+export interface SearchBarProps {
+    updateSearchSequence: (sequence: string) => void
+    clearHits: () => void
+    addHit: (hit: HitProps) => void
+}
 
-    const useStyles = makeStyles(theme => ({
+interface SearchResults {
+    sequences: HitProps[]
+}
+
+export const SearchBar: React.FC<SearchBarProps> = (props: SearchBarProps) => {
+
+    const useStyles = makeStyles((theme: Theme) => ({
         root: {
             flexGrow: 1,
         },
@@ -59,12 +70,20 @@ export default function SearchBar(props) {
         },
     }));
 
-    const classes = useStyles()
+    const classes = useStyles(useTheme())
 
     const [searchSequence, setSearchSequence] = useState('')
 
-    function search(event) {
+    function handleSearchButton(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.preventDefault()
+        search()
+    }
+
+    function formatSearchResults(result: any): SearchResults {
+        return { sequences: result.sequences};
+    }
+
+    function search() {
         props.clearHits()
         fetch('http://localhost:8080/search', {
             method: 'POST',
@@ -72,19 +91,19 @@ export default function SearchBar(props) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({'sequence': searchSequence})
-        })
-            .then(response => response.json())
+        }).then(response => response.json())
+            .then(formatSearchResults)
             .then(hits => hits.sequences.forEach(hit => props.addHit(hit)))
-            .catch(error => alert('There has been a problem with your fetch operation: '))
+            .catch(_ => alert('There has been a problem with your fetch operation: '))
     }
 
-    function handleEnter(event) {
+    function handleEnter(event: React.KeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Enter') {
-            search(event)
+            search()
         }
     }
 
-    function updateSequence(event) {
+    function updateSequence(event: ChangeEvent<HTMLInputElement>) {
         const sequence = event.target.value
         setSearchSequence(sequence)
         props.updateSearchSequence(sequence)
@@ -114,18 +133,12 @@ export default function SearchBar(props) {
                             onChange={updateSequence}
                         />
                     </div>
-                    <Button color="inherit" onClick={search}>Search</Button>
-                    <FileUploadDialog/>
+                    <Button color="inherit" onClick={handleSearchButton}>Search</Button>
+                    <FileUpload/>
                 </Toolbar>
             </AppBar>
-            {/* This toolbar is needed so that content isn't hidden by the first. */ }
+            {/* This toolbar is needed so that content isn't hidden by the first. */}
             <Toolbar/>
         </React.Fragment>
     )
-}
-
-SearchBar.propTypes = {
-    clearHits: PropTypes.func.isRequired,
-    addHit: PropTypes.func.isRequired,
-    updateSearchSequence: PropTypes.func.isRequired
 }

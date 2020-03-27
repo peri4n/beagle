@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
-import SearchBar from './SearchBar'
-import HitList from './HitList'
+import {SearchBar} from './SearchBar'
+import {SearchResult} from './SearchResult'
 import {Typography} from "@material-ui/core";
+import {HitProps} from "./Hit";
 
-export default function App(){
+export const App: React.FC = () => {
 
     const [searchSequence, setSearchSequence] = useState('')
-    const [hits, setHits] = useState([])
+    const [hits, setHits] = useState<HitProps[]>([])
 
 
     function clearHits() {
         setHits([])
     }
 
-    function addHit(hit) {
+    function addHit(hit: HitProps) {
         setHits(prevHits => [hit, ...prevHits])
     }
 
@@ -21,9 +22,7 @@ export default function App(){
         <div>
             <SearchBar updateSearchSequence={setSearchSequence} clearHits={clearHits} addHit={addHit}/>
             <Typography>Welcome to beagle</Typography>
-            <div>
-                <HitList searchSequence={searchSequence} hitList={hits}/>
-            </div>
+            <SearchResult searchSequence={searchSequence} hitList={hits}/>
         </div>
     )
 }

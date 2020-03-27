@@ -1,10 +1,14 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 
-export default function Hit(props) {
+export interface HitProps {
+    header: string;
+    sequence: string;
+}
+
+export const Hit: React.FC<HitProps> = (props: HitProps) => {
     return (
         <ListItem alignItems="flex-start">
             <ListItemText
@@ -14,9 +18,3 @@ export default function Hit(props) {
         </ListItem>
     )
 }
-
-Hit.propTypes = {
-    header: PropTypes.string,
-    sequence: PropTypes.string
-}
-

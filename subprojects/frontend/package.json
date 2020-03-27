@@ -2,11 +2,11 @@
   "name": "beagle",
   "version": "0.0.1",
   "description": "Search engine for biological ",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "watch": "npx webpack --mode development --watch",
     "build": "npx webpack --mode production",
-    "lint": "npx eslint \"./app/**/*.{js,jsx}\""
+    "lint": "npx eslint \"./app/**/*.{ts,tsx}\""
   },
   "repository": {
     "type": "git",
@@ -28,20 +28,24 @@
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
+    "@types/react": "^16.9.5",
+    "@types/react-dom": "^16.9.5",
     "babel-loader": "^8.0.6",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
     "git-revision-webpack-plugin": "^3.0.4",
     "html-webpack-plugin": "^3.2.0",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "@material-ui/core": "^4.1.1",
     "@material-ui/icons": "^4.2.0",
-    "babel-polyfill": "^6.26.0",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
+    "react": "^16.9.5",
+    "react-dom": "^16.9.5",
     "prop-types": "^15.7.2"
   }
 }

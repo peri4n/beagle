@@ -4,10 +4,9 @@ const GitRevisionPlugin = require('git-revision-webpack-plugin');
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
-const config = () => {
-
+module.exports = () => {
     return {
-        entry: ['babel-polyfill', './app/index.js'],
+        entry: './app/index.tsx',
         mode: 'development',
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -16,6 +15,7 @@ const config = () => {
         devServer: {
             contentBase: './dist'
         },
+        devtool: 'inline-source-map',
         plugins: [
             new HtmlWebpackPlugin({
                 filename: 'index.html',
@@ -25,18 +25,19 @@ const config = () => {
                 }
             })
         ],
+        resolve: {
+            extensions: [ '.tsx', '.ts', '.js' ],
+        },
         module: {
             rules: [
                 {
-                    test: /\.jsx?$/,
+                    test: /\.ts(x?)$/,
                     exclude: /node_modules/,
                     use: {
-                        loader: 'babel-loader',
+                        loader: "ts-loader"
                     }
                 },
             ]
         }
     }
 }
-
-module.exports = config
