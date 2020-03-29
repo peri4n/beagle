@@ -2,12 +2,12 @@ package io.beagle.persistence.service
 
 import doobie.implicits._
 import io.beagle.domain.{Dataset, Project, ProjectId, User, UserId}
-import io.beagle.persistence.service.testsupport.ForAllPostgresContainer
+import io.beagle.persistence.service.testsupport.PersistenceSupport
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class DatasetServiceTest extends ForAllPostgresContainer with ScalaCheckPropertyChecks with Matchers with BeforeAndAfter with BeforeAndAfterAll {
+class DatasetServiceTest extends PersistenceSupport with ScalaCheckPropertyChecks with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
   override def beforeAll = {
     (for {

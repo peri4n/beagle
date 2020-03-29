@@ -19,7 +19,7 @@ case object DatasetRepo {
 
   def create(dataset: Dataset): ConnectionIO[DatasetItem] =
     sql"""INSERT INTO datasets (name, owner_id, project_id, created, last_modified)
-          VALUES (${ dataset.name }, ${dataset.ownerId}, ${ dataset.projectId }, ${ dataset.created }, ${ dataset.lastModified })"""
+          VALUES (${ dataset.name }, ${dataset.ownerId}, ${ dataset.projectIds }, ${ dataset.created }, ${ dataset.lastModified })"""
       .update
       .withUniqueGeneratedKeys[DatasetItem]("id", "name", "owner_id", "project_id", "created", "last_modified")
 

@@ -6,7 +6,7 @@ case class DatasetId(value: Long) extends AnyVal
 
 case class Dataset(name: String,
                    ownerId: UserId,
-                   projectId: ProjectId,
+                   projectIds: ProjectId,
                    created: ZonedDateTime = ZonedDateTime.now(),
                    lastModified: ZonedDateTime = ZonedDateTime.now())
 

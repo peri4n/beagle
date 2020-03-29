@@ -3,7 +3,7 @@ package io.beagle.controller
 import cats.effect.IO
 import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
-import io.beagle.components.Search
+import io.beagle.search.SearchService
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe._
@@ -12,8 +12,6 @@ import org.http4s.dsl.Http4sDsl
 object HealthCheckController {
 
   val PathName = "health"
-
-  def instance = Search.service map { HealthCheckController(_).route }
 
   case class HealthCheckRequest()
 

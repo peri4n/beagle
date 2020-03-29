@@ -1,16 +1,14 @@
 package io.beagle.persistence.service
 
-import java.time.ZonedDateTime
-
 import doobie.implicits._
 import io.beagle.domain.User
 import io.beagle.persistence.service.UserService.UserAlreadyExists
-import io.beagle.persistence.service.testsupport.ForAllPostgresContainer
+import io.beagle.persistence.service.testsupport.PersistenceSupport
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class UserServiceTest extends ForAllPostgresContainer with ScalaCheckPropertyChecks with Matchers with BeforeAndAfter with BeforeAndAfterAll {
+class UserServiceTest extends PersistenceSupport with ScalaCheckPropertyChecks with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
   override def beforeAll = {
     UserService.createTable().transact(xa).unsafeRunSync()

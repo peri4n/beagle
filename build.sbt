@@ -21,7 +21,12 @@ lazy val webserver = project
     commonSettings,
     libraryDependencies ++= commonDependencies
   )
-  .dependsOn(persistence, execution, search)
+  .dependsOn(
+    search % "compile->compile;test->test",
+    persistence % "compile->compile;test->test",
+    execution,
+    parser,
+    security)
 
 lazy val persistence = project
   .in(file("subprojects/persistence"))
@@ -124,12 +129,15 @@ lazy val compilerOptions = Seq(
 
 lazy val dependencies = new {
 
-  val specsV = "4.8.3"
   val checkV = "1.14.0"
   val catsV = "2.1.0"
   val logbackV = "1.2.3"
   val loggingV = "3.9.2"
   val testV = "3.1.1"
+  val pureConfigV = "0.12.3"
+
+  // configuration
+  val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
 
   // logging
   val logging = "com.typesafe.scala-logging" %% "scala-logging" % loggingV
@@ -146,6 +154,9 @@ lazy val dependencies = new {
 }
 
 lazy val commonDependencies = Seq(
+  // configuration
+  dependencies.pureConfig,
+
   // logging
   dependencies.logback,
   dependencies.logging,

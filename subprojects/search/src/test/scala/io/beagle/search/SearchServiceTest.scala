@@ -1,14 +1,13 @@
 package io.beagle.search
 
-import io.beagle.exec.Execution
 import io.beagle.search.docs.FastaDoc
-import io.beagle.search.testsupport.ForAllElasticSearchContainer
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
+import io.beagle.search.testsupport.SearchSupport
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 
-class SearchServiceTest extends ForAllElasticSearchContainer with Matchers with BeforeAndAfter with BeforeAndAfterAll {
+class SearchServiceTest extends SearchSupport with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
-  val service = SearchService(Execution.global, "fasta", client)
+  val service = Search.service(search)
 
   override def beforeAll = {
     service.createSequenceIndex().unsafeRunSync()

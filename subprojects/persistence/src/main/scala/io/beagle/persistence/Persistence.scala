@@ -3,18 +3,20 @@ package io.beagle.persistence
 import cats.effect.IO
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import doobie.hikari.HikariTransactor
-import doobie.util.transactor.Transactor
+import doobie.util.transactor.Transactor.Aux
 import io.beagle.exec.Execution
 
 sealed trait Persistence {
 
-  def transactor: Transactor.Aux[IO, HikariDataSource]
+  def transactor: Aux[IO, HikariDataSource]
+
+  def execution: Execution
 
 }
 
 object Persistence {
 
-  def of(name: String, execution: Execution) = Postgres(name, "fbull", "", execution = execution)
+  case class TestPersistence(transactor: Aux[IO, HikariDataSource], execution: Execution) extends Persistence
 
   case class Postgres(database: String,
                       username: String,

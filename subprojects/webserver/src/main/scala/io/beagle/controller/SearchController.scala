@@ -1,17 +1,18 @@
 package io.beagle.controller
 
+import io.beagle.search.Search
+import io.beagle.search.SearchService
 import cats.effect.IO
 import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
-import io.beagle.components._
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe._
 import org.http4s.dsl._
 
-object SearchSequenceController {
+object SearchController {
 
-  def instance = Search.service map { SearchSequenceController(_).route }
+  def instance = Search.service map { SearchController(_).route }
 
   case class SearchSequenceRequest(sequence: String)
 
@@ -21,9 +22,9 @@ object SearchSequenceController {
 
 }
 
-case class SearchSequenceController(searchService: SearchService) extends Http4sDsl[IO] {
+case class SearchController(searchService: SearchService) extends Http4sDsl[IO] {
 
-  import SearchSequenceController._
+  import SearchController._
 
   implicit val entityDecoder = jsonOf[IO, SearchSequenceRequest]
   implicit val entityEncoder = jsonEncoderOf[IO, SearchSequenceResponse]

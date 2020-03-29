@@ -13,7 +13,7 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
   describe("A token store") {
     it("store new sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtSettings(5 seconds, "secret"))
+      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
         _ <- tokenStore.add(randomHashValue, User("name", "pw", "email"))
@@ -27,7 +27,7 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
 
     it("renew already existing sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtSettings(5 seconds, "secret"))
+      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
         _ <- tokenStore.add(randomHashValue, User("name", "pw", "email"))
@@ -44,7 +44,7 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
     it("not renew unknown sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
       val unknownHashValue = "ianstioeanrstiearnstoianerstien"
-      val tokenStore = TokenStore(JwtSettings(5 seconds, "secret"))
+      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
         _ <- tokenStore.add(randomHashValue, User("name", "password", "email"))
@@ -63,7 +63,7 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
       implicit val timer = IO.timer(ExecutionContext.global)
 
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtSettings(1 seconds, "secret"))
+      val tokenStore = TokenStore(JwtConf(1 seconds, "secret"))
 
       val test = for {
         _ <- tokenStore.add(randomHashValue, User("name", "password", "email"))

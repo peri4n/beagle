@@ -1,67 +1,43 @@
 package io.beagle.components
 
-import cats.data.Reader
 import cats.effect.IO
 import cats.syntax.semigroupk._
-import io.beagle.Env
 import io.beagle.controller._
-import org.http4s.HttpRoutes
+import io.beagle.exec.Execution
+import io.beagle.persistence.Persistence.Postgres
+import io.beagle.search.Search
+import io.beagle.security.Security
+import org.http4s.implicits._
+import org.http4s.server.blaze.BlazeServerBuilder
 
-sealed trait Web {
+case class Web(uiRoot: String, port: Int, persistence: Postgres, search: Search, security: Security, execution: Execution) {
 
-  def uiRoot: String
+  /**
+   * Runtime
+   */
+  implicit lazy val cs = execution.threadPool
+  implicit lazy val timer = execution.timer
 
-  def upload: HttpRoutes[IO]
+  /**
+   * Services
+   */
+  lazy val searchService = Search.service(search)
 
-  def health: HttpRoutes[IO]
+  /**
+   * Controllers
+   */
+  lazy val userRoute = UserController(persistence).route
+  lazy val datasetRoute = DatasetController(persistence).route
+  lazy val staticRoute = StaticContentController(execution, uiRoot).route
+  lazy val searchRoute = SearchController(searchService).route
+  lazy val healthRoute = HealthCheckController(searchService).route
+  lazy val fileUploadRoute = FileUploadController(execution, searchService).route
 
-  def search: HttpRoutes[IO]
+  lazy val all = userRoute <+> datasetRoute <+> searchRoute <+> healthRoute <+> fileUploadRoute <+> staticRoute
 
-  def dataset: HttpRoutes[IO]
-
-  def login: HttpRoutes[IO]
-
-  def static: HttpRoutes[IO]
-
-  def all: HttpRoutes[IO] = static <+> endpoints
-
-  def endpoints: HttpRoutes[IO] = upload <+> health <+> search <+> dataset <+> login
-
+  lazy val server = BlazeServerBuilder[IO]
+    .bindHttp(port)
+    .withHttpApp(all.orNotFound)
+    .resource
 }
 
-object Web {
-
-  private val web = Reader[Env, Web](_.webserver)
-
-  val uiRoot = web map { _.uiRoot }
-
-  val dataset = web map { _.dataset }
-
-  val upload = web map { _.upload }
-
-  val health = web map { _.health }
-
-  val search = web map { _.search }
-
-  val login = web map { _.login }
-
-  val static = web map { _.static }
-
-  case class DefaultWeb(env: Env) extends Web {
-
-    lazy val uiRoot = "../frontend/dist"
-
-    lazy val dataset = DatasetController.instance(env)
-
-    lazy val health = HealthCheckController.instance(env)
-
-    lazy val search = SearchSequenceController.instance(env)
-
-    lazy val upload = FileUploadController.instance(env)
-
-    lazy val login = LoginController.instance(env)
-
-    lazy val static = StaticContentController.instance(env)
-
-  }
-}

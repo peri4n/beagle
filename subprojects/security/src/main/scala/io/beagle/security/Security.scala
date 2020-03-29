@@ -1,11 +1,21 @@
 package io.beagle.security
 
-sealed trait Security {
+import cats.data.Reader
 
-  def settings: SecuritySettings
+import scala.concurrent.duration.FiniteDuration
 
-  def jwt: Jwt
+case class Security(realm: String, jwt: JwtConf) {
 
-  def tokenStore: TokenStore
+  lazy val tokenStore = TokenStore(jwt)
+
 }
 
+case class JwtConf(expirationTime: FiniteDuration, secret: String)
+
+object Security {
+
+  val security = Reader[Security, Security](identity)
+
+  def tokenStore = security map { s => s.tokenStore }
+
+}

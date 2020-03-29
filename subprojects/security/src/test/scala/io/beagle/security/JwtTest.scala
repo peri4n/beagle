@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 class JwtTest extends AnyFunSpec with Matchers with TryValues with EitherValues {
 
-  val jwt = Jwt(JwtSettings(10 seconds, "secret"))
+  val jwt = Jwt(JwtConf(10 seconds, "secret"))
 
   import jwt._
 

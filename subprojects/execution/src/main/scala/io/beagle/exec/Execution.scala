@@ -21,12 +21,12 @@ sealed trait Execution {
 
 object Execution {
 
-  final case object global extends Execution {
+  final case object Global extends Execution {
     val context: ExecutionContext = glob
   }
 
-  final case class fixed(n: Int) extends Execution {
-    val context = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(n))
+  final case class Fixed(threads: Int) extends Execution {
+    val context = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(threads))
   }
 
 }
