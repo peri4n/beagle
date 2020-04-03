@@ -1,7 +1,7 @@
 package io.beagle.components
 
 import io.beagle.exec.Execution.{Fixed, Global}
-import io.beagle.persistence.Persistence.Postgres
+import io.beagle.persistence.Postgres
 import io.beagle.search.Search
 import io.beagle.security.{JwtConf, Security}
 import org.scalatest.EitherValues

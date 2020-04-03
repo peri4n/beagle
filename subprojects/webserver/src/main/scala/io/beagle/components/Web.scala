@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.syntax.semigroupk._
 import io.beagle.controller._
 import io.beagle.exec.Execution
-import io.beagle.persistence.Persistence.Postgres
+import io.beagle.persistence.Postgres
 import io.beagle.search.Search
 import io.beagle.security.Security
 import org.http4s.implicits._

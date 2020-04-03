@@ -1,12 +1,8 @@
 package io.beagle.persistence.service.testsupport
 
-import cats.effect.IO
 import com.dimafeng.testcontainers.{ForAllTestContainer, PostgreSQLContainer}
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import doobie.hikari.HikariTransactor
 import io.beagle.exec.Execution
-import io.beagle.persistence.Persistence
-import io.beagle.persistence.Persistence.{Postgres, TestPersistence}
+import io.beagle.persistence.Postgres
 import org.scalatest.funspec.AnyFunSpec
 
 trait PersistenceSupport extends AnyFunSpec with ForAllTestContainer {
@@ -17,21 +13,12 @@ trait PersistenceSupport extends AnyFunSpec with ForAllTestContainer {
     pg
   }
 
-  lazy val persistence = {
-    val execution = Execution.Global
-    implicit val pool = execution.threadPool
-
-    val config = new HikariConfig()
-    config.setJdbcUrl(container.jdbcUrl)
-    config.setUsername(container.username)
-    config.setPassword(container.password)
-    config.setDriverClassName(container.driverClassName)
-    config.setMaximumPoolSize(5)
-
-    val xa = HikariTransactor.apply[IO](new HikariDataSource(config), execution.context, execution.blocker)
-
-    TestPersistence(xa, execution)
-  }
+  lazy val persistence = Postgres(container.databaseName,
+    container.username,
+    container.password,
+    container.containerIpAddress,
+    container.mappedPort(Postgres.port),
+    Execution.Global)
 
   lazy val xa = persistence.transactor
 }

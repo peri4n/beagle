@@ -15,5 +15,7 @@ case class StaticContentController(execution: Execution, uiRoot: String) extends
     fileService[IO](FileService.Config[IO](absolutePathOf(uiRoot), execution.blocker))
   }
 
-  private def absolutePathOf(dir: String) = new File(dir).getAbsolutePath
+  private def absolutePathOf(dir: String) = {
+    new File(dir).getAbsolutePath
+  }
 }

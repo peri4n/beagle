@@ -1,7 +1,6 @@
 package io.beagle.persistence
 
 import io.beagle.exec.Execution.Fixed
-import io.beagle.persistence.Persistence.Postgres
 import org.scalatest.EitherValues
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers

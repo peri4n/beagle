@@ -19,9 +19,9 @@ class DatasetServiceTest extends PersistenceSupport with ScalaCheckPropertyCheck
 
   after {
     (for {
+      _ <- DatasetService.deleteAll()
       _ <- ProjectService.deleteAll()
       _ <- UserService.deleteAll()
-      _ <- DatasetService.deleteAll()
     } yield ()).transact(xa).unsafeRunSync()
   }
 
