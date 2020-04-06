@@ -18,12 +18,12 @@ class WebTest extends AnyFunSpec with Matchers with EitherValues {
     it("can be configured via file") {
       val value1 = ConfigSource.resources("web.conf").load[Web]
       value1.right.value should be(
-        Web("./dist",
-          8088,
-          Postgres("dbName", "username", "password", execution = Fixed(2)),
-          Search(execution = Global),
-          Security("realm", JwtConf(5 seconds, "secret")),
-          execution = Fixed(3)))
+        Web("subprojects/frontend/dist/",
+          9000,
+          Postgres("beagle", "fbull", "password", execution = Fixed(3)),
+          Search(execution = Fixed(1)),
+          Security("beagle", JwtConf(30 minutes, "secret")),
+          execution = Fixed(4)))
     }
   }
 

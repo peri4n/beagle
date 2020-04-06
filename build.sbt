@@ -24,7 +24,7 @@ lazy val webserver = project
   .dependsOn(
     search % "compile->compile;test->test",
     persistence % "compile->compile;test->test",
-    execution,
+    execution % "compile->compile;test->test",
     parser,
     security)
 

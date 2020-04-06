@@ -44,8 +44,9 @@
   "dependencies": {
     "@material-ui/core": "^4.1.1",
     "@material-ui/icons": "^4.2.0",
+    "clsx": "^1.1.0",
+    "prop-types": "^15.7.2",
     "react": "^16.9.5",
-    "react-dom": "^16.9.5",
-    "prop-types": "^15.7.2"
+    "react-dom": "^16.9.5"
   }
 }

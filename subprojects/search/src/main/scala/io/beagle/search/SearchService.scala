@@ -22,7 +22,7 @@ import scala.concurrent.duration.{FiniteDuration, _}
 
 case class SearchService(execution: Execution, indexName: String, client: ElasticClient) {
 
-  private val Logger = LoggerFactory.getLogger(classOf[SearchService])
+  val Logger = LoggerFactory.getLogger(classOf[SearchService])
 
   import SearchService._
 
