@@ -47,24 +47,24 @@ export const mainListItems = (
 
 export const secondaryListItems = (
     <div>
-        <ListSubheader inset>Workbench</ListSubheader>
+        <ListSubheader inset>Recent Projects</ListSubheader>
         <ListItem button>
             <ListItemIcon>
                 <AssignmentIcon/>
             </ListItemIcon>
-            <ListItemText primary="Current month"/>
+            <ListItemText primary="Human genome"/>
         </ListItem>
         <ListItem button>
             <ListItemIcon>
                 <AssignmentIcon/>
             </ListItemIcon>
-            <ListItemText primary="Last quarter"/>
+            <ListItemText primary="Drosophila"/>
         </ListItem>
         <ListItem button>
             <ListItemIcon>
                 <AssignmentIcon/>
             </ListItemIcon>
-            <ListItemText primary="Year-end sale"/>
+            <ListItemText primary="Insulin expression"/>
         </ListItem>
     </div>
 );
