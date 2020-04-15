@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const GitRevisionPlugin = require('git-revision-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
@@ -23,6 +24,9 @@ module.exports = () => {
                 templateParameters: {
                     COMMITHASH: process.env.COMMIT_HASH || gitRevisionPlugin.commithash()
                 }
+            }),
+            new CompressionPlugin({
+                test: /\.js(\?.*)?$/i,
             })
         ],
         resolve: {
@@ -38,6 +42,9 @@ module.exports = () => {
                     }
                 },
             ]
-        }
+        },
+        optimization: {
+            minimize: true
+        },
     }
 }

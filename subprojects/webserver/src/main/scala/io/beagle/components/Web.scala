@@ -9,6 +9,7 @@ import io.beagle.search.Search
 import io.beagle.security.Security
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.middleware.GZip
 
 case class Web(uiRoot: String, port: Int, persistence: Postgres, search: Search, security: Security, execution: Execution) {
 
@@ -33,7 +34,7 @@ case class Web(uiRoot: String, port: Int, persistence: Postgres, search: Search,
   lazy val healthRoute = HealthCheckController(searchService).route
   lazy val fileUploadRoute = FileUploadController(execution, searchService).route
 
-  lazy val all = userRoute <+> datasetRoute <+> searchRoute <+> healthRoute <+> fileUploadRoute <+> staticRoute
+  lazy val all = GZip(userRoute <+> datasetRoute <+> searchRoute <+> healthRoute <+> fileUploadRoute <+> staticRoute)
 
   lazy val server = BlazeServerBuilder[IO]
     .bindHttp(port)

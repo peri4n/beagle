@@ -6,7 +6,9 @@
   "scripts": {
     "watch": "npx webpack --mode development --watch",
     "build": "npx webpack --mode production",
-    "lint": "npx eslint \"./app/**/*.{ts,tsx}\""
+    "start": "webpack-dev-server --open",
+    "lint": "npx eslint \"./app/**/*.{ts,tsx}\"",
+    "stats": "npx webpack --profile --json > stats.json"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "@types/react": "^16.9.5",
     "@types/react-dom": "^16.9.5",
     "babel-loader": "^8.0.6",
+    "compression-webpack-plugin": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
     "git-revision-webpack-plugin": "^3.0.4",
@@ -39,7 +42,8 @@
     "ts-loader": "^6.2.2",
     "typescript": "^3.8.3",
     "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "@material-ui/core": "^4.1.1",
