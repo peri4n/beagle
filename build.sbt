@@ -132,7 +132,7 @@ lazy val dependencies = new {
   val checkV = "1.14.0"
   val catsV = "2.1.0"
   val logbackV = "1.2.3"
-  val loggingV = "3.9.2"
+  val catsLogV = "1.0.1"
   val testV = "3.1.1"
   val pureConfigV = "0.12.3"
 
@@ -140,7 +140,7 @@ lazy val dependencies = new {
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
 
   // logging
-  val logging = "com.typesafe.scala-logging" %% "scala-logging" % loggingV
+  val logging =  "io.chrisdavenport" %% "log4cats-slf4j"   % catsLogV
   val logback = "ch.qos.logback" % "logback-classic" % logbackV
 
   // cats
@@ -158,8 +158,8 @@ lazy val commonDependencies = Seq(
   dependencies.pureConfig,
 
   // logging
-  dependencies.logback,
   dependencies.logging,
+  dependencies.logback,
 
   // cats
   dependencies.catsCore,

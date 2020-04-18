@@ -1,57 +1,57 @@
 package io.beagle.app
 
-import cats.effect.{IO, Sync}
+import cats.effect.{ExitCode, IO, IOApp, Sync}
 import com.zaxxer.hikari.HikariDataSource
 import doobie.free.connection.ConnectionIO
-import io.beagle.components.Web
-import io.beagle.domain.{User, UserItem}
-import io.beagle.persistence.service.UserService
-import org.slf4j.LoggerFactory
-import pureconfig.ConfigSource
-import pureconfig.generic.auto._
 import doobie.implicits._
 import doobie.util.transactor.Transactor.Aux
+import io.beagle.components.Web
+import io.beagle.domain.User
 import io.beagle.persistence.repository.user.UserRepo
+import io.beagle.persistence.service.UserService
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import pureconfig.ConfigSource
+import pureconfig.generic.auto._
 
-object App {
+object App extends IOApp {
 
-  private val Logger = LoggerFactory.getLogger(classOf[App])
+  implicit def unsafeLogger[F[_]: Sync] = Slf4jLogger.getLogger[F]
 
-  def main(args: Array[String]): Unit = {
-    Logger.info("Welcome to bIO - the search engine for biological sequences")
+  def run(args: List[String]): IO[ExitCode] = {
+    Logger[IO].info("Welcome to bIO - the search engine for biological sequences").unsafeRunSync()
 
     loadWebserver match {
-      case Left(value) => Logger.info(value.toString)
+      case Left(value) => Logger[IO].info(value.toString).map( _ => ExitCode.Error)
       case Right(server) => {
-        Logger.info("Done loading the environment")
 
-        implicit val cs = server.execution.threadPool
         import server.persistence._
-
-        createDb.unsafeRunSync()
 
         val xa = transactor
         val searchService = server.searchService
 
-        val createSearchIndex = for {
+        val esSetup = for {
+          _ <- Logger[IO].info("Setting up elastic search environment")
           _ <- searchService.connectionCheck()
           _ <- searchService.createSequenceIndex()
         } yield ()
 
-        val setup = for {
+        val dbSetup = for {
+          _ <- Logger[IO].info("Setting up database environment")
+          _ <- createDb
           _ <- createTables
           _ <- injectAdmin(xa)
-          _ <- createSearchIndex
         } yield ()
 
-        setup.unsafeRunAsyncAndForget()
+        val setup = IO.racePair(esSetup, dbSetup)
 
-        Logger.info("Starting webserver")
         val program = for {
+          _ <- Logger[IO].info("Starting web server")
+          _ <- setup
           _ <- server.server.use(_ => IO.never).start
-        } yield ()
+        } yield ExitCode.Success
 
-        program.unsafeRunSync()
+        program
       }
     }
   }
