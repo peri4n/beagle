@@ -1,7 +1,6 @@
 package io.beagle.controller
 
 import cats.effect.IO
-import io.beagle.search.Search
 import io.beagle.search.docs.FastaDoc
 import io.beagle.search.testsupport.SearchSupport
 import io.beagle.testsupport.ResponseMatchers
@@ -15,8 +14,6 @@ import org.scalatest.matchers.should.Matchers
 class SearchSequenceControllerTest extends AnyFunSpec with Matchers with ResponseMatchers with SearchSupport {
 
   import SearchController._
-
-  val service = Search.service(search)
 
   implicit val requestEncoder: EntityEncoder[IO, SearchSequenceRequest] = jsonEncoderOf[IO, SearchSequenceRequest]
   implicit val responseDecoder: EntityDecoder[IO, SearchSequenceResponse] = jsonOf[IO, SearchSequenceResponse]

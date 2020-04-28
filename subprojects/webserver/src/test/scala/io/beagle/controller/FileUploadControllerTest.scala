@@ -18,7 +18,6 @@ class FileUploadControllerTest extends AnyFunSpec with Matchers with ResponseMat
   import FileUploadController._
 
   implicit val responseDecoder: EntityDecoder[IO, FileUploadResponse] = jsonOf[IO, FileUploadResponse]
-  private val service = Search.service(search)
 
   describe("The FileUploadController") {
     it("returns success if the file is correctly uploaded") {

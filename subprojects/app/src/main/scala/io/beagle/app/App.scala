@@ -25,29 +25,28 @@ object App extends IOApp {
       case Left(value) => Logger[IO].info(value.toString).map( _ => ExitCode.Error)
       case Right(server) => {
 
-        import server.persistence._
-
-        val xa = transactor
         val searchService = server.searchService
-
         val esSetup = for {
           _ <- Logger[IO].info("Setting up elastic search environment")
           _ <- searchService.connectionCheck()
           _ <- searchService.createSequenceIndex()
         } yield ()
 
+        val db = server.persistence
+        val xa = db.transactor
+
         val dbSetup = for {
           _ <- Logger[IO].info("Setting up database environment")
-          _ <- createDb
-          _ <- createTables
+          _ <- db.createDb
+          _ <- db.createTables
           _ <- injectAdmin(xa)
         } yield ()
 
         val setup = IO.racePair(esSetup, dbSetup)
 
         val program = for {
-          _ <- Logger[IO].info("Starting web server")
           _ <- setup
+          _ <- Logger[IO].info("Starting web server")
           _ <- server.server.use(_ => IO.never).start
         } yield ExitCode.Success
 

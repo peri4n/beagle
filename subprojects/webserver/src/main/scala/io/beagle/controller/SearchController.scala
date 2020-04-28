@@ -1,6 +1,5 @@
 package io.beagle.controller
 
-import io.beagle.search.Search
 import io.beagle.search.SearchService
 import cats.effect.IO
 import com.sksamuel.elastic4s.Response
@@ -11,8 +10,6 @@ import org.http4s.circe._
 import org.http4s.dsl._
 
 object SearchController {
-
-  def instance = Search.service map { SearchController(_).route }
 
   case class SearchSequenceRequest(sequence: String)
 

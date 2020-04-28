@@ -1,30 +1,29 @@
 package io.beagle.search
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, Sync, Timer}
 import cats.implicits._
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.{ElasticClient, Response}
-import io.circe.generic.auto._
-import com.sksamuel.elastic4s.circe._
 import com.sksamuel.elastic4s.cats.effect.instances._
-import com.sksamuel.elastic4s.requests.analysis._
+import com.sksamuel.elastic4s.circe._
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
-import com.sksamuel.elastic4s.requests.delete.{DeleteByQueryResponse, DeleteResponse}
+import com.sksamuel.elastic4s.requests.delete.DeleteByQueryResponse
 import com.sksamuel.elastic4s.requests.indexes.{CreateIndexResponse, IndexResponse}
-import com.sksamuel.elastic4s.requests.mappings.{MappingDefinition, TextField}
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
+import com.sksamuel.elastic4s.{ElasticClient, Response}
 import io.beagle.exec.Execution
 import io.beagle.search.docs.FastaDoc
-import org.slf4j.LoggerFactory
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.circe.generic.auto._
 
 import scala.concurrent.duration.{FiniteDuration, _}
 
 case class SearchService(execution: Execution, indexName: String, client: ElasticClient) {
 
-  val Logger = LoggerFactory.getLogger(classOf[SearchService])
-
   import SearchService._
+
+  implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
   def index(fastaDoc: FastaDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = {
     client.execute {
@@ -33,9 +32,8 @@ case class SearchService(execution: Execution, indexName: String, client: Elasti
     }
   }
 
-  def index(entries: List[FastaDoc]): IO[Response[BulkResponse]] = {
-    val indexRequests = entries map { indexRequest(indexName) }
-    client.execute { bulk(indexRequests) }
+  def indexBulk(entries: List[FastaDoc]): IO[Response[BulkResponse]] = {
+    client.execute { bulk(entries map { indexRequest(indexName) }) }
   }
 
   def find(sequence: String): IO[Response[SearchResponse]] = {
@@ -54,7 +52,7 @@ case class SearchService(execution: Execution, indexName: String, client: Elasti
     def retryWithBackOff[A](ioa: IO[A], initialDelay: FiniteDuration, maxRetries: Int)(implicit timer: Timer[IO]): IO[A] = {
       ioa.handleErrorWith { error =>
         if (maxRetries > 0) {
-          Logger.warn("Can not connect to search server. Retry ")
+          Logger[IO].warn("Can not connect to search server. Retry ")
           IO.sleep(initialDelay) *> retryWithBackOff(ioa, initialDelay * 2, maxRetries - 1)
         } else
           IO.raiseError(error)
@@ -66,28 +64,14 @@ case class SearchService(execution: Execution, indexName: String, client: Elasti
   }
 
   def createSequenceIndex(): IO[Response[CreateIndexResponse]] = client.execute {
-    createIndex(indexName).mapping(MappingDefinition().as(
-      TextField(headerFieldName).analyzer(headerAnalyzer),
-      TextField(sequenceFieldName).analyzer(sequenceAnalyzer)))
-      .analysis(Analysis(
-        analyzers = List(
-          StandardAnalyzer(headerAnalyzer),
-          CustomAnalyzer(sequenceAnalyzer, "ngram_ref", List.empty, List.empty)),
-        tokenizers = List(NGramTokenizer("ngram_ref", 3, 4))
-      ))
+    createIndex(indexName)
+      .mapping(FastaDoc.Mapping)
+      .analysis(FastaDoc.Analysis)
   }
 
 }
 
 object SearchService {
-
-  val headerFieldName = "header"
-
-  val headerAnalyzer = s"${ headerFieldName }_analyzer"
-
-  val sequenceFieldName = "sequence"
-
-  val sequenceAnalyzer = s"${ sequenceFieldName }_analyzer"
 
   private def indexRequest(indexName: String)(fastaDoc: FastaDoc) = {
     indexInto(indexName).doc(fastaDoc)

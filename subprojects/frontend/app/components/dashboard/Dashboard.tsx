@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
@@ -6,7 +6,7 @@ import Container from '@material-ui/core/Container';
 import {theme} from "../../theme";
 import {Copyright} from "../copyright/Copyright";
 import {DashboardDrawer} from "./drawer/DashboardDrawer";
-import {DashboardBar} from "./bar/DashboardBar";
+import {DashboardSearchBar} from "./bar/DashboardSearchBar";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,7 +26,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function Dashboard() {
     const classes = useStyles(theme);
-    const [open, setOpen] = React.useState(true);
+
+    const [open, setOpen] = useState(true);
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -37,7 +39,7 @@ export function Dashboard() {
     return (
         <div className={classes.root}>
             <CssBaseline/>
-            <DashboardBar handleDrawerOpen={handleDrawerOpen} open={open}/>
+            <DashboardSearchBar handleDrawerOpen={handleDrawerOpen} open={open}/>
             <DashboardDrawer handleDrawerClose={handleDrawerClose} open={open}/>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer}/>

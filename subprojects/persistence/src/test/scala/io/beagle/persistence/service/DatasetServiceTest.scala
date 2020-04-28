@@ -1,10 +1,10 @@
 package io.beagle.persistence.service
 
 import doobie.implicits._
-import io.beagle.domain.{Dataset, Project, ProjectId, User, UserId}
+import io.beagle.domain._
 import io.beagle.persistence.service.testsupport.PersistenceSupport
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class DatasetServiceTest extends PersistenceSupport with ScalaCheckPropertyChecks with Matchers with BeforeAndAfter with BeforeAndAfterAll {

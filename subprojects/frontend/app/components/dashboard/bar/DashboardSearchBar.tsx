@@ -9,6 +9,8 @@ import {SearchBarInput} from "./SearchBarInput";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {theme} from "../../../theme";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../store";
 
 const drawerWidth = 240;
 
@@ -45,8 +47,10 @@ interface DashboardBarProps {
     open: boolean
 }
 
-export const DashboardBar: React.FC<DashboardBarProps> = ({open, handleDrawerOpen}) => {
+export const DashboardSearchBar: React.FC<DashboardBarProps> = ({open, handleDrawerOpen}) => {
     const classes = useStyles(theme)
+
+    const system = useSelector((state:RootState) => state.system)
 
     return (
         <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
@@ -64,6 +68,9 @@ export const DashboardBar: React.FC<DashboardBarProps> = ({open, handleDrawerOpe
                 </Typography>
                 <SearchBarInput/>
                 <Button color="inherit">Search</Button>
+                <Typography component="h1" variant="h6" color="inherit" noWrap>
+                    {system.userName}
+                </Typography>
             </Toolbar>
         </AppBar>
     )

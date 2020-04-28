@@ -22,7 +22,7 @@ case class Web(uiRoot: String, port: Int, persistence: Postgres, search: Search,
   /**
    * Services
    */
-  lazy val searchService = Search.service(search)
+  lazy val searchService = search.service
 
   /**
    * Controllers

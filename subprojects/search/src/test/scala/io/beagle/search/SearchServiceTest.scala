@@ -7,8 +7,6 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 
 class SearchServiceTest extends SearchSupport with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
-  val service = Search.service(search)
-
   override def beforeAll = {
     service.createSequenceIndex().unsafeRunSync()
   }
