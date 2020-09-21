@@ -130,7 +130,7 @@ lazy val compilerOptions = Seq(
 lazy val dependencies = new {
 
   val checkV = "1.14.0"
-  val catsV = "2.1.0"
+  val catsV = "2.2.0"
   val logbackV = "1.2.3"
   val catsLogV = "1.0.1"
   val testV = "3.1.1"

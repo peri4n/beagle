@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FastaParserSpec extends AnyFunSpec with Matchers {
+class FastaParserTest extends AnyFunSpec with Matchers {
 
   val blocker = Blocker.liftExecutionContext(
     ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2)))
