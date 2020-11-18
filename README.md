@@ -8,6 +8,14 @@ For now, everything has to be started manually. I hope to automate this process 
 
 ### Start the HTTP server
 
+For development:
+
+```shell
+sbt runDev
+```
+
+In production:
+
 ```shell
 sbt run
 ```
