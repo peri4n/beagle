@@ -3,7 +3,7 @@ package io.beagle.persistence.repository.project
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.{Project, ProjectId, ProjectItem, UserId}
-import io.beagle.persistence.metas._
+import doobie.implicits.javatime._
 
 case object ProjectRepo {
   def createTable(): ConnectionIO[Int] = {

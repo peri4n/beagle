@@ -2,7 +2,6 @@ package io.beagle.controller
 
 import cats.effect.IO
 import io.beagle.exec.testsupport.ExecutionSupport
-import io.beagle.search.Search
 import io.beagle.search.testsupport.SearchSupport
 import io.beagle.testsupport.ResponseMatchers
 import io.circe.generic.auto._

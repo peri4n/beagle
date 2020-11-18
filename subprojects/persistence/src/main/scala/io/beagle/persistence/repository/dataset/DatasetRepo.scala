@@ -3,7 +3,7 @@ package io.beagle.persistence.repository.dataset
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.{Dataset, DatasetId, DatasetItem, ProjectId}
-import io.beagle.persistence.metas._
+import doobie.implicits.javatime._
 
 case object DatasetRepo {
 
@@ -19,12 +19,12 @@ case object DatasetRepo {
 
   def create(dataset: Dataset): ConnectionIO[DatasetItem] =
     sql"""INSERT INTO datasets (name, owner_id, project_id, created, last_modified)
-          VALUES (${ dataset.name }, ${dataset.ownerId}, ${ dataset.projectIds }, ${ dataset.created }, ${ dataset.lastModified })"""
+          VALUES (${dataset.name}, ${dataset.ownerId}, ${dataset.projectIds}, ${dataset.created}, ${dataset.lastModified})"""
       .update
       .withUniqueGeneratedKeys[DatasetItem]("id", "name", "owner_id", "project_id", "created", "last_modified")
 
   def update(id: DatasetId, seqSet: Dataset): ConnectionIO[DatasetItem] =
-    sql"UPDATE datasets SET name = ${ seqSet.name } WHERE id = $id".update
+    sql"UPDATE datasets SET name = ${seqSet.name} WHERE id = $id".update
       .withUniqueGeneratedKeys[DatasetItem]("id", "name")
 
   def findById(id: DatasetId): ConnectionIO[Option[DatasetItem]] =

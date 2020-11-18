@@ -24,6 +24,7 @@ class FastaParserTest extends AnyFunSpec with Matchers {
         .through(FastaParser.parse)
         .compile
         .toList
+        .unsafeRunSync()
 
       entries shouldBe empty
     }

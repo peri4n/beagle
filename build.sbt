@@ -73,7 +73,6 @@ lazy val domain = project
     libraryDependencies ++= commonDependencies
   )
 
-
 lazy val frontend = project
   .in(file("subprojects/frontend"))
 

@@ -1,11 +1,11 @@
 package io.beagle.persistence.repository.user
 
-import doobie.free.connection.ConnectionIO
+import doobie.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.{User, UserId, UserItem}
-import io.beagle.persistence.metas._
+import doobie.implicits.javatime._
 
-case object UserRepo {
+case object UserRepo extends UserRepository {
 
   val TableName = "users"
 
