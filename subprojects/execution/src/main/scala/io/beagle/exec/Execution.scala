@@ -21,7 +21,7 @@ sealed trait Execution {
 
 object Execution {
 
-  final case object Global extends Execution {
+  final case class Global() extends Execution {
     val context: ExecutionContext = glob
   }
 
