@@ -1,7 +1,7 @@
 package io.beagle.security
 
 import cats.effect.IO
-import io.beagle.domain.{User, UserId}
+import io.beagle.domain.User
 import org.scalatest.OptionValues
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -13,11 +13,11 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
   describe("A token store") {
     it("store new sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
-        _ <- tokenStore.add(randomHashValue, User("name", "pw", "email"))
-        session <- tokenStore.sessionOf(randomHashValue)
+        store <- TokenStore.empty(JwtSettings(5 seconds, "secret"))
+        _ <- store.add(randomHashValue, User("name", "pw", "email"))
+        session <- store.sessionOf(randomHashValue)
       } yield session
 
       val maybeSession = test.unsafeRunSync()
@@ -27,13 +27,13 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
 
     it("renew already existing sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
-        _ <- tokenStore.add(randomHashValue, User("name", "pw", "email"))
-        firstSession <- tokenStore.sessionOf(randomHashValue)
-        _ <- tokenStore.renew(randomHashValue)
-        secondSession <- tokenStore.sessionOf(randomHashValue)
+        store <- TokenStore.empty(JwtSettings(5 seconds, "secret"))
+        _ <- store.add(randomHashValue, User("name", "pw", "email"))
+        firstSession <- store.sessionOf(randomHashValue)
+        _ <- store.renew(randomHashValue)
+        secondSession <- store.sessionOf(randomHashValue)
       } yield (firstSession, secondSession)
 
       val (firstSession, secondSession) = test.unsafeRunSync()
@@ -44,13 +44,13 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
     it("not renew unknown sessions") {
       val randomHashValue = "entariosniamcairesntmcarsnt"
       val unknownHashValue = "ianstioeanrstiearnstoianerstien"
-      val tokenStore = TokenStore(JwtConf(5 seconds, "secret"))
 
       val test = for {
-        _ <- tokenStore.add(randomHashValue, User("name", "password", "email"))
-        firstStore <- tokenStore.ref.get
-        _ <- tokenStore.renew(unknownHashValue)
-        secondStore <- tokenStore.ref.get
+        store <- TokenStore.empty(JwtSettings(5 seconds, "secret"))
+        _ <- store.add(randomHashValue, User("name", "password", "email"))
+        firstStore <- store.ref.get
+        _ <- store.renew(unknownHashValue)
+        secondStore <- store.ref.get
       } yield (firstStore, secondStore)
 
       val (firstStore, secondStore) = test.unsafeRunSync()
@@ -63,18 +63,18 @@ class TokenStoreTest extends AnyFunSpec with Matchers with OptionValues {
       implicit val timer = IO.timer(ExecutionContext.global)
 
       val randomHashValue = "entariosniamcairesntmcarsnt"
-      val tokenStore = TokenStore(JwtConf(1 seconds, "secret"))
 
       val test = for {
-        _ <- tokenStore.add(randomHashValue, User("name", "password", "email"))
+        store <- TokenStore.empty(JwtSettings(1 seconds, "secret"))
+        _ <- store.add(randomHashValue, User("name", "password", "email"))
         _ <- IO.sleep(2 seconds)
-        _ <- tokenStore.clear()
-        session <- tokenStore.sessionOf(randomHashValue)
+        _ <- store.clear()
+        session <- store.sessionOf(randomHashValue)
       } yield session
 
       val maybeSession = test.unsafeRunSync()
 
-      maybeSession shouldBe empty
+      maybeSession shouldBe None
     }
 
   }

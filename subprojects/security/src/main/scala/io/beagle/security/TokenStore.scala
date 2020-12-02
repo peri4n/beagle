@@ -1,12 +1,12 @@
 package io.beagle.security
 
-import java.time.LocalDateTime
-
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import io.beagle.domain.User
 
-case class TokenStore(settings: JwtConf, ref: Ref[IO, Map[Token, Session]] = Ref.unsafe(Map.empty)) {
+import java.time.LocalDateTime
+
+case class TokenStore(settings: JwtSettings, ref: Ref[IO, Map[Token, Session]]) {
 
   def add(token: Token, user: User): IO[Unit] = {
     ref.update(_ + (token -> Session(user, LocalDateTime.now())))
@@ -27,3 +27,8 @@ case class TokenStore(settings: JwtConf, ref: Ref[IO, Map[Token, Session]] = Ref
   def clear(): IO[Unit] = ref.update(store => store.filterNot(record => sessionExpired(record._2)))
 }
 
+object TokenStore {
+
+  def empty(settings: JwtSettings): IO[TokenStore] =
+    Ref[IO].of(Map.empty[Token, Session]).map(store => TokenStore(settings, store))
+}

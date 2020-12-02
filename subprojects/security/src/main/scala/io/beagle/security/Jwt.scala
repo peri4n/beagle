@@ -7,7 +7,7 @@ import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
 
 import scala.util.Try
 
-case class Jwt(settings: JwtConf) {
+case class Jwt(settings: JwtSettings) {
 
   def encode(user: User): String = JwtCirce.encode(user.asJson, settings.secret, JwtAlgorithm.HS256)
 

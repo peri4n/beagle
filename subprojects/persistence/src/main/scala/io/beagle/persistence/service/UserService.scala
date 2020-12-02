@@ -3,11 +3,11 @@ package io.beagle.persistence.service
 import cats.effect.Sync
 import doobie.free.connection.ConnectionIO
 import io.beagle.domain.{User, UserId, UserItem}
-import io.beagle.persistence.repository.user.UserRepo
+import io.beagle.persistence.repository.user.{UserRepo, UserRepository}
 
-case object UserService {
+case class UserService(userRepo: UserRepository) {
 
-  def createTable(): ConnectionIO[Int] = UserRepo.createTable()
+  def createTable(): ConnectionIO[Int] = userRepo.createTable()
 
   def create(user: User): ConnectionIO[UserItem] = {
     UserRepo.findByName(user.name).flatMap { maybeUser =>

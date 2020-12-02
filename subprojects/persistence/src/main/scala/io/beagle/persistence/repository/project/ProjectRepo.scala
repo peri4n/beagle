@@ -5,7 +5,7 @@ import doobie.implicits._
 import io.beagle.domain.{Project, ProjectId, ProjectItem, UserId}
 import doobie.implicits.javatime._
 
-case object ProjectRepo {
+case object ProjectRepo extends ProjectRepository {
   def createTable(): ConnectionIO[Int] = {
     sql"""CREATE TABLE IF NOT EXISTS projects (
          | id serial PRIMARY KEY,

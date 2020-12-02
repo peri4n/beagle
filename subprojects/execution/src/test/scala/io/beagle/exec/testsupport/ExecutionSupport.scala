@@ -1,6 +1,6 @@
 package io.beagle.exec.testsupport
 
-import io.beagle.exec.Execution.Global
+import io.beagle.exec.Exec.Global
 
 trait ExecutionSupport {
 

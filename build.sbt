@@ -83,7 +83,8 @@ lazy val commonSettings = Seq(
     "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots")
-  )
+  ),
+  Test / parallelExecution := true
 )
 
 lazy val compilerOptions = Seq(

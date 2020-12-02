@@ -15,7 +15,7 @@ case object UserRepo extends UserRepository {
          | username VARCHAR(255) UNIQUE NOT NULL,
          | password VARCHAR(255),
          | email VARCHAR(255),
-         | created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP)""".stripMargin.update.run
+         | created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)""".stripMargin.update.run
   }
 
   def create(user: User): ConnectionIO[UserItem] = {
