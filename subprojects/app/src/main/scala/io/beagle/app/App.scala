@@ -19,6 +19,7 @@ object App extends IOApp {
 
     for {
       _ <- Logger[IO].info("Welcome to bIO - the search engine for biological sequences")
+      _ <- printRunMode
       environment <- loadWebserver
 
       searchService = environment.searchService
@@ -66,4 +67,11 @@ object App extends IOApp {
       case Left(error) => Logger[IO].error(error.toString) *> IO.raiseError(new RuntimeException("foo"))
       case Right(settings) => settings.environment()
     }
+
+  def printRunMode: IO[Unit] = {
+    sys.props.getOrElse("run.mode", "dev") match {
+      case "dev" => Logger[IO].info("Running in development mode.")
+      case "prod"  =>Logger[IO].info("Running in production mode.")
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import sbt.Keys.libraryDependencies
+import sbt.Keys.{javaOptions, libraryDependencies}
 
 lazy val beagle = project
   .in(file("."))
@@ -76,6 +76,8 @@ lazy val domain = project
 lazy val frontend = project
   .in(file("subprojects/frontend"))
 
+lazy val runMode = settingKey[String]("Detects running mode")
+
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.1",
   scalacOptions ++= compilerOptions,
@@ -84,7 +86,14 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots")
   ),
-  Test / parallelExecution := true
+  Test / parallelExecution := true,
+) ++ runModeSettings
+
+lazy val runModeSettings = Seq(
+  runMode := sys.props.get("run.mode").getOrElse("dev"),
+  javaOptions += {
+    s"-Drun.mode=${runMode.value}"
+  }
 )
 
 lazy val compilerOptions = Seq(
@@ -140,7 +149,7 @@ lazy val dependencies = new {
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
 
   // logging
-  val logging =  "io.chrisdavenport" %% "log4cats-slf4j"   % catsLogV
+  val logging = "io.chrisdavenport" %% "log4cats-slf4j" % catsLogV
   val logback = "ch.qos.logback" % "logback-classic" % logbackV
 
   // cats
@@ -149,7 +158,6 @@ lazy val dependencies = new {
 
   // Scala test
   val scalaTest = "org.scalatest" %% "scalatest" % testV
-  val scalaTestPlus = "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2"
   val scalaCheck = "org.scalacheck" %% "scalacheck" % checkV
 }
 
@@ -167,7 +175,6 @@ lazy val commonDependencies = Seq(
 
   // tests
   dependencies.scalaTest % "test",
-  dependencies.scalaTestPlus % "test",
   dependencies.scalaCheck % "test"
 )
 
