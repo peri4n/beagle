@@ -25,7 +25,7 @@ case class FileUploadController(execution: Exec, elasticService: SearchService) 
   import FileUploadController._
 
   implicit val timer = execution.timer
-  implicit val e = execution.threadPool
+  implicit val e = execution.shift
 
   implicit val entityEncoder = jsonEncoderOf[IO, FileUploadResponse]
 

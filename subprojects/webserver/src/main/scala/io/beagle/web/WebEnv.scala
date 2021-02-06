@@ -16,19 +16,20 @@ case class WebEnv(uiRoot: String, port: Int, persistence: PersistenceEnv, search
   /**
    * Runtime
    */
-  implicit lazy val cs = exec.threadPool
+  implicit lazy val cs = exec.shift
   implicit lazy val timer = exec.timer
 
   /**
    * Services
    */
   lazy val searchService = search.searchService
+  lazy val datasetService = persistence.datasetService
 
   /**
    * Controllers
    */
   lazy val userRoute = UserController(persistence).route
-  lazy val datasetRoute = DatasetController(persistence).route
+  lazy val datasetRoute = DatasetController(datasetService, persistence.transactor).route
   lazy val staticRoute = StaticContentController(exec, uiRoot).route
   lazy val searchRoute = SearchController(searchService).route
   lazy val healthRoute = HealthCheckController(searchService).route

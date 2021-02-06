@@ -50,7 +50,7 @@ case class PostgresEnv(database: String,
       .run
       .handleError(_ => 0)
 
-    implicit val pool = execution.threadPool
+    implicit val pool = execution.shift
     val xa = Transactor.fromDriverManager[IO](driverClass, s"jdbc:postgresql://$host:$port/postgres", user, password)
 
     (for {
@@ -60,7 +60,7 @@ case class PostgresEnv(database: String,
   }
 
   lazy val transactor: Aux[IO, HikariDataSource] = {
-    implicit val pool = execution.threadPool
+    implicit val pool = execution.shift
 
     val config = new HikariConfig()
     config.setJdbcUrl(s"jdbc:postgresql://$host:$port/$database")
@@ -94,7 +94,7 @@ case class InMemEnv(execution: Exec, userRepo: InMemUserRepo, projectRepo: InMem
   override def createTables(): IO[Unit] = IO.unit
 
   override lazy val transactor: Transactor[IO] = {
-    implicit val pool = execution.threadPool
+    implicit val pool = execution.shift
 
     Transactor(
       (),

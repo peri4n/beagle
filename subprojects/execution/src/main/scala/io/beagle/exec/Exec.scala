@@ -11,7 +11,7 @@ sealed trait Exec {
 
   def context: ExecutionContext
 
-  def threadPool: ContextShift[IO] = IO.contextShift(context)
+  def shift: ContextShift[IO] = IO.contextShift(context)
 
   def timer: Timer[IO] = IO.timer(context)
 

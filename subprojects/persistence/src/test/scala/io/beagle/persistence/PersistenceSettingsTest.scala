@@ -15,7 +15,7 @@ class PersistenceSettingsTest extends AnyFunSpec with Matchers with OptionValues
     }
 
     it("can be configured to use in-memory abstractions") {
-      ConfigSource.resources("inmem.conf").load[InMem] should be(Right(InMem(exec = Fixed(2))))
+      ConfigSource.resources("inmem.conf").load[InMemDB] should be(Right(InMemDB(exec = Fixed(2))))
     }
   }
 

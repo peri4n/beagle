@@ -21,11 +21,10 @@ case class Postgres(database: String,
   override def environment(): IO[PersistenceEnv] = IO { PostgresEnv(database, user, password, host, port, exec) }
 }
 
-case class InMem(exec: Exec) extends PersistenceSettings {
+case class InMemDB(exec: Exec) extends PersistenceSettings {
   override def environment(): IO[PersistenceEnv] = for {
     userRepo <- InMemUserRepo.create()
     projectRepo <- InMemProjectRepo.create()
     datasetRepo <- InMemDatasetRepo.create()
-
   } yield InMemEnv(exec, userRepo, projectRepo, datasetRepo)
 }

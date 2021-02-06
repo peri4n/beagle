@@ -4,6 +4,8 @@ import cats.effect.IO
 import doobie.implicits._
 import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain._
+import io.beagle.exec.Exec
+import io.beagle.persistence.{InMemDB, InMemEnv}
 import io.beagle.persistence.service.{DatasetService, ProjectService, UserService}
 import io.beagle.persistence.testsupport.PostgresSupport
 import io.beagle.testsupport.ResponseMatchers
@@ -20,19 +22,21 @@ class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatche
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
   implicit val responseEncoder = jsonEncoderOf[IO, DatasetItem]
 
+  val userService = environment.userService
+
+  val datasetService = environment.datasetService
+
+  val projectService = environment.projectService
+
   override def beforeAll = {
-    (for {
-      _ <- UserService.createTable()
-      _ <- ProjectService.createTable()
-      _ <- DatasetService.createTable()
-    } yield ()).transact(xa).unsafeRunSync()
+    environment.createTables().unsafeRunSync()
   }
 
   after {
     (for {
-      _ <- DatasetService.deleteAll()
-      _ <- ProjectService.deleteAll()
-      _ <- UserService.deleteAll()
+      _ <- datasetService.deleteAll()
+      _ <- projectService.deleteAll()
+      _ <- userService.deleteAll()
     } yield ()).transact(xa).unsafeRunSync()
   }
 
@@ -41,11 +45,11 @@ class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatche
     it("must return 200 if the dataset was successfully created") {
       // setup
       val (userI, projectI) = (for {
-        userItem <- UserService.create(User("foo", "1234", "gna@example.com"))
-        projectItem <- ProjectService.create(Project("user", userItem.id))
+        userItem <- userService.create(User("foo", "1234", "gna@example.com"))
+        projectItem <- projectService.create(Project("user", userItem.id))
       } yield (userItem, projectItem)).transact(xa).unsafeRunSync()
       val createRequest = CreateSequenceSetRequest("set1", userI.id, projectI.id)
-      val controller = DatasetController(persistence).route.orNotFound
+      val controller = DatasetController(datasetService, xa).route.orNotFound
 
       // test
       val response = controller

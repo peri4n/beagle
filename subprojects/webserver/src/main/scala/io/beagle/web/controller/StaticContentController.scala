@@ -11,7 +11,7 @@ import org.http4s.server.staticcontent._
 case class StaticContentController(execution: Exec, uiRoot: String) extends Http4sDsl[IO] {
 
   val route: HttpRoutes[IO] = {
-    implicit val e = execution.threadPool
+    implicit val e = execution.shift
     fileService[IO](FileService.Config[IO](absolutePathOf(uiRoot), execution.blocker))
   }
 
