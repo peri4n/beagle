@@ -7,15 +7,15 @@ import org.scalatest.matchers.should.Matchers
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
-class PersistenceSettingsTest extends AnyFunSpec with Matchers with OptionValues {
+class DbConfigTest extends AnyFunSpec with Matchers with OptionValues {
 
   describe("The persistence layer") {
     it("can be configured to use PostgreSQL") {
-      ConfigSource.resources("postgres.conf").load[Postgres] should be(Right(Postgres("dbName", "fbull", "password", exec = Fixed(3))))
+      ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(Right(PostgresConfig("dbName", "fbull", "password", exec = Fixed(3))))
     }
 
     it("can be configured to use in-memory abstractions") {
-      ConfigSource.resources("inmem.conf").load[InMemDB] should be(Right(InMemDB(exec = Fixed(2))))
+      ConfigSource.resources("inmem.conf").load[InMemConfig] should be(Right(InMemConfig(exec = Fixed(2))))
     }
   }
 

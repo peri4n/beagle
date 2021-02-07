@@ -13,7 +13,9 @@ lazy val app = project
     commonSettings,
     libraryDependencies ++= commonDependencies
   )
-  .dependsOn(webserver)
+  .dependsOn(
+    webserver % "compile->compile;runtime->runtime;test->test",
+  )
 
 lazy val webserver = project
   .in(file("subprojects/webserver"))
@@ -23,7 +25,7 @@ lazy val webserver = project
   )
   .dependsOn(
     search % "compile->compile;test->test",
-    persistence % "compile->compile;test->test",
+    persistence % "compile->compile;runtime->runtime;test->test",
     execution % "compile->compile;test->test",
     parser,
     security)
@@ -92,7 +94,7 @@ lazy val commonSettings = Seq(
 lazy val runModeSettings = Seq(
   runMode := sys.props.get("run.mode").getOrElse("dev"),
   javaOptions += {
-    s"-Drun.mode=${runMode.value}"
+    s"-Drun.mode=${ runMode.value }"
   }
 )
 

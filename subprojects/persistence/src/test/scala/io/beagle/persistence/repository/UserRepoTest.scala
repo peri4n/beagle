@@ -3,15 +3,15 @@ package io.beagle.persistence.repository
 import doobie.implicits._
 import io.beagle.domain.{User, UserId, UserItem}
 import io.beagle.persistence.repository.user.UserRepo
-import io.beagle.persistence.testsupport.PostgresSupport
+import io.beagle.persistence.testsupport.DockerPostgres
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, OptionValues}
 
-class UserRepoTest extends AnyFunSpec with Matchers with OptionValues with BeforeAndAfterAll with BeforeAndAfterEach with PostgresSupport {
+class UserRepoTest extends AnyFunSpec with Matchers with OptionValues with BeforeAndAfterAll with BeforeAndAfterEach with DockerPostgres {
 
   override def beforeAll(): Unit = {
-    container.start()
+    super.beforeAll()
     val dbSetup = for {
       _ <- environment.userService.createTable().transact(xa)
     } yield ()
@@ -33,9 +33,4 @@ class UserRepoTest extends AnyFunSpec with Matchers with OptionValues with Befor
       maybeUser.value shouldBe UserItem(UserId(1), user)
     }
   }
-
-  override def afterAll(): Unit = {
-    container.stop()
-  }
-
 }

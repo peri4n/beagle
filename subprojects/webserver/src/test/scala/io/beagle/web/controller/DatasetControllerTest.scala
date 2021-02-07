@@ -2,22 +2,19 @@ package io.beagle.web.controller
 
 import cats.effect.IO
 import doobie.implicits._
-import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
 import io.beagle.domain._
-import io.beagle.exec.Exec
-import io.beagle.persistence.{InMemDB, InMemEnv}
-import io.beagle.persistence.service.{DatasetService, ProjectService, UserService}
-import io.beagle.persistence.testsupport.PostgresSupport
+import io.beagle.persistence.testsupport.DockerPostgres
 import io.beagle.testsupport.ResponseMatchers
+import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 
-class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatchers with PostgresSupport with OptionValues with BeforeAndAfter with BeforeAndAfterAll {
+class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatchers with DockerPostgres with OptionValues with BeforeAndAfter with BeforeAndAfterAll {
 
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
   implicit val responseEncoder = jsonEncoderOf[IO, DatasetItem]
@@ -29,7 +26,7 @@ class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatche
   val projectService = environment.projectService
 
   override def beforeAll = {
-    environment.createTables().unsafeRunSync()
+    environment.initSchema().unsafeRunSync()
   }
 
   after {

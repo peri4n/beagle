@@ -3,7 +3,7 @@ package io.beagle.web.controller
 import cats.effect.IO
 import doobie.implicits._
 import io.beagle.domain.User
-import io.beagle.persistence.PersistenceEnv
+import io.beagle.persistence.DB
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -17,7 +17,7 @@ case object UserController {
 
 }
 
-case class UserController(env: PersistenceEnv) extends Http4sDsl[IO] {
+case class UserController(env: DB) extends Http4sDsl[IO] {
 
   import UserController._
 

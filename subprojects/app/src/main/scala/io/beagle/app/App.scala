@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp, Sync}
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.User
-import io.beagle.persistence.PersistenceEnv
+import io.beagle.persistence.DB
 import io.beagle.web.{WebEnv, WebSettings}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
@@ -34,8 +34,7 @@ object App extends IOApp {
 
       dbSetup = for {
         _ <- Logger[IO].info("Setting up database environment")
-        _ <- db.createDb()
-        _ <- db.createTables()
+        _ <- db.initSchema()
         _ <- injectAdmin(db)
       } yield ()
 
@@ -50,7 +49,7 @@ object App extends IOApp {
     } yield program.unsafeRunSync()
   }
 
-  private def injectAdmin(persistenceEnv: PersistenceEnv): IO[Unit] = {
+  private def injectAdmin(persistenceEnv: DB): IO[Unit] = {
     val admin = User("admin", "admin", "admin@beagle.io")
 
     val create = for {
@@ -64,7 +63,7 @@ object App extends IOApp {
 
   def loadWebserver: IO[WebEnv] =
     ConfigSource.defaultApplication.load[WebSettings] match {
-      case Left(error) => Logger[IO].error(error.toString) *> IO.raiseError(new RuntimeException("foo"))
+      case Left(error) => Logger[IO].error(error.toString) *> IO.raiseError(new RuntimeException(s"Unable to load config file: $error"))
       case Right(settings) => settings.environment()
     }
 
