@@ -21,6 +21,7 @@ case class Postgres(database: String,
                     password: String,
                     host: String = "localhost",
                     port: Int = 5432,
+                    poolSize: Int = 5,
                     execution: Exec) extends DB {
 
   val driverClass: String = "org.postgresql.Driver"
@@ -32,7 +33,7 @@ case class Postgres(database: String,
     config.setJdbcUrl(s"jdbc:postgresql://$host:$port/$database")
     config.setUsername(user)
     config.setPassword(password)
-    config.setMaximumPoolSize(5)
+    config.setMaximumPoolSize(poolSize)
     config.setDriverClassName(driverClass)
 
     HikariTransactor[IO](new HikariDataSource(config), execution.context, execution.blocker)

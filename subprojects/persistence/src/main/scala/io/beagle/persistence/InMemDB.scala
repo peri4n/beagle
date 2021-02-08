@@ -13,9 +13,9 @@ import java.sql.Connection
 
 case class InMemDB(execution: Exec, userRepo: InMemUserRepo, projectRepo: InMemProjectRepo, datasetRepo: InMemDatasetRepo) extends DB {
 
-  override def initSchema(): IO[Unit] = IO.unit
+  def initSchema(): IO[Unit] = IO.unit
 
-  override lazy val transactor: Transactor[IO] = {
+  lazy val transactor: Transactor[IO] = {
     implicit val pool = execution.shift
 
     Transactor(
@@ -26,10 +26,10 @@ case class InMemDB(execution: Exec, userRepo: InMemUserRepo, projectRepo: InMemP
     )
   }
 
-  override lazy val userService: UserService = UserService(userRepo)
+  lazy val userService: UserService = UserService(userRepo)
 
-  override lazy val projectService: ProjectService = ProjectService(userService, projectRepo)
+  lazy val projectService: ProjectService = ProjectService(userService, projectRepo)
 
-  override lazy val datasetService: DatasetService = DatasetService(datasetRepo)
+  lazy val datasetService: DatasetService = DatasetService(datasetRepo)
 
 }

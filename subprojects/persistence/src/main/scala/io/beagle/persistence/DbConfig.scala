@@ -17,9 +17,10 @@ case class PostgresConfig(database: String,
                           password: String,
                           host: String = "localhost",
                           port: Int = 5432,
+                          poolSize: Int = 5,
                           exec: Exec) extends DbConfig {
   override def environment(): IO[DB] = IO {
-    Postgres(database, user, password, host, port, exec)
+    Postgres(database, user, password, host, port, poolSize, exec)
   }
 }
 

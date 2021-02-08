@@ -1,1 +1,4 @@
-create database beagle;
+CREATE DATABASE beagle;
+CREATE USER beagle WITH PASSWORD 'beagle';
+GRANT ALL PRIVILEGES ON DATABASE beagle TO beagle;
+

@@ -3,7 +3,7 @@ package io.beagle.web.controller
 import cats.effect.IO
 import doobie.implicits._
 import io.beagle.domain._
-import io.beagle.persistence.testsupport.DockerPostgres
+import io.beagle.persistence.testsupport.DbSupport
 import io.beagle.testsupport.ResponseMatchers
 import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
 import io.circe.generic.auto._
@@ -14,7 +14,7 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 
-class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatchers with DockerPostgres with OptionValues with BeforeAndAfter with BeforeAndAfterAll {
+class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatchers with DbSupport with OptionValues with BeforeAndAfter with BeforeAndAfterAll {
 
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
   implicit val responseEncoder = jsonEncoderOf[IO, DatasetItem]

@@ -1,5 +1,5 @@
 lazy val dependencies = new {
-  val doobieV = "0.9.2"
+  val doobieV = "0.10.0"
   val testcontainerV = "0.39.0"
   val liquibaseV = "4.2.2"
 

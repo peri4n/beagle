@@ -88,7 +88,7 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots")
   ),
-  Test / parallelExecution := true,
+  Test / parallelExecution := false,
 ) ++ runModeSettings
 
 lazy val runModeSettings = Seq(
