@@ -5,7 +5,7 @@ import doobie.implicits._
 import io.beagle.domain.{User, UserId, UserItem}
 import doobie.implicits.javatime._
 
-case object UserRepo extends UserRepository {
+case object UserRepo {
 
   val TableName = "users"
 

@@ -5,14 +5,10 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import doobie.hikari.HikariTransactor
 import doobie.util.transactor.Transactor.Aux
 import io.beagle.exec.Exec
-import io.beagle.persistence.repository.dataset.DatasetRepo
-import io.beagle.persistence.repository.project.ProjectRepo
-import io.beagle.persistence.repository.user.UserRepo
-import io.beagle.persistence.service.{DatasetService, ProjectService, UserService}
-import liquibase.{Contexts, Liquibase}
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
+import liquibase.{Contexts, Liquibase}
 
 import java.sql.DriverManager
 
@@ -46,11 +42,4 @@ case class Postgres(database: String,
     val liquibase = new Liquibase("schema/changeset.sql", new ClassLoaderResourceAccessor(), db)
     IO { liquibase.update(new Contexts()) }
   }
-
-  override lazy val userService: UserService = UserService(UserRepo)
-
-  override lazy val projectService: ProjectService = ProjectService(userService, ProjectRepo)
-
-  override lazy val datasetService: DatasetService = DatasetService(DatasetRepo)
-
 }

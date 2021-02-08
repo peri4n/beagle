@@ -11,11 +11,11 @@ trait DB {
 
   def initSchema(): IO[Unit]
 
-  def userService: UserService
+  def userService = UserService
 
-  def projectService: ProjectService
+  def projectService = ProjectService
 
-  def datasetService: DatasetService
+  def datasetService = DatasetService
 
   def transactor: Transactor[IO]
 

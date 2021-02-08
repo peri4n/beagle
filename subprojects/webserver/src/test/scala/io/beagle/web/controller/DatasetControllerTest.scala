@@ -3,6 +3,7 @@ package io.beagle.web.controller
 import cats.effect.IO
 import doobie.implicits._
 import io.beagle.domain._
+import io.beagle.persistence.service.{DatasetService, ProjectService, UserService}
 import io.beagle.persistence.testsupport.DbSupport
 import io.beagle.testsupport.ResponseMatchers
 import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
@@ -19,21 +20,15 @@ class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatche
   implicit val requestEncoder = jsonEncoderOf[IO, CreateSequenceSetRequest]
   implicit val responseEncoder = jsonEncoderOf[IO, DatasetItem]
 
-  val userService = environment.userService
-
-  val datasetService = environment.datasetService
-
-  val projectService = environment.projectService
-
   override def beforeAll = {
     environment.initSchema().unsafeRunSync()
   }
 
   after {
     (for {
-      _ <- datasetService.deleteAll()
-      _ <- projectService.deleteAll()
-      _ <- userService.deleteAll()
+      _ <- DatasetService.deleteAll()
+      _ <- ProjectService.deleteAll()
+      _ <- UserService.deleteAll()
     } yield ()).transact(xa).unsafeRunSync()
   }
 
@@ -42,11 +37,11 @@ class DatasetControllerTest extends AnyFunSpec with Matchers with ResponseMatche
     it("must return 200 if the dataset was successfully created") {
       // setup
       val (userI, projectI) = (for {
-        userItem <- userService.create(User("foo", "1234", "gna@example.com"))
-        projectItem <- projectService.create(Project("user", userItem.id))
+        userItem <- UserService.create(User("foo", "1234", "gna@example.com"))
+        projectItem <- ProjectService.create(Project("user", userItem.id))
       } yield (userItem, projectItem)).transact(xa).unsafeRunSync()
       val createRequest = CreateSequenceSetRequest("set1", userI.id, projectI.id)
-      val controller = DatasetController(datasetService, xa).route.orNotFound
+      val controller = DatasetController(xa).route.orNotFound
 
       // test
       val response = controller

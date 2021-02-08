@@ -5,7 +5,7 @@ import doobie.implicits._
 import io.beagle.domain.{Dataset, DatasetId, DatasetItem, ProjectId}
 import doobie.implicits.javatime._
 
-case object DatasetRepo extends DatasetRepository {
+case object DatasetRepo {
 
   def createTable(): ConnectionIO[Int] = {
     sql"""CREATE TABLE IF NOT EXISTS datasets (

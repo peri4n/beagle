@@ -13,10 +13,6 @@ class DbConfigTest extends AnyFunSpec with Matchers with OptionValues {
     it("can be configured to use PostgreSQL") {
       ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(Right(PostgresConfig("dbName", "fbull", "password", exec = Fixed(3))))
     }
-
-    it("can be configured to use in-memory abstractions") {
-      ConfigSource.resources("inmem.conf").load[InMemConfig] should be(Right(InMemConfig(exec = Fixed(2))))
-    }
   }
 
 }

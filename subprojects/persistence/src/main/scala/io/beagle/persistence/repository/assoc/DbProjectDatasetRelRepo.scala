@@ -3,7 +3,7 @@ package io.beagle.persistence.repository.assoc
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 
-case object DbProjectDatasetRelRepo extends ProjectDatasetRelRepo {
+case object DbProjectDatasetRelRepo {
 
   def create(rel: ProjectDatasetRel): ConnectionIO[ProjectDatasetRel] =
     sql"""INSERT INTO datasets_projects (dataset_id, project_id)

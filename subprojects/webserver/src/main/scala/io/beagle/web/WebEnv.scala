@@ -29,7 +29,7 @@ case class WebEnv(uiRoot: String, port: Int, persistence: DB, search: SearchEnv,
    * Controllers
    */
   lazy val userRoute = UserController(persistence).route
-  lazy val datasetRoute = DatasetController(datasetService, persistence.transactor).route
+  lazy val datasetRoute = DatasetController(persistence.transactor).route
   lazy val staticRoute = StaticContentController(exec, uiRoot).route
   lazy val searchRoute = SearchController(searchService).route
   lazy val healthRoute = HealthCheckController(searchService).route
