@@ -1,6 +1,6 @@
 package io.beagle.search
 
-import io.beagle.search.docs.FastaDoc
+import io.beagle.search.docs.SequenceDoc
 import io.beagle.search.testsupport.SearchSupport
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
@@ -18,7 +18,7 @@ class SearchServiceTest extends SearchSupport with Matchers with BeforeAndAfter 
   describe("A search service") {
     it("can index Fasta entries") {
       val test = for {
-        _ <- service.index(FastaDoc("foo", 1, "ACGTA"), refresh = true)
+        _ <- service.index(SequenceDoc("foo", 1, "ACGTA"), refresh = true)
         response <- service.find("ACGT")
       } yield response
 
@@ -28,7 +28,7 @@ class SearchServiceTest extends SearchSupport with Matchers with BeforeAndAfter 
 
     it("can delete Fasta entries") {
       val test = for {
-        _ <- service.index(FastaDoc("foo", 1, "ACGTA"), refresh = true)
+        _ <- service.index(SequenceDoc("foo", 1, "ACGTA"), refresh = true)
         _ <- service.delete("foo")
         response <- service.find("ACGT")
       } yield response

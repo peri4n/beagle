@@ -7,11 +7,12 @@ import org.scalatest.matchers.should.Matchers
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
-class DbConfigTest extends AnyFunSpec with Matchers with OptionValues {
+class PostgresConfigTest extends AnyFunSpec with Matchers with OptionValues {
 
   describe("The persistence layer") {
     it("can be configured to use PostgreSQL") {
-      ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(Right(PostgresConfig("dbName", "fbull", "password", "remote-server", 1234, 3)))
+      ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(
+        Right(PostgresConfig("remote-server", 1234, "dbName", DbCredentials("user", "password"), 3)))
     }
   }
 

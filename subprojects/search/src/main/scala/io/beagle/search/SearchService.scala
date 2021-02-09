@@ -12,7 +12,7 @@ import com.sksamuel.elastic4s.requests.indexes.{CreateIndexResponse, IndexRespon
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import io.beagle.exec.Exec
-import io.beagle.search.docs.FastaDoc
+import io.beagle.search.docs.SequenceDoc
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe.generic.auto._
@@ -31,14 +31,14 @@ case class SearchService(protocol: String, host: String, port: Int, indexName: S
 
   implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
-  def index(fastaDoc: FastaDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = client.use {
+  def index(fastaDoc: SequenceDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = client.use {
     _.execute {
       val request = indexRequest(indexName)(fastaDoc)
       if (refresh) { request.refreshImmediately } else { request }
     }
   }
 
-  def indexBulk(entries: List[FastaDoc]): IO[Response[BulkResponse]] = client.use {
+  def indexBulk(entries: List[SequenceDoc]): IO[Response[BulkResponse]] = client.use {
     _.execute { bulk(entries map { indexRequest(indexName) }) }
   }
 
@@ -72,8 +72,8 @@ case class SearchService(protocol: String, host: String, port: Int, indexName: S
   def createSequenceIndex(): IO[Response[CreateIndexResponse]] = client.use {
     _.execute {
       createIndex(indexName)
-        .mapping(FastaDoc.Mapping)
-        .analysis(FastaDoc.Analysis)
+        .mapping(SequenceDoc.Mapping)
+        .analysis(SequenceDoc.Analysis)
     }
 
   }
@@ -81,7 +81,7 @@ case class SearchService(protocol: String, host: String, port: Int, indexName: S
 
 object SearchService {
 
-  private def indexRequest(indexName: String)(fastaDoc: FastaDoc) = {
+  private def indexRequest(indexName: String)(fastaDoc: SequenceDoc) = {
     indexInto(indexName).doc(fastaDoc)
   }
 

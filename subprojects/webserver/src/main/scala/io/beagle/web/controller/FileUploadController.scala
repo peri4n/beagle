@@ -6,7 +6,7 @@ import fs2.Stream
 import io.beagle.exec.Exec
 import io.beagle.parser.fasta.{FastaParser, FastaSeq}
 import io.beagle.search.SearchService
-import io.beagle.search.docs.FastaDoc
+import io.beagle.search.docs.SequenceDoc
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe._
@@ -29,7 +29,7 @@ case class FileUploadController(execution: Exec, elasticService: SearchService) 
 
   implicit val entityEncoder = jsonEncoderOf[IO, FileUploadResponse]
 
-  def toFastaDoc(sequences: List[FastaSeq]): FastaDoc = ???
+  def toFastaDoc(sequences: List[FastaSeq]): SequenceDoc = ???
 
   val route =
     HttpRoutes.of[IO] {

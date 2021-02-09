@@ -1,7 +1,7 @@
 package io.beagle.web.controller
 
 import cats.effect.IO
-import io.beagle.search.docs.FastaDoc
+import io.beagle.search.docs.SequenceDoc
 import io.beagle.search.testsupport.SearchSupport
 import io.beagle.testsupport.ResponseMatchers
 import io.circe.generic.auto._
@@ -24,8 +24,8 @@ class SearchSequenceControllerTest extends AnyFunSpec with Matchers with Respons
     it("finds a previously indexed sequences with shared n-grams" ) {
       val test = for {
         _ <- service.createSequenceIndex()
-        _ <- service.index(FastaDoc("header1", 1, "AAACGT"), refresh = true)
-        _ <- service.index(FastaDoc("header2", 1, "CAAAAT"), refresh = true)
+        _ <- service.index(SequenceDoc("header1", 1, "AAACGT"), refresh = true)
+        _ <- service.index(SequenceDoc("header2", 1, "CAAAAT"), refresh = true)
         response <- controller.run(Request(
           method = Method.POST,
           uri = uri"/search",

@@ -5,11 +5,11 @@ import com.sksamuel.elastic4s.requests.analysis.{
 }
 import com.sksamuel.elastic4s.requests.mappings.{MappingDefinition, TextField}
 
-case class FastaDoc(identifier: String,
-                    projectId: Int,
-                    sequence: String)
+case class SequenceDoc(identifier: String,
+                       projectId: Int,
+                       sequence: String)
 
-object FastaDoc {
+object SequenceDoc {
 
   val headerFieldName = "header"
 

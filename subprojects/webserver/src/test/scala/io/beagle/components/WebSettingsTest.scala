@@ -1,11 +1,10 @@
 package io.beagle.components
 
 import io.beagle.exec.Exec.Fixed
-import io.beagle.persistence.PostgresConfig
-import io.beagle.search.SearchSettings
+import io.beagle.persistence.{DbCredentials, PostgresConfig}
+import io.beagle.search.SearchConfig
 import io.beagle.security.{JwtSettings, SecuritySettings}
 import io.beagle.web.WebSettings
-import org.scalatest.EitherValues
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import pureconfig.ConfigSource
@@ -13,13 +12,17 @@ import pureconfig.generic.auto._
 
 import scala.concurrent.duration._
 
-class WebSettingsTest extends AnyFunSpec with Matchers with EitherValues {
+class WebSettingsTest extends AnyFunSpec with Matchers {
 
   describe("The web server") {
     it("can be configured via file") {
-      val actual = ConfigSource.resources("web.conf").load[WebSettings]
-      val expected = WebSettings("subprojects/frontend/dist/", 9000, PostgresConfig("beagle", "fbull", "password"), SearchSettings(exec = Fixed(1)), SecuritySettings(JwtSettings(30 minutes, "secret")), Fixed(4))
-      actual.right.value should be(expected)
+      ConfigSource.resources("web.conf").load[WebSettings] should be(
+        Right(WebSettings(
+          "subprojects/frontend/dist/",
+          9000,
+          PostgresConfig(credentials = DbCredentials("fbull", "password")),
+          SearchConfig(),
+          SecuritySettings(JwtSettings(30 minutes, "secret")), Fixed(4))))
     }
   }
 

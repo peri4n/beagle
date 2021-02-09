@@ -3,7 +3,8 @@ package io.beagle.web.controller
 import cats.effect.IO
 import doobie.implicits._
 import io.beagle.domain.User
-import io.beagle.persistence.DB
+import io.beagle.persistence.Postgres
+import io.beagle.persistence.service.UserService
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -17,14 +18,14 @@ case object UserController {
 
 }
 
-case class UserController(env: DB) extends Http4sDsl[IO] {
+case class UserController(postgres: Postgres) extends Http4sDsl[IO] {
 
   import UserController._
 
   val route = HttpRoutes.of[IO] {
     case req@POST -> Root / PathName => req.decode[CreateUserRequest] { createUser =>
-      env.userService.create(User(createUser.username, createUser.password, createUser.email))
-        .transact(env.transactor)
+      UserService.create(User(createUser.username, createUser.password, createUser.email))
+        .transact(postgres.transactor)
       ???
     }
   }

@@ -12,31 +12,25 @@ import liquibase.{Contexts, Liquibase}
 
 import java.sql.DriverManager
 
-case class Postgres(database: String,
-                    user: String,
-                    password: String,
-                    host: String = "localhost",
-                    port: Int = 5432,
-                    poolSize: Int = 5,
-                    execution: Exec) extends DB {
+case class Postgres(config: PostgresConfig, execution: Exec) {
 
   val driverClass: String = "org.postgresql.Driver"
 
   lazy val transactor: Aux[IO, HikariDataSource] = {
     import execution._
 
-    val config = new HikariConfig()
-    config.setJdbcUrl(s"jdbc:postgresql://$host:$port/$database")
-    config.setUsername(user)
-    config.setPassword(password)
-    config.setMaximumPoolSize(poolSize)
-    config.setDriverClassName(driverClass)
+    val hikari = new HikariConfig()
+    hikari.setJdbcUrl(config.jdbcUrl())
+    hikari.setUsername(config.credentials.username)
+    hikari.setPassword(config.credentials.password)
+    hikari.setMaximumPoolSize(config.poolSize)
+    hikari.setDriverClassName(driverClass)
 
-    HikariTransactor[IO](new HikariDataSource(config), execution.context, execution.blocker)
+    HikariTransactor[IO](new HikariDataSource(hikari), execution.context, execution.blocker)
   }
 
-  override def initSchema(): IO[Unit] = {
-    val con = DriverManager.getConnection(s"jdbc:postgresql://$host:$port/$database", user, password)
+  def initSchema(): IO[Unit] = {
+    val con = DriverManager.getConnection(config.jdbcUrl(), config.credentials.username, config.credentials.password)
 
     val db = DatabaseFactory.getInstance.findCorrectDatabaseImplementation(new JdbcConnection(con))
     val liquibase = new Liquibase("schema/changeset.sql", new ClassLoaderResourceAccessor(), db)

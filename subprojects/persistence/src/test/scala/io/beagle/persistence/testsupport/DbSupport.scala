@@ -2,7 +2,7 @@ package io.beagle.persistence.testsupport
 
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import io.beagle.exec.Exec.Global
-import io.beagle.persistence.{DB, PostgresConfig}
+import io.beagle.persistence.{DbCredentials, Postgres, PostgresConfig}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funspec.AnyFunSpec
 
@@ -13,24 +13,16 @@ trait DbSupport extends AnyFunSpec with BeforeAndAfterAll {
     //    commonJdbcParams = JdbcDatabaseContainer.CommonParams(initScriptPath = Some("schema/create-db.sql"))
   ).start()
 
-  lazy val environment: DB = (System.getProperty("run.mode") match {
+  lazy val environment: Postgres = (System.getProperty("run.mode") match {
     case "dev" =>
-      PostgresConfig(
-        "beagle",
-        "beagle",
-        "beagle",
-        "localhost",
-        5432,
-        1)
+      PostgresConfig("localhost", 5432, "beagle", DbCredentials("beagle", "beagle"), 1)
     case _ =>
-      PostgresConfig(
-        container.databaseName,
-        container.username,
-        container.password,
-        container.host,
+      PostgresConfig(container.host,
         container.mappedPort(5432),
+        container.databaseName,
+        DbCredentials(container.username, container.password),
         1)
-  }).environment(Global()).unsafeRunSync()
+  }).environment(Global())
 
   lazy val xa = environment.transactor
 

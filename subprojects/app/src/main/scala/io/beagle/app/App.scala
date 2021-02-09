@@ -4,7 +4,8 @@ import cats.effect.{ExitCode, IO, IOApp, Sync}
 import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.User
-import io.beagle.persistence.DB
+import io.beagle.persistence.Postgres
+import io.beagle.persistence.service.UserService
 import io.beagle.web.{WebEnv, WebSettings}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
@@ -49,16 +50,16 @@ object App extends IOApp {
     } yield program.unsafeRunSync()
   }
 
-  private def injectAdmin(persistenceEnv: DB): IO[Unit] = {
+  private def injectAdmin(postgres: Postgres): IO[Unit] = {
     val admin = User("admin", "admin", "admin@beagle.io")
 
     val create = for {
-      maybeUser <- persistenceEnv.userService.findByName(admin.name)
-      _ <- maybeUser.fold(persistenceEnv.userService.create(admin).map(_ => ())) {
+      maybeUser <- UserService.findByName(admin.name)
+      _ <- maybeUser.fold(UserService.create(admin).map(_ => ())) {
         _ => Sync[ConnectionIO].unit
       }
     } yield ()
-    create.transact(persistenceEnv.transactor)
+    create.transact(postgres.transactor)
   }
 
   def loadWebserver: IO[WebEnv] =

@@ -4,6 +4,7 @@ import doobie.implicits._
 import io.beagle.domain._
 import io.beagle.persistence.repository.project.ProjectRepo
 import io.beagle.persistence.repository.user.UserRepo
+import io.beagle.persistence.service.{ProjectService, UserService}
 import io.beagle.persistence.testsupport.DbSupport
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -15,8 +16,8 @@ class ProjectRepoTest extends AnyFunSpec with Matchers with OptionValues with Be
 
   override def beforeEach(): Unit = {
     (for {
-      _ <- environment.userService.deleteAll()
-      _ <- environment.projectService.deleteAll()
+      _ <- UserService.deleteAll()
+      _ <- ProjectService.deleteAll()
     } yield ())
       .transact(xa).unsafeRunSync()
   }

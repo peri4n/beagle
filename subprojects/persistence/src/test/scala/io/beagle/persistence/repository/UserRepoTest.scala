@@ -3,6 +3,7 @@ package io.beagle.persistence.repository
 import doobie.implicits._
 import io.beagle.domain.{User, UserId, UserItem}
 import io.beagle.persistence.repository.user.UserRepo
+import io.beagle.persistence.service.UserService
 import io.beagle.persistence.testsupport.DbSupport
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -13,7 +14,7 @@ object DatabaseTest extends Tag("DatabaseTest")
 class UserRepoTest extends AnyFunSpec with Matchers with OptionValues with BeforeAndAfterEach with DbSupport {
 
   override def beforeEach(): Unit = {
-    environment.userService.deleteAll().transact(xa).unsafeRunSync()
+    UserService.deleteAll().transact(xa).unsafeRunSync()
   }
 
   describe("A UserRepo") {
