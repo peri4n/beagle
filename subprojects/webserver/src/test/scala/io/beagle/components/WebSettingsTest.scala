@@ -2,7 +2,7 @@ package io.beagle.components
 
 import io.beagle.exec.Exec.Fixed
 import io.beagle.persistence.{DbCredentials, PostgresConfig}
-import io.beagle.search.SearchConfig
+import io.beagle.search.ElasticSearchConfig
 import io.beagle.security.{JwtSettings, SecuritySettings}
 import io.beagle.web.WebSettings
 import org.scalatest.funspec.AnyFunSpec
@@ -21,7 +21,7 @@ class WebSettingsTest extends AnyFunSpec with Matchers {
           "subprojects/frontend/dist/",
           9000,
           PostgresConfig(credentials = DbCredentials("fbull", "password")),
-          SearchConfig(),
+          ElasticSearchConfig(),
           SecuritySettings(JwtSettings(30 minutes, "secret")), Fixed(4))))
     }
   }

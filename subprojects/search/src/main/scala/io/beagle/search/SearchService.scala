@@ -19,12 +19,12 @@ import io.circe.generic.auto._
 
 import scala.concurrent.duration.{FiniteDuration, _}
 
-case class SearchService(protocol: String, host: String, port: Int, indexName: String, execution: Exec) {
+case class SearchService(config: ElasticSearchConfig, execution: Exec) {
 
   import SearchService._
 
   val client: Resource[IO, ElasticClient] = Resource.make {
-    IO { ElasticClient(JavaClient(ElasticProperties(s"$protocol://$host:$port/"))) }
+    IO { ElasticClient(JavaClient(ElasticProperties(config.connectionUrl()))) }
   } {
     client => IO { client.close() }
   }
@@ -33,25 +33,25 @@ case class SearchService(protocol: String, host: String, port: Int, indexName: S
 
   def index(fastaDoc: SequenceDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = client.use {
     _.execute {
-      val request = indexRequest(indexName)(fastaDoc)
+      val request = indexRequest(config.indexName)(fastaDoc)
       if (refresh) { request.refreshImmediately } else { request }
     }
   }
 
   def indexBulk(entries: List[SequenceDoc]): IO[Response[BulkResponse]] = client.use {
-    _.execute { bulk(entries map { indexRequest(indexName) }) }
+    _.execute { bulk(entries map { indexRequest(config.indexName) }) }
   }
 
   def find(sequence: String): IO[Response[SearchResponse]] = client.use {
-    _.execute { search(indexName) query sequence }
+    _.execute { search(config.indexName) query sequence }
   }
 
   def delete(identifier: String): IO[Response[DeleteByQueryResponse]] = client.use {
-    _.execute(deleteRequest(indexName, identifier))
+    _.execute(deleteRequest(config.indexName, identifier))
   }
 
   def deleteAll() = client.use {
-    _.execute(deleteAllRequest(indexName))
+    _.execute(deleteAllRequest(config.indexName))
   }
 
   def connectionCheck(): IO[Response[ClusterHealthResponse]] = {
@@ -71,7 +71,7 @@ case class SearchService(protocol: String, host: String, port: Int, indexName: S
 
   def createSequenceIndex(): IO[Response[CreateIndexResponse]] = client.use {
     _.execute {
-      createIndex(indexName)
+      createIndex(config.indexName)
         .mapping(SequenceDoc.Mapping)
         .analysis(SequenceDoc.Analysis)
     }
