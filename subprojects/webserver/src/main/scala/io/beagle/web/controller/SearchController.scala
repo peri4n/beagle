@@ -31,7 +31,7 @@ case class SearchController(searchService: SearchService) extends Http4sDsl[IO] 
       case req@POST -> Root / "search" =>
         for {
           request <- req.as[SearchSequenceRequest]
-          esResponse <- searchService.find(request.sequence)
+          esResponse <- searchService.findSequence(request.sequence)
           resp <- Ok(convertResponse(esResponse))
         } yield resp
     }

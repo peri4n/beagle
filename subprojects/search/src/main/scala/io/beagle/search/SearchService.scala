@@ -10,7 +10,9 @@ import com.sksamuel.elastic4s.requests.cluster.ClusterHealthResponse
 import com.sksamuel.elastic4s.requests.delete.DeleteByQueryResponse
 import com.sksamuel.elastic4s.requests.indexes.{CreateIndexResponse, IndexResponse}
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
+import com.sksamuel.elastic4s.requests.searches.queries.term.TermQuery
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
+import io.beagle.domain.DatasetId
 import io.beagle.exec.Exec
 import io.beagle.search.docs.SequenceDoc
 import io.chrisdavenport.log4cats.Logger
@@ -31,9 +33,9 @@ case class SearchService(config: ElasticSearchConfig, execution: Exec) {
 
   implicit def unsafeLogger[F[_] : Sync] = Slf4jLogger.getLogger[F]
 
-  def index(fastaDoc: SequenceDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = client.use {
+  def index(sequenceDoc: SequenceDoc, refresh: Boolean = false): IO[Response[IndexResponse]] = client.use {
     _.execute {
-      val request = indexRequest(config.indexName)(fastaDoc)
+      val request = indexRequest(config.indexName)(sequenceDoc)
       if (refresh) { request.refreshImmediately } else { request }
     }
   }
@@ -42,8 +44,22 @@ case class SearchService(config: ElasticSearchConfig, execution: Exec) {
     _.execute { bulk(entries map { indexRequest(config.indexName) }) }
   }
 
-  def find(sequence: String): IO[Response[SearchResponse]] = client.use {
-    _.execute { search(config.indexName) query sequence }
+  def findSequence(sequence: String): IO[Response[SearchResponse]] = client.use {
+    _.execute {
+      val searchRequest = search(config.indexName) query TermQuery(SequenceDoc.sequenceFieldName, sequence)
+      println("============================")
+      println(searchRequest.show)
+      println("============================")
+      searchRequest }
+  }
+
+  def findByDataset(id: DatasetId): IO[Response[SearchResponse]] = client.use {
+    _.execute {
+      val searchRequest = search(config.indexName) query TermQuery(SequenceDoc.datasetIdFieldName, id.value)
+      println("============================")
+      println(searchRequest.show)
+      println("============================")
+      searchRequest }
   }
 
   def delete(identifier: String): IO[Response[DeleteByQueryResponse]] = client.use {
@@ -81,12 +97,12 @@ case class SearchService(config: ElasticSearchConfig, execution: Exec) {
 
 object SearchService {
 
-  private def indexRequest(indexName: String)(fastaDoc: SequenceDoc) = {
-    indexInto(indexName).doc(fastaDoc)
+  private def indexRequest(indexName: String)(sequenceDoc: SequenceDoc) = {
+    indexInto(indexName).doc(sequenceDoc)
   }
 
   private def deleteRequest(indexName: String, identifier: String) = {
-    deleteIn(indexName).by(fuzzyQuery("identifier", identifier)).refreshImmediately
+    deleteIn(indexName).by(fuzzyQuery(SequenceDoc.headerFieldName, identifier)).refreshImmediately
   }
 
   private def deleteAllRequest(indexName: String) = {

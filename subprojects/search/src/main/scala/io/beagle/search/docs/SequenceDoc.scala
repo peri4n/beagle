@@ -1,12 +1,10 @@
 package io.beagle.search.docs
 
-import com.sksamuel.elastic4s.requests.analysis.{
-  Analysis => EsAnalysis, CustomAnalyzer, NGramTokenizer, StandardAnalyzer
-}
-import com.sksamuel.elastic4s.requests.mappings.{MappingDefinition, TextField}
+import com.sksamuel.elastic4s.requests.analysis.{CustomAnalyzer, NGramTokenizer, StandardAnalyzer, Analysis => EsAnalysis}
+import com.sksamuel.elastic4s.requests.mappings.{KeywordField, MappingDefinition, TextField}
 
-case class SequenceDoc(identifier: String,
-                       projectId: Int,
+case class SequenceDoc(header: String,
+                       datasetId: Long,
                        sequence: String)
 
 object SequenceDoc {
@@ -19,9 +17,15 @@ object SequenceDoc {
 
   val sequenceAnalyzer = s"${ sequenceFieldName }_analyzer"
 
+  val datasetIdFieldName = "datasetId"
+
+  val datasetIdFieldAnalyzer = s"${ datasetIdFieldName }_analyzer"
+
   val Mapping = MappingDefinition().as(
     TextField(headerFieldName).analyzer(headerAnalyzer),
-    TextField(sequenceFieldName).analyzer(sequenceAnalyzer))
+    TextField(sequenceFieldName).analyzer(sequenceAnalyzer),
+    KeywordField(datasetIdFieldName)
+  )
 
   val Analysis = EsAnalysis(
     analyzers = List(
