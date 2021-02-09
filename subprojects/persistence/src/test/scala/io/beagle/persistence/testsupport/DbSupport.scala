@@ -13,9 +13,6 @@ trait DbSupport extends AnyFunSpec with BeforeAndAfterAll {
     //    commonJdbcParams = JdbcDatabaseContainer.CommonParams(initScriptPath = Some("schema/create-db.sql"))
   ).start()
 
-
-  private val exec: Global = Global()
-
   lazy val environment: DB = (System.getProperty("run.mode") match {
     case "dev" =>
       PostgresConfig(
@@ -24,8 +21,7 @@ trait DbSupport extends AnyFunSpec with BeforeAndAfterAll {
         "beagle",
         "localhost",
         5432,
-        1,
-        exec)
+        1)
     case _ =>
       PostgresConfig(
         container.databaseName,
@@ -33,9 +29,8 @@ trait DbSupport extends AnyFunSpec with BeforeAndAfterAll {
         container.password,
         container.host,
         container.mappedPort(5432),
-        1,
-        exec)
-  }).environment().unsafeRunSync()
+        1)
+  }).environment(Global()).unsafeRunSync()
 
   lazy val xa = environment.transactor
 

@@ -11,7 +11,7 @@ class DbConfigTest extends AnyFunSpec with Matchers with OptionValues {
 
   describe("The persistence layer") {
     it("can be configured to use PostgreSQL") {
-      ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(Right(PostgresConfig("dbName", "fbull", "password", exec = Fixed(3))))
+      ConfigSource.resources("postgres.conf").load[PostgresConfig] should be(Right(PostgresConfig("dbName", "fbull", "password", "remote-server", 1234, 3)))
     }
   }
 

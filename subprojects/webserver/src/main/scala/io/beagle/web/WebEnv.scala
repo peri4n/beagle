@@ -46,7 +46,7 @@ case class WebEnv(uiRoot: String, port: Int, persistence: DB, search: SearchEnv,
 object WebEnv {
   def from(settings: WebSettings): IO[WebEnv] =
     for {
-      persistence <- settings.db.environment()
+      persistence <- settings.db.environment(settings.exec)
       search <- settings.search.environment()
       security <- settings.security.environment()
     } yield WebEnv(settings.uiRoot, settings.port, persistence, search, security, settings.exec)
