@@ -15,9 +15,9 @@ import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import io.beagle.domain.DatasetId
 import io.beagle.exec.Exec
 import io.beagle.search.docs.SequenceDoc
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe.generic.auto._
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import scala.concurrent.duration.{FiniteDuration, _}
 
@@ -47,18 +47,12 @@ case class SearchService(config: ElasticSearchConfig, execution: Exec) {
   def findSequence(sequence: String): IO[Response[SearchResponse]] = client.use {
     _.execute {
       val searchRequest = search(config.indexName) query TermQuery(SequenceDoc.sequenceFieldName, sequence)
-      println("============================")
-      println(searchRequest.show)
-      println("============================")
       searchRequest }
   }
 
   def findByDataset(id: DatasetId): IO[Response[SearchResponse]] = client.use {
     _.execute {
       val searchRequest = search(config.indexName) query TermQuery(SequenceDoc.datasetIdFieldName, id.value)
-      println("============================")
-      println(searchRequest.show)
-      println("============================")
       searchRequest }
   }
 
@@ -74,7 +68,7 @@ case class SearchService(config: ElasticSearchConfig, execution: Exec) {
     def retryWithBackOff[A](ioa: IO[A], initialDelay: FiniteDuration, maxRetries: Int)(implicit timer: Timer[IO]): IO[A] = {
       ioa.handleErrorWith { error =>
         if (maxRetries > 0) {
-          Logger[IO].warn("Can not connect to search server. Retry ")
+          Logger[IO].warn("Can not connect to search server. Retry ") *>
           IO.sleep(initialDelay) *> retryWithBackOff(ioa, initialDelay * 2, maxRetries - 1)
         } else
           IO.raiseError(error)

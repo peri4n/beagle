@@ -7,8 +7,8 @@ import io.beagle.domain.User
 import io.beagle.persistence.Postgres
 import io.beagle.persistence.service.UserService
 import io.beagle.web.{WebEnv, WebSettings}
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 

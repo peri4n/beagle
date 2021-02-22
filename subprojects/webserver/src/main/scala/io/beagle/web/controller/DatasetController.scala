@@ -4,7 +4,6 @@ import cats.effect.IO
 import doobie.Transactor
 import doobie.implicits._
 import io.beagle.domain._
-import io.beagle.persistence.DB
 import io.beagle.persistence.service.DatasetService
 import io.circe.generic.auto._
 import io.circe.syntax._
