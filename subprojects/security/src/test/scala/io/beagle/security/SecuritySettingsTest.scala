@@ -1,18 +1,17 @@
 package io.beagle.security
 
-import org.scalatest.funspec.AnyFunSpec
-import org.scalatest.matchers.should.Matchers
+import munit.FunSuite
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
 import scala.concurrent.duration._
 
-class SecuritySettingsTest extends AnyFunSpec with Matchers {
+class SecuritySettingsTest extends FunSuite {
 
-  describe("The security settings") {
-    it("can be configured via file") {
-      ConfigSource.resources("security.conf").load[SecuritySettings] should be(Right(SecuritySettings(JwtSettings(5 seconds, "foo"))))
-    }
+  test("can be configured via file") {
+    assertEquals(
+      ConfigSource.resources("security.conf").load[SecuritySettings],
+      Right(SecuritySettings(JwtSettings(5 seconds, "foo"))))
   }
 
 }

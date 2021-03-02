@@ -1,12 +1,11 @@
 package io.beagle.web.controller
 
 import cats.effect.IO
-import io.beagle.testsupport.ResponseMatchers
 import io.circe.generic.auto._
+import munit.FunSuite
 import org.http4s.circe.jsonOf
-import org.scalatest.funspec.AnyFunSpec
 
-class LoginControllerTest extends AnyFunSpec with ResponseMatchers {
+class LoginControllerTest extends FunSuite {
 
   import LoginController._
 

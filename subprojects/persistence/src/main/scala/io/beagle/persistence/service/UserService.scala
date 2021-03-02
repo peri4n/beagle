@@ -5,56 +5,58 @@ import doobie.free.connection.ConnectionIO
 import io.beagle.domain.{User, UserId, UserItem}
 import io.beagle.persistence.repository.user.UserRepo
 
-case object UserService {
+case class UserService(userRepo: UserRepo) {
 
-  def createTable(): ConnectionIO[Int] = UserRepo.createTable()
+  def createTable(): ConnectionIO[Int] = userRepo.createTable()
 
   def create(user: User): ConnectionIO[UserItem] = {
-    UserRepo.findByName(user.name).flatMap { maybeUser =>
-      maybeUser.fold(UserRepo.create(user)) { _ =>
-        Sync[ConnectionIO].raiseError(UserAlreadyExists(user))
+    userRepo.findByName(user.name).flatMap { maybeUser =>
+      maybeUser.fold(userRepo.create(user)) { item =>
+        Sync[ConnectionIO].raiseError(UserAlreadyExists(item))
       }
     }
   }
 
-  def findById(id: UserId): ConnectionIO[Option[UserItem]] = UserRepo.findById(id)
+  def findById(id: UserId): ConnectionIO[Option[UserItem]] = userRepo.findById(id)
 
-  def findByIdStrict(id: UserId): ConnectionIO[UserItem] = UserRepo.findById(id).flatMap { maybeUser =>
-    maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist("foo"))) { owner =>
-      Sync[ConnectionIO].pure(owner)
+  def findByIdStrict(id: UserId): ConnectionIO[UserItem] =
+    userRepo.findById(id).flatMap { maybeUser =>
+      maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist("foo"))) { owner =>
+        Sync[ConnectionIO].pure(owner)
+      }
     }
-  }
 
-  def findByName(userName: String): ConnectionIO[Option[UserItem]] = UserRepo.findByName(userName)
+  def findByName(userName: String): ConnectionIO[Option[UserItem]] = userRepo.findByName(userName)
 
-  def findByNameAndPassword(userName: String, password: String): ConnectionIO[Option[UserItem]] = UserRepo.findByName(userName).map {
-    case Some(item) if item.user.password == password => Some(item)
-    case _                                            => None
-  }
+  def findByNameAndPassword(userName: String, password: String): ConnectionIO[Option[UserItem]] =
+    userRepo.findByName(userName).map {
+      case Some(item) if item.user.password == password => Some(item)
+      case _ => None
+    }
 
-  def findByNameStrict(userName: String): ConnectionIO[UserItem] = UserRepo.findByName(userName).flatMap { maybeUser =>
+  def findByNameStrict(userName: String): ConnectionIO[UserItem] = userRepo.findByName(userName).flatMap { maybeUser =>
     maybeUser.fold(Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(userName))) { owner =>
       Sync[ConnectionIO].pure(owner)
     }
   }
 
   def update(oldUser: User, newUser: User): ConnectionIO[UserItem] = {
-    UserRepo.findByName(oldUser.name).flatMap {
-      case Some(userItem) => UserRepo.update(userItem.id, newUser)
-      case _              => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser.name))
+    userRepo.findByName(oldUser.name).flatMap {
+      case Some(userItem) => userRepo.update(userItem.id, newUser)
+      case _ => Sync[ConnectionIO].raiseError[UserItem](UserDoesNotExist(oldUser.name))
     }
   }
 
   def delete(user: User): ConnectionIO[Unit] = {
-    UserRepo.findByName(user.name).flatMap {
-      case Some(userItem) => UserRepo.delete(userItem.id)
-      case _              => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user.name))
+    userRepo.findByName(user.name).flatMap {
+      case Some(userItem) => userRepo.delete(userItem.id)
+      case _ => Sync[ConnectionIO].raiseError[Unit](UserDoesNotExist(user.name))
     }
   }
 
-  def deleteAll(): ConnectionIO[Unit] = UserRepo.deleteAll()
+  def deleteAll(): ConnectionIO[Unit] = userRepo.deleteAll()
 
-  case class UserAlreadyExists(user: User) extends Exception(user.name)
+  case class UserAlreadyExists(item: UserItem) extends Exception(item.user.name)
 
   case class UserDoesNotExist(user: String) extends Exception(user)
 

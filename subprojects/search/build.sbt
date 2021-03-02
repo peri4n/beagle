@@ -1,11 +1,16 @@
-// Elastic Search
-val elastic4sVersion = "7.3.5"
-libraryDependencies ++= Seq(
-  "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-json-circe" % elastic4sVersion
-)
+lazy val dependencies = new {
+  // Elastic Search
+  val elastic4sV = "7.3.5"
+  val testcontainerV = "1.15.2"
 
-libraryDependencies += "com.dimafeng" %% "testcontainers-scala-scalatest" % "0.36.0" % "test"
-libraryDependencies += "com.dimafeng" %% "testcontainers-scala-elasticsearch" % "0.36.0" % "test"
+  val elastic4s = Seq(
+    "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sV,
+    "com.sksamuel.elastic4s" %% "elastic4s-effect-cats" % elastic4sV,
+    "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sV,
+    "com.sksamuel.elastic4s" %% "elastic4s-json-circe" % elastic4sV
+  )
+  val testcontainerPostgres = "org.testcontainers" % "elasticsearch" % testcontainerV % Test
+}
+
+libraryDependencies ++= dependencies.elastic4s
+libraryDependencies += dependencies.testcontainerPostgres

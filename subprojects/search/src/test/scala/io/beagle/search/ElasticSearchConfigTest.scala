@@ -1,19 +1,18 @@
 package io.beagle.search
 
-import org.scalatest.funspec.AnyFunSpec
-import org.scalatest.matchers.should.Matchers
+import munit.FunSuite
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
-class ElasticSearchConfigTest extends AnyFunSpec with Matchers {
+class ElasticSearchConfigTest extends FunSuite {
 
-  describe("SearchSettings") {
-    it("should be configurable via file") {
-      ConfigSource.resources("search.conf").load[ElasticSearchConfig] should be(Right(ElasticSearchConfig(
+  test("should be configurable via file") {
+    assertEquals(
+      ConfigSource.resources("search.conf").load[ElasticSearchConfig],
+      Right(ElasticSearchConfig(
         host = "remote-server",
         port = 9300,
         indexName = "sequences"
       )))
-    }
   }
 }

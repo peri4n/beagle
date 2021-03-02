@@ -1,42 +1,36 @@
 package io.beagle.web.controller
 
 import cats.effect.IO
-import io.beagle.search.testsupport.SearchSupport
-import io.beagle.testsupport.ResponseMatchers
+import io.beagle.search.testsupport.SearchSuite
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
-import org.scalatest.funspec.AnyFunSpec
-import org.scalatest.matchers.should.Matchers
 
-class HealthCheckControllerTest extends AnyFunSpec with ResponseMatchers with Matchers with SearchSupport {
+class HealthCheckControllerTest extends SearchSuite {
 
   import HealthCheckController._
 
   implicit val requestEncoder: EntityEncoder[IO, HealthCheckRequest] = jsonEncoderOf[IO, HealthCheckRequest]
   implicit val responseDecoder: EntityDecoder[IO, HealthCheckResponse] = jsonOf[IO, HealthCheckResponse]
 
+  val service = setup().searchService
+
   val controller = HealthCheckController(service).route.orNotFound
 
-  describe("The HealthCheckController") {
+  test("return true if ElasticSearch can be reached") {
+    val test = controller.run(Request(method = Method.GET, uri = uri"/health"))
 
-    it("return true if ElasticSearch can be reached") {
-      val response = controller.run(Request(method = Method.GET, uri = uri"/health")).unsafeRunSync()
+    val responseCode = test.map { _.status }
 
-      response should have {
-        status(Status.Ok)
-      }
-      //      response must haveBody(HealthCheckResponse(true))
-    }
+    assertIO(responseCode, returns = Status.Ok)
+  }
 
-    it("return false if ElasticSearch can't be reached") {
-      val response = controller.run(Request(method = Method.GET, uri = uri"/health")).unsafeRunSync()
+  test("return false if ElasticSearch can't be reached") {
+    val test = controller.run(Request(method = Method.GET, uri = uri"/health"))
 
-      response should have {
-        status(Status.Ok)
-      }
-      //      response must haveBody(HealthCheckResponse(false))
-    }
+    val responseCode = test.map { _.status }
+
+    assertIO(responseCode, returns = Status.Ok)
   }
 }

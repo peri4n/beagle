@@ -21,7 +21,7 @@ sealed trait Exec {
 
 object Exec {
 
-  final case class Global() extends Exec {
+  final case object Global extends Exec {
     lazy val context: ExecutionContext = glob
   }
 

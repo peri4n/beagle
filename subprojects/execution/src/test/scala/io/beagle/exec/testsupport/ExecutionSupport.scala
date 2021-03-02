@@ -4,6 +4,6 @@ import io.beagle.exec.Exec.Global
 
 trait ExecutionSupport {
 
-  lazy val execution = Global()
+  lazy val execution = Global
 
 }

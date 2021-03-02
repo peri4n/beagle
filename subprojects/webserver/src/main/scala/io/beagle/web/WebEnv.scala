@@ -3,7 +3,7 @@ package io.beagle.web
 import cats.effect.IO
 import cats.implicits._
 import io.beagle.exec.Exec
-import io.beagle.persistence.Postgres
+import io.beagle.persistence.DB
 import io.beagle.search.ElasticSearch
 import io.beagle.security.SecurityEnv
 import io.beagle.web.controller._
@@ -11,24 +11,27 @@ import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.GZip
 
-case class WebEnv(uiRoot: String, port: Int, persistence: Postgres, search: ElasticSearch, security: SecurityEnv, exec: Exec) {
+case class WebEnv(uiRoot: String, port: Int, persistence: DB, search: ElasticSearch, security: SecurityEnv, exec: Exec) {
 
   /**
    * Runtime
    */
   implicit lazy val cs = exec.shift
   implicit lazy val timer = exec.timer
+  lazy val xa = persistence.xa
 
   /**
    * Services
    */
   lazy val searchService = search.searchService
+  lazy val datasetService = persistence.datasetService
+  lazy val userService = persistence.userService
 
   /**
    * Controllers
    */
-  lazy val userRoute = UserController(persistence).route
-  lazy val datasetRoute = DatasetController(persistence.transactor).route
+  lazy val userRoute = UserController(userService, xa).route
+  lazy val datasetRoute = DatasetController(datasetService, xa).route
   lazy val staticRoute = StaticContentController(exec, uiRoot).route
   lazy val searchRoute = SearchController(searchService).route
   lazy val healthRoute = HealthCheckController(searchService).route
@@ -47,6 +50,6 @@ object WebEnv {
     for {
       security <- settings.security.environment()
       search = settings.search.environment(settings.exec)
-      persistence = settings.db.environment(settings.exec)
+      persistence <- settings.db.environment(settings.exec)
     } yield WebEnv(settings.uiRoot, settings.port, persistence, search, security, settings.exec)
 }

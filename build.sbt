@@ -89,6 +89,7 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("snapshots")
   ),
   Test / parallelExecution := false,
+  testFrameworks += new TestFramework("munit.Framework")
 ) ++ runModeSettings
 
 lazy val runModeSettings = Seq(
@@ -144,8 +145,8 @@ lazy val dependencies = new {
   val catsV = "2.2.0"
   val logbackV = "1.2.3"
   val catsLogV = "1.2.0"
-  val testV = "3.1.1"
-  val pureConfigV = "0.12.3"
+  val munitV = "0.13.1"
+  val pureConfigV = "0.14.0"
 
   // configuration
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
@@ -159,8 +160,8 @@ lazy val dependencies = new {
   val catsEffect = "org.typelevel" %% "cats-effect" % catsV
 
   // Scala test
-  val scalaTest = "org.scalatest" %% "scalatest" % testV
-  val scalaCheck = "org.scalacheck" %% "scalacheck" % checkV
+  val scalaCheck = "org.scalacheck" %% "scalacheck" % checkV % Test
+  val munit = "org.typelevel" %% "munit-cats-effect-2" % munitV % Test
 }
 
 lazy val commonDependencies = Seq(
@@ -176,8 +177,8 @@ lazy val commonDependencies = Seq(
   dependencies.catsEffect,
 
   // tests
-  dependencies.scalaTest % "test",
-  dependencies.scalaCheck % "test"
+  dependencies.munit,
+  dependencies.scalaCheck
 )
 
 

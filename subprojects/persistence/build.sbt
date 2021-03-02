@@ -1,6 +1,6 @@
 lazy val dependencies = new {
   val doobieV = "0.10.0"
-  val testcontainerV = "0.39.0"
+  val testcontainerV = "1.15.2"
   val liquibaseV = "4.2.2"
 
   /** Doobie */
@@ -11,19 +11,14 @@ lazy val dependencies = new {
 
   /** Liquibase */
   val liquibaseCore = "org.liquibase" % "liquibase-core" % liquibaseV
-  val liquibaseLogger = "com.mattbertolini" % "liquibase-slf4j" % "4.0.0" % "runtime"
+  val liquibaseLogger = "com.mattbertolini" % "liquibase-slf4j" % "4.0.0" % Runtime
   val liquibase = Seq(liquibaseCore, liquibaseLogger)
 
   /** Test containers */
-  val testcontainerScalaTest = "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainerV % Test
-  val testcontainerPostgres = "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainerV % Test
-
-  val testcontainer = Seq(testcontainerScalaTest, testcontainerPostgres)
+  val testcontainerPostgres = "org.testcontainers" % "postgresql" % testcontainerV % Test
 
 }
 
 libraryDependencies ++= dependencies.doobie
 libraryDependencies ++= dependencies.liquibase
-libraryDependencies ++= dependencies.testcontainer
-
-
+libraryDependencies += dependencies.testcontainerPostgres

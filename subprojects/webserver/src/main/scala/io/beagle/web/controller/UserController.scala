@@ -2,8 +2,8 @@ package io.beagle.web.controller
 
 import cats.effect.IO
 import doobie.implicits._
+import doobie.util.transactor.Transactor
 import io.beagle.domain.User
-import io.beagle.persistence.Postgres
 import io.beagle.persistence.service.UserService
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
@@ -18,15 +18,15 @@ case object UserController {
 
 }
 
-case class UserController(postgres: Postgres) extends Http4sDsl[IO] {
+case class UserController(service: UserService, xa: Transactor[IO]) extends Http4sDsl[IO] {
 
   import UserController._
 
   val route = HttpRoutes.of[IO] {
     case req@POST -> Root / PathName => req.decode[CreateUserRequest] { createUser =>
-      UserService.create(User(createUser.username, createUser.password, createUser.email))
-        .transact(postgres.transactor)
-      ???
+      service.create(User(createUser.username, createUser.password, createUser.email))
+        .transact(xa)
+      null
     }
   }
 }
