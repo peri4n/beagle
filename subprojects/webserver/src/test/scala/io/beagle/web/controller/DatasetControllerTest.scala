@@ -6,7 +6,6 @@ import io.beagle.domain._
 import io.beagle.persistence.testsupport.DbSuite
 import io.beagle.web.controller.DatasetController.CreateSequenceSetRequest
 import io.circe.generic.auto._
-import org.http4s.Status.Ok
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -24,26 +23,30 @@ class DatasetControllerTest extends DbSuite {
 
   val xa = setup().xa
 
+  val controller = DatasetController(datasetService, xa).route.orNotFound
+
   test("must return 200 if the dataset was successfully created") {
     // setup
-    val (userI, projectI) = (for {
+    val setup = for {
       userItem <- userService.create(User("foo", "1234", "gna@example.com"))
       projectItem <- projectService.create(Project("user", userItem.id))
-    } yield (userItem, projectItem)).transact(xa).unsafeRunSync()
-    val createRequest = CreateSequenceSetRequest("set1", userI.id, projectI.id)
-    val controller = DatasetController(datasetService, xa).route.orNotFound
+    } yield (userItem, projectItem)
+
+    val (userI, projectI) = setup.transact(xa).unsafeRunSync()
 
     // test
-    val response = controller
+    val test = controller
       .run(
         Request(
           method = Method.POST,
           uri = uri"/seqsets",
-          body = requestEncoder.toEntity(createRequest).body))
-      .unsafeRunSync()
+          body = requestEncoder.toEntity(
+            CreateSequenceSetRequest("set1", userI.id, projectI.id)).body))
+
+    val responseCode = test.map { _.status }
 
     // verify
-    assert(response.status == Ok)
+    assertIO(responseCode, Status.Ok)
   }
 
 }
