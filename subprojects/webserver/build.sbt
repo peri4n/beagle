@@ -1,13 +1,21 @@
-// config
-libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.12.1"
-libraryDependencies += "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.12.1"
+lazy val dependencies = new {
 
-// Webapp
-val http4sVersion = "0.21.20"
-libraryDependencies += "org.http4s" %% "http4s-core" % http4sVersion
-libraryDependencies += "org.http4s" %% "http4s-dsl" % http4sVersion
-libraryDependencies += "org.http4s" %% "http4s-circe" % http4sVersion
-libraryDependencies += "org.http4s" %% "http4s-blaze-server" % http4sVersion
+  val http4sV = "0.21.20"
+  val tapirV = "0.17.15"
+
+  // web server
+  val http4sCore = "org.http4s" %% "http4s-core" % http4sV
+  val http4sDsl =  "org.http4s" %% "http4s-dsl" % http4sV
+  val http4sCirce = "org.http4s" %% "http4s-circe" % http4sV
+  val http4sServer = "org.http4s" %% "http4s-blaze-server" % http4sV
+  val http4s = Seq(http4sCore, http4sDsl, http4sCirce, http4sServer)
+
+  // openapi
+  val tapir = "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % tapirV
+}
+
+libraryDependencies ++= dependencies.http4s
+libraryDependencies += dependencies.tapir
 
 fork := true
 connectInput := true

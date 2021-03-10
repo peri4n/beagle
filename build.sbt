@@ -149,6 +149,7 @@ lazy val dependencies = new {
   val pureConfigV = "0.14.0"
 
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
+  val pureConfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigV
 
   val logging = "org.typelevel" %% "log4cats-slf4j" % catsLogV
   val logback = "ch.qos.logback" % "logback-classic" % logbackV
@@ -165,6 +166,7 @@ lazy val dependencies = new {
 lazy val commonDependencies = Seq(
   // configuration
   dependencies.pureConfig,
+  dependencies.pureConfigCats,
 
   // logging
   dependencies.logging,
