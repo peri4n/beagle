@@ -142,23 +142,22 @@ lazy val dependencies = new {
 
   val checkV = "1.14.0"
   val catsV = "2.2.0"
+  val circeV = "0.13.0"
   val logbackV = "1.2.3"
   val catsLogV = "1.2.0"
   val munitV = "0.13.1"
   val pureConfigV = "0.14.0"
 
-  // configuration
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % pureConfigV
 
-  // logging
   val logging = "org.typelevel" %% "log4cats-slf4j" % catsLogV
   val logback = "ch.qos.logback" % "logback-classic" % logbackV
 
-  // cats
   val catsCore = "org.typelevel" %% "cats-core" % catsV
   val catsEffect = "org.typelevel" %% "cats-effect" % catsV
 
-  // Scala test
+  val circe = "io.circe" %% "circe-generic" % circeV
+
   val scalaCheck = "org.scalacheck" %% "scalacheck" % checkV % Test
   val munit = "org.typelevel" %% "munit-cats-effect-2" % munitV % Test
 }
@@ -170,6 +169,9 @@ lazy val commonDependencies = Seq(
   // logging
   dependencies.logging,
   dependencies.logback,
+
+  // circe
+  dependencies.circe,
 
   // cats
   dependencies.catsCore,
