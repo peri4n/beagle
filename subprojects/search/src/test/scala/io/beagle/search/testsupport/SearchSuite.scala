@@ -21,7 +21,7 @@ trait SearchSuite extends CatsEffectSuite {
 
     override def apply(): ElasticSearch = search
 
-    override def beforeAll = {
+    override def beforeAll() = {
       search.searchService.createSequenceIndex().unsafeRunSync()
     }
 

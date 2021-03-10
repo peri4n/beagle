@@ -13,8 +13,9 @@ trait DbSuite extends CatsEffectSuite {
   val setup = new Fixture[DB]("database") {
     val db = (System.getProperty("run.mode") match {
       case "dev" => InMemConfig
-      case _ => {
-        val container: PostgreSQLContainer[_] = new PostgreSQLContainer().withDatabaseName(getClass.getSimpleName)
+      case _ =>
+        val container: PostgreSQLContainer[_] = new PostgreSQLContainer("postgres:13.2")
+          .withDatabaseName(getClass.getSimpleName)
         container.start()
 
         PgConfig(container.getHost,
@@ -22,18 +23,17 @@ trait DbSuite extends CatsEffectSuite {
           container.getDatabaseName,
           DbCredentials(container.getUsername, container.getPassword),
           1)
-      }
     }).environment(Global).unsafeRunSync()
 
-    def apply = db
+    def apply() = db
 
     override def beforeAll(): Unit = db.initSchema().unsafeRunSync()
 
     override def afterEach(context: AfterEach): Unit = {
       val deleteAll = for {
         _ <- db.userService.deleteAll()
-//        _ <- setup.projectService.deleteAll() to be implemented
-//        _ <- setup.datasetService.deleteAll()
+        //        _ <- setup.projectService.deleteAll() to be implemented
+        //        _ <- setup.datasetService.deleteAll()
       } yield ()
 
       deleteAll.transact(db.xa)
