@@ -1,3 +1,6 @@
+# Project specific files
+openapi.yaml
+
 # Jetbrains specific files
 .idea
 *.ipr

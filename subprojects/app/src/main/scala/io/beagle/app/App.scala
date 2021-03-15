@@ -1,12 +1,10 @@
 package io.beagle.app
 
 import cats.effect.{ExitCode, IO, IOApp, Sync}
-import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import io.beagle.domain.{User, UserItem}
-import io.beagle.persistence.{DB, PgDB}
-import io.beagle.persistence.service.UserService
-import io.beagle.web.{WebEnv, WebSettings}
+import io.beagle.persistence.DB
+import io.beagle.web.server.{WebEnv, WebSettings}
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.ConfigSource

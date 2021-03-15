@@ -4,7 +4,7 @@ lazy val beagle = project
   .in(file("."))
   .aggregate(
     frontend,
-    webserver
+    webServer
   )
 
 lazy val app = project
@@ -14,11 +14,18 @@ lazy val app = project
     libraryDependencies ++= commonDependencies
   )
   .dependsOn(
-    webserver % "compile->compile;runtime->runtime;test->test",
+    webServer % "compile->compile;runtime->runtime;test->test",
   )
 
-lazy val webserver = project
-  .in(file("subprojects/webserver"))
+lazy val webApi = project
+  .in(file("subprojects/web-api"))
+  .settings(
+    commonSettings,
+    libraryDependencies ++= commonDependencies
+  )
+
+lazy val webServer = project
+  .in(file("subprojects/web-server"))
   .settings(
     commonSettings,
     libraryDependencies ++= commonDependencies
