@@ -12,13 +12,13 @@ COPY package*.json ./
 RUN npm install
 
 # Copy sources
-COPY app ./app/
+COPY frontend/app ./app/
 
 # Copy Webpack config
-COPY webpack.config.js ./
+COPY frontend/webpack.config.js ./
 
 # Copy Babel config
-COPY .babelrc ./
+COPY frontend/.babelrc ./
 
 # Build the UI
 ARG commit_hash

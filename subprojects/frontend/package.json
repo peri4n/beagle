@@ -1,65 +1,40 @@
 {
-  "name": "beagle",
-  "version": "0.0.1",
-  "description": "Search engine for biological ",
-  "main": "index.tsx",
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "watch": "npx webpack --mode development --watch",
-    "build": "npx webpack --mode production",
-    "start": "webpack-dev-server --open",
-    "lint": "npx eslint \"./app/**/*.{ts,tsx}\"",
-    "stats": "npx webpack --profile --json > stats.json",
-    "preinstall": "npx npm-force-resolutions"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/peri4n/beagle.git"
-  },
-  "keywords": [
-    "biological",
-    "search",
-    "engine"
-  ],
-  "author": "Fabian Bull",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/peri4n/beagle/issues"
-  },
-  "homepage": "https://github.com/peri4n/beagle#readme",
-  "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@babel/preset-react": "^7.9.4",
-    "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.6",
-    "@types/react-redux": "^7.1.7",
-    "@types/react-router-dom": "^5.1.2",
-    "babel-loader": "^8.1.0",
-    "compression-webpack-plugin": "^3.1.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.19.0",
-    "git-revision-webpack-plugin": "^3.0.6",
-    "html-webpack-plugin": "^3.2.0",
-    "source-map-loader": "^0.2.4",
-    "ts-loader": "^6.2.2",
-    "typescript": "^3.8.3",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.10",
-    "@material-ui/icons": "^4.9.1",
-    "clsx": "^1.1.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.9.34",
-    "react-dom": "^16.9.6",
-    "react-redux": "^7.1.7",
-    "react-router-dom": "^5.1.2",
-    "redux": "^4.0.5"
+    "core-js": "^3.6.5",
+    "vue": "^2.6.11",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0"
   },
-  "resolutions": {
-    "minimist": "^1.2.5"
+  "devDependencies": {
+    "@types/jest": "^24.0.19",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^5.0.2",
+    "@vue/test-utils": "^1.0.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-vue": "^6.2.2",
+    "prettier": "^1.19.1",
+    "typescript": "~3.9.3",
+    "vue-template-compiler": "^2.6.11"
   }
 }
