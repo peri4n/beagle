@@ -1,16 +1,21 @@
 <template>
-  <div id="app">
-    <router-link to="/">Home</router-link>
-    <router-view />
+  <div>
+    <h1>Hello World</h1>
+    <Debug :keycloak="keycloak" />
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator"
+import Debug from "@/components/Debug.vue"
+import { KeycloakInstance } from "keycloak-js"
+
+@Component({
+  components: { Debug }
+})
+export default class App extends Vue {
+  @Prop() private keycloak!: KeycloakInstance;
 }
+</script>
+<style>
 </style>
